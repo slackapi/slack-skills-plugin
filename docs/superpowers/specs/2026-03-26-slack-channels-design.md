@@ -47,19 +47,16 @@ Stored in a single JSON file at a configurable path (default: `~/.slack-channel/
 {
   "gating": {
     "mode": "per-user",
-    "allowedUsers": ["U12345ABC"],
-    "allowedWorkspaces": []
+    "allowedUsers": ["U12345ABC"]
   },
-  "watchedChannels": ["C09876DEF", "C11223344"],
-  "pairing": {
-    "pendingCodes": {}
-  }
+  "watchedChannels": ["C09876DEF", "C11223344"]
 }
 ```
 
-- **`gating.mode`**: `"per-user"` (only `allowedUsers` can interact) or `"workspace"` (all users from `allowedWorkspaces` are allowed).
+- **`gating.mode`**: `"per-user"` — only users in `allowedUsers` can interact. (Workspace-level gating is deferred to a future iteration; see [Future Work](#future-work).)
 - **`watchedChannels`**: Channel IDs where the bot listens for all messages. In channels not on this list, only `@mentions` and DMs trigger notifications.
-- **`pairing.pendingCodes`**: Transient map of `code → { userId, timestamp }` for the pairing flow. Codes expire after 5 minutes. Not persisted across restarts.
+
+Pairing codes are transient, process-local state — stored in an in-memory `Map<string, { userId: string; timestamp: number }>` inside `gating.ts`, never written to the settings file. Codes expire after 5 minutes and are pruned on each access.
 
 The settings file is read at startup. Default is `"per-user"` with an empty allowlist (bootstrap mode).
 
@@ -88,6 +85,8 @@ The `.mcp.json` gains a second entry alongside the existing remote Slack MCP:
 ```
 
 The existing `slack` tools (search, read, send) remain on the remote server. The `slack-channel` entry is the local channel subprocess. They coexist.
+
+**Development flag**: During the research preview, start Claude Code with `--dangerously-load-development-channels server:slack-channel` to bypass the channel allowlist. Once the plugin is on the approved allowlist, this flag is no longer needed.
 
 ## MCP Capabilities
 
@@ -130,12 +129,18 @@ Add an emoji reaction to a message.
 
 ### `manage_access`
 
-Add or remove users/workspaces from the allowlist, or switch gating mode. Only callable when the originating user is already in the allowlist.
+Add or remove users from the allowlist or initiate pairing. **Authorization**: when a tool call arrives, the bridge checks `lastActiveContext.userId` against the allowlist. If `lastActiveContext` is null (no gated interaction has occurred yet) or the caller is not in the allowlist, the tool returns an authorization error and no action is taken.
 
 | Param | Type | Required | Description |
 |---|---|---|---|
-| `action` | string | yes | `add_user`, `remove_user`, `add_workspace`, `remove_workspace`, `set_mode` |
-| `value` | string | yes | User ID, workspace ID, or mode (`per-user` / `workspace`) |
+| `action` | string | yes | `add_user`, `remove_user`, `pair_user` |
+| `value` | string | yes | Slack user ID (e.g. `U12345ABC`) |
+
+- **`add_user`**: Directly adds a user to the allowlist (no pairing round-trip). Use for trusted additions.
+- **`remove_user`**: Removes a user from the allowlist.
+- **`pair_user`**: Initiates the pairing flow for the target user — sends them an ephemeral code that they must echo back before being added. Use when the requesting user wants to verify the target's identity.
+
+All values are Slack user IDs. If Claude receives a `@handle` from the user, it should resolve it to a user ID using the existing remote `slack_search_users` tool before calling `manage_access`.
 
 ### `manage_channels`
 
@@ -180,16 +185,26 @@ Reaction :eyes: on message: "Deploy summary: 3 services updated..."
 </channel>
 ```
 
+**Reaction event filter**: Only emit `reaction` notifications when `reaction_added.item.type === 'message'` AND the reacted-to message's author (`item_user`) matches the bot's own user ID. All other `reaction_added` events are silently dropped.
+
 Meta keys: `event` for routing, `user` + `user_name` for identity, `channel_id` + `channel_name` for context, `ts` for the message timestamp, `thread_ts` when part of a thread.
+
+**Meta key constraint**: All meta keys must match `[a-z0-9_]+`. Keys containing hyphens or other characters are silently dropped by Claude Code.
+
+**Name resolution**: `user_name` and `channel_name` require resolving Slack IDs via `users.info` and `conversations.info` API calls. The bridge maintains a per-process in-memory cache (`Map<string, string>`) for both, populated on first lookup. Cache entries do not expire within a process lifetime (names change rarely).
 
 ### Permission Relay
 
-When Claude Code emits a `permission_request`, the bridge formats it and sends it as a DM (or in the originating thread) to the allowed user(s):
+The bridge maintains a `lastActiveContext: { userId: string, channelId: string, threadTs?: string }` variable, updated on every gated inbound event. When Claude Code emits a `permission_request`, the bridge sends the prompt to this context — either in the originating thread or as a DM to the last active user.
+
+If `lastActiveContext` is null (no interaction has occurred yet), the permission request is logged to stderr and dropped. The local terminal dialog remains open as the only way to respond.
+
+Example prompt sent to Slack:
 
 > **Claude wants to run `Bash`:** `git pull origin main`
 > Reply `yes abcde` or `no abcde`
 
-Replies matching the `yes/no <id>` pattern are intercepted and emitted as `notifications/claude/channel/permission` verdicts instead of being forwarded as chat messages.
+Replies matching the `yes/no <id>` pattern (regex: `/^\s*(y|yes|n|no)\s+([a-km-z]{5})\s*$/i`) are intercepted and emitted as `notifications/claude/channel/permission` verdicts instead of being forwarded as chat messages.
 
 ## Sender Gating & Pairing
 
@@ -197,26 +212,28 @@ Replies matching the `yes/no <id>` pattern are intercepted and emitted as `notif
 
 Every inbound event is checked against the allowlist before emitting an MCP notification:
 
-- **`per-user` mode**: `event.user` must be in `gating.allowedUsers`
-- **`workspace` mode**: the user's workspace (from the event or a cached lookup) must be in `gating.allowedWorkspaces`
+- `event.user` must be in `gating.allowedUsers`
 
-Gate on the sender's user ID, not the channel/room ID.
+Gate on the sender's user ID, not the channel/room ID. Events from ungated users are silently dropped (no error response).
 
 ### First-User Bootstrap
 
 1. Instance starts with an empty allowlist → enters bootstrap mode
-2. First user to DM the bot receives a 6-character pairing code via ephemeral Slack message (only they can see it)
-3. The code is also written to stdout and to a file at `~/.slack-channel/pairing-code.txt`
-4. User echoes the code back to the bot (e.g., "pair ABC123")
-5. Round-trip verified — code matches and was sent to the same user. User is added to the allowlist. Bootstrap mode ends.
+2. The first user to DM the bot receives a 6-character pairing code via ephemeral Slack message (only they can see it)
+3. The code is also written to stdout (captured in Claude Code's debug log) and to a file at `~/.slack-channel/pairing-code.txt`
+4. Only one pairing code is active at a time during bootstrap. If a second user DMs while a code is pending, the bot replies with an ephemeral message: "Pairing already in progress, please try again shortly."
+5. User echoes the code back to the bot (e.g., "pair ABC123")
+6. Round-trip verified — code matches and was sent to the same user. User is added to the allowlist. Bootstrap mode ends.
+7. After the first user is paired, subsequent users go through the "Subsequent User Pairing" flow below.
 
 Security: the code is ephemeral (only the recipient sees it), must be echoed by the same user, and expires after 5 minutes.
 
 ### Subsequent User Pairing
 
 1. An authorized user asks Claude to pair a new user (e.g., "pair @bob")
-2. Claude calls `manage_access` to note the intent; the bridge sends an ephemeral pairing code to Bob
-3. Bob echoes the code back. Round-trip verified, Bob is added.
+2. Claude resolves Bob's user ID via the remote `slack_search_users` tool, then calls `manage_access` with `action: "pair_user"` and `value: "U67890XYZ"`
+3. The bridge resolves the target user and sends them an ephemeral pairing code
+4. Bob echoes the code back to the bot. Round-trip verified, Bob is added to the allowlist.
 
 ### Pre-configured Allowlist
 
@@ -248,3 +265,12 @@ slack-mcp-plugin/
 - **Startup validation**: Check that both tokens are present and well-formed (`xoxb-` and `xapp-` prefixes). Fail fast with a clear error rather than connecting with bad credentials.
 
 No external monitoring or health endpoints — infrastructure-level supervision (systemd, Docker) is the user's responsibility. The channel's responsibility is to not crash and to reconnect when disconnected.
+
+## Future Work
+
+These items are explicitly out of scope for v1 but noted for future iterations:
+
+- **Workspace-level gating**: A `"workspace"` gating mode that allows all users from specified Slack workspaces. Requires resolving workspace membership via `team.id` from events or the `authorizations` field, with a caching strategy. Deferred due to complexity and unclear benefit for the primary headless use case.
+- **All-channel message monitoring**: Listening to all messages in all channels (not just watched ones).
+- **File/image attachments**: Forwarding file uploads from Slack as channel event attachments.
+- **Multi-session support**: Routing different Slack channels to different Claude Code sessions.

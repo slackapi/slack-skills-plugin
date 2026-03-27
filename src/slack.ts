@@ -11,7 +11,7 @@ export function createSlackApp(botToken: string, appToken: string): App {
 
 export function registerEventHandlers(app: App, bridge: Bridge, botUserId: string): void {
   // DMs and channel messages
-  app.event('message', async ({ event, say }) => {
+  app.event('message', async ({ event }) => {
     try {
       // Skip bot messages, message_changed, etc.
       if ((event as any).subtype) return

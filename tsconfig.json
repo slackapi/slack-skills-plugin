@@ -7,8 +7,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "outDir": "dist",
-    "rootDir": "src",
-    "types": ["bun-types"]
+    "rootDir": "src"
   },
   "include": ["src/**/*.ts", "tests/**/*.ts"]
 }

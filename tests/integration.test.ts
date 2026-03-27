@@ -23,6 +23,8 @@ function createMocks() {
           Promise.resolve({ ok: true, channel: { id: 'C1', name: 'general' } })
         ),
         join: mock(() => Promise.resolve({ ok: true })),
+        open: mock(() => Promise.resolve({ ok: true, channel: { id: 'D_DM' } })),
+        history: mock(() => Promise.resolve({ ok: true, messages: [] })),
       },
     },
   }

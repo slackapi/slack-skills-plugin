@@ -1,4 +1,11 @@
 {
+  "name": "slack-channel-server",
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "start": "bun src/index.ts",
+    "test": "bun test"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.28.0",
     "@slack/bolt": "^4.6.0",

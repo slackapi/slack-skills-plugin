@@ -108,9 +108,8 @@ Add the `slack-channel` server entry to your `.mcp.json`:
 {
   "mcpServers": {
     "slack-channel": {
-      "type": "stdio",
-      "command": "node",
-      "args": ["path/to/slack-mcp-plugin/channel-server/index.js"],
+      "command": "bun",
+      "args": ["./src/index.ts"],
       "env": {
         "SLACK_BOT_TOKEN": "xoxb-your-bot-token",
         "SLACK_APP_TOKEN": "xapp-your-app-token"
@@ -126,7 +125,11 @@ To pre-configure which Slack users are allowed to interact with the bot, create 
 
 ```json
 {
-  "allowedUsers": ["U012AB3CD", "U098ZY7WX"]
+  "gating": {
+    "mode": "per-user",
+    "allowedUsers": ["U012AB3CD", "U098ZY7WX"]
+  },
+  "watchedChannels": []
 }
 ```
 

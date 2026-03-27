@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto'
 import type { Settings } from './settings'
 
 const CODE_TTL_MS = 5 * 60 * 1000 // 5 minutes
@@ -44,9 +45,8 @@ export class Gating {
       return null
     }
 
-    const code = Array.from({ length: 6 }, () =>
-      CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)]
-    ).join('')
+    const bytes = randomBytes(6)
+    const code = Array.from(bytes, (b) => CODE_CHARS[b % CODE_CHARS.length]).join('')
 
     this.pendingCodes.set(code, { userId, timestamp: now })
     return code

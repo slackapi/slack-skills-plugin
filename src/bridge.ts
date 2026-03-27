@@ -3,6 +3,8 @@ import type { App } from '@slack/bolt'
 import type { Gating } from './gating'
 import type { Settings } from './settings'
 import { writeSettings } from './settings'
+import { writeFile, mkdir } from 'node:fs/promises'
+import { dirname } from 'node:path'
 
 export interface ActiveContext {
   userId: string
@@ -46,7 +48,7 @@ interface PermissionRequest {
   input_preview: string
 }
 
-const PERMISSION_REPLY_RE = /^\s*(y|yes|n|no)\s+([a-km-z]{5})\s*$/i
+const PERMISSION_REPLY_RE = /^\s*(y|yes|n|no)\s+([a-km-z0-9]{5})\s*$/i
 
 export class Bridge {
   private mcp: Server | null = null
@@ -143,6 +145,7 @@ export class Bridge {
     const channelName = await this.resolveChannelName(event.item.channel)
 
     const meta: Record<string, string> = {
+      source: 'slack',
       event: 'reaction',
       user: event.user,
       user_name: userName,
@@ -158,10 +161,29 @@ export class Bridge {
       channelId: event.item.channel,
     }
 
+    // Fetch the original message text for context
+    let messageText = ''
+    try {
+      const history = await this.slackApp.client.conversations.history({
+        channel: event.item.channel,
+        latest: event.item.ts,
+        oldest: event.item.ts,
+        inclusive: true,
+        limit: 1,
+      })
+      messageText = (history.messages as any)?.[0]?.text || ''
+    } catch {
+      // Non-fatal — proceed without message text
+    }
+
+    const content = messageText
+      ? `Reaction :${event.reaction}: on message: "${messageText}"`
+      : `Reaction :${event.reaction}: on message`
+
     await this.mcp!.notification({
       method: 'notifications/claude/channel' as any,
       params: {
-        content: `Reaction :${event.reaction}: on message`,
+        content,
         meta,
       },
     })
@@ -185,7 +207,7 @@ export class Bridge {
           throw new Error(`unknown tool: ${name}`)
       }
     } catch (err) {
-      return { content: [{ type: 'text', text: `error: ${(err as Error).message}` }] }
+      return { content: [{ type: 'text', text: `error: ${(err as Error).message}` }], isError: true }
     }
   }
 
@@ -226,11 +248,11 @@ export class Bridge {
 
     try {
       const result = await this.slackApp.client.conversations.info({ channel: channelId })
-      const name = (result.channel as any)?.name || channelId
-      this.channelNameCache.set(channelId, name)
+      const name = (result.channel as any)?.name || ''
+      if (name) this.channelNameCache.set(channelId, name)
       return name
     } catch {
-      return channelId
+      return ''
     }
   }
 
@@ -246,6 +268,7 @@ export class Bridge {
       : undefined
 
     const meta: Record<string, string> = {
+      source: 'slack',
       event: eventType,
       user: event.user,
       user_name: userName,
@@ -271,6 +294,9 @@ export class Bridge {
   }
 
   private async handleBootstrapMessage(event: SlackMessageEvent): Promise<void> {
+    // Only accept pairing codes in DMs to keep them private
+    if (event.channel_type !== 'im') return
+
     const pairMatch = event.text.match(/^pair\s+([A-Z0-9]{6})\s*$/i)
     if (pairMatch) {
       const code = pairMatch[1].toUpperCase()
@@ -348,6 +374,9 @@ export class Bridge {
   }
 
   private async handleReply(args: Record<string, string>) {
+    if (!this.lastActiveContext) {
+      throw new Error('authorization error: no active context')
+    }
     await this.slackApp.client.chat.postMessage({
       channel: args.channel_id,
       text: args.text,
@@ -357,6 +386,9 @@ export class Bridge {
   }
 
   private async handleReact(args: Record<string, string>) {
+    if (!this.lastActiveContext) {
+      throw new Error('authorization error: no active context')
+    }
     await this.slackApp.client.reactions.add({
       channel: args.channel_id,
       timestamp: args.timestamp,
@@ -384,9 +416,14 @@ export class Bridge {
         if (!code) {
           return { content: [{ type: 'text', text: 'pairing code already pending, try again shortly' }] }
         }
-        // Send ephemeral code to target user in the current channel
+        // Open a DM with the target user and send the pairing code there
+        const dm = await this.slackApp.client.conversations.open({ users: args.value })
+        const dmChannelId = (dm.channel as any)?.id
+        if (!dmChannelId) {
+          throw new Error(`failed to open DM with ${args.value}`)
+        }
         await this.slackApp.client.chat.postEphemeral({
-          channel: this.lastActiveContext!.channelId,
+          channel: dmChannelId,
           user: args.value,
           text: `Your pairing code is: \`${code}\`\nReply with \`pair ${code}\` to complete pairing.`,
         })
@@ -404,9 +441,10 @@ export class Bridge {
     switch (args.action) {
       case 'watch':
         if (!this.settings.watchedChannels.includes(args.channel_id)) {
+          // Join first — only persist if join succeeds
+          await this.slackApp.client.conversations.join({ channel: args.channel_id })
           this.settings.watchedChannels.push(args.channel_id)
           await this.persistSettings()
-          await this.slackApp.client.conversations.join({ channel: args.channel_id })
         }
         return { content: [{ type: 'text', text: `now watching ${args.channel_id}` }] }
 
@@ -433,8 +471,6 @@ export class Bridge {
 
   private async writePairingCodeFile(code: string): Promise<void> {
     try {
-      const { writeFile, mkdir } = await import('node:fs/promises')
-      const { dirname } = await import('node:path')
       const path = this.settingsPath
         ? `${dirname(this.settingsPath)}/pairing-code.txt`
         : `${process.env.HOME}/.slack-channel/pairing-code.txt`

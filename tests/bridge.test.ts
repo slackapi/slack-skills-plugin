@@ -32,6 +32,11 @@ function createMockSlackApp() {
           channel: { id: 'C123', name: 'general' },
         })),
         join: mock(() => Promise.resolve({ ok: true })),
+        open: mock(() => Promise.resolve({ ok: true, channel: { id: 'D_TARGET_DM' } })),
+        history: mock(() => Promise.resolve({
+          ok: true,
+          messages: [{ text: 'Original message text', ts: '1234.5678' }],
+        })),
       },
     },
   }
@@ -182,6 +187,13 @@ describe('Bridge - permission verdict parsing', () => {
   test('returns null for verdict with l in id', () => {
     expect(Bridge.parsePermissionVerdict('yes ablde')).toBeNull()
   })
+
+  test('parses verdict with digits in id', () => {
+    expect(Bridge.parsePermissionVerdict('yes a2c3e')).toEqual({
+      requestId: 'a2c3e',
+      behavior: 'allow',
+    })
+  })
 })
 
 describe('Bridge - tool authorization', () => {
@@ -228,12 +240,21 @@ describe('Bridge - tool authorization', () => {
     expect(result.content[0].text).toContain('authorization')
   })
 
-  test('reply tool works without authorization check', async () => {
+  test('reply fails when lastActiveContext is null', async () => {
     const result = await bridge.handleToolCall('reply', {
       channel_id: 'C123',
       text: 'hello',
     })
-    expect(result.content[0].text).toBe('sent')
+    expect(result.content[0].text).toContain('authorization')
+  })
+
+  test('react fails when lastActiveContext is null', async () => {
+    const result = await bridge.handleToolCall('react', {
+      channel_id: 'C123',
+      timestamp: '1234.5678',
+      emoji: 'thumbsup',
+    })
+    expect(result.content[0].text).toContain('authorization')
   })
 })
 
@@ -268,5 +289,250 @@ describe('Bridge - name resolution cache', () => {
     expect(name1).toBe('general')
     expect(name2).toBe('general')
     expect(mockSlack.client.conversations.info).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('Bridge - reaction handling', () => {
+  let bridge: Bridge
+  let mockMcp: ReturnType<typeof createMockMcp>
+  let mockSlack: ReturnType<typeof createMockSlackApp>
+
+  beforeEach(() => {
+    const settings: Settings = {
+      gating: { mode: 'per-user', allowedUsers: ['U_ALLOWED'] },
+      watchedChannels: [],
+    }
+    const gating = new Gating(settings)
+    mockMcp = createMockMcp()
+    mockSlack = createMockSlackApp()
+    bridge = new Bridge(mockSlack as any, gating, settings)
+    bridge.setMcpServer(mockMcp as any)
+  })
+
+  test('emits reaction notification for bot message', async () => {
+    await bridge.handleReaction({
+      user: 'U_ALLOWED',
+      reaction: 'eyes',
+      item: { type: 'message', channel: 'C123', ts: '1234.5678' },
+      item_user: 'U_BOT',
+      event_ts: '1234.9999',
+    }, 'U_BOT')
+    expect(mockMcp.notification).toHaveBeenCalledTimes(1)
+    const call = (mockMcp.notification as any).mock.calls[0][0]
+    expect(call.params.meta.event).toBe('reaction')
+    expect(call.params.meta.source).toBe('slack')
+    expect(call.params.meta.emoji).toBe('eyes')
+    expect(call.params.content).toContain('Original message text')
+  })
+
+  test('drops reactions on non-bot messages', async () => {
+    await bridge.handleReaction({
+      user: 'U_ALLOWED',
+      reaction: 'eyes',
+      item: { type: 'message', channel: 'C123', ts: '1234.5678' },
+      item_user: 'U_OTHER',
+      event_ts: '1234.9999',
+    }, 'U_BOT')
+    expect(mockMcp.notification).not.toHaveBeenCalled()
+  })
+
+  test('drops reactions on non-message items', async () => {
+    await bridge.handleReaction({
+      user: 'U_ALLOWED',
+      reaction: 'eyes',
+      item: { type: 'file', channel: 'C123', ts: '1234.5678' },
+      item_user: 'U_BOT',
+      event_ts: '1234.9999',
+    }, 'U_BOT')
+    expect(mockMcp.notification).not.toHaveBeenCalled()
+  })
+
+  test('drops reactions from non-allowed users', async () => {
+    await bridge.handleReaction({
+      user: 'U_STRANGER',
+      reaction: 'eyes',
+      item: { type: 'message', channel: 'C123', ts: '1234.5678' },
+      item_user: 'U_BOT',
+      event_ts: '1234.9999',
+    }, 'U_BOT')
+    expect(mockMcp.notification).not.toHaveBeenCalled()
+  })
+})
+
+describe('Bridge - mention gating', () => {
+  test('drops mentions from non-allowed users', async () => {
+    const settings: Settings = {
+      gating: { mode: 'per-user', allowedUsers: ['U_ALLOWED'] },
+      watchedChannels: [],
+    }
+    const gating = new Gating(settings)
+    const mockMcp = createMockMcp()
+    const mockSlack = createMockSlackApp()
+    const bridge = new Bridge(mockSlack as any, gating, settings)
+    bridge.setMcpServer(mockMcp as any)
+
+    await bridge.handleMention({
+      text: '<@BOT> help',
+      user: 'U_STRANGER',
+      channel: 'C_ANY',
+      ts: '1234.5678',
+    })
+    expect(mockMcp.notification).not.toHaveBeenCalled()
+  })
+})
+
+describe('Bridge - source attribute', () => {
+  test('notifications include source: slack in meta', async () => {
+    const settings: Settings = {
+      gating: { mode: 'per-user', allowedUsers: ['U_ALLOWED'] },
+      watchedChannels: [],
+    }
+    const gating = new Gating(settings)
+    const mockMcp = createMockMcp()
+    const mockSlack = createMockSlackApp()
+    const bridge = new Bridge(mockSlack as any, gating, settings)
+    bridge.setMcpServer(mockMcp as any)
+
+    await bridge.handleMessage({
+      text: 'hello',
+      user: 'U_ALLOWED',
+      channel: 'D_DM',
+      channel_type: 'im',
+      ts: '1234.5678',
+    })
+    const call = (mockMcp.notification as any).mock.calls[0][0]
+    expect(call.params.meta.source).toBe('slack')
+  })
+})
+
+describe('Bridge - manage_access success paths', () => {
+  let bridge: Bridge
+  let mockSlack: ReturnType<typeof createMockSlackApp>
+  let gating: Gating
+
+  beforeEach(async () => {
+    const settings: Settings = {
+      gating: { mode: 'per-user', allowedUsers: ['U_ADMIN'] },
+      watchedChannels: [],
+    }
+    gating = new Gating(settings)
+    const mockMcp = createMockMcp()
+    mockSlack = createMockSlackApp()
+    bridge = new Bridge(mockSlack as any, gating, settings)
+    bridge.setMcpServer(mockMcp as any)
+
+    // Set up active context
+    await bridge.handleMessage({
+      text: 'setup',
+      user: 'U_ADMIN',
+      channel: 'D_ADMIN_DM',
+      channel_type: 'im',
+      ts: '100.001',
+    })
+  })
+
+  test('add_user adds to allowlist', async () => {
+    const result = await bridge.handleToolCall('manage_access', {
+      action: 'add_user',
+      value: 'U_NEW',
+    })
+    expect(result.content[0].text).toContain('added')
+    expect(gating.isAllowed('U_NEW')).toBe(true)
+  })
+
+  test('remove_user removes from allowlist', async () => {
+    gating.addUser('U_TEMP')
+    const result = await bridge.handleToolCall('manage_access', {
+      action: 'remove_user',
+      value: 'U_TEMP',
+    })
+    expect(result.content[0].text).toContain('removed')
+    expect(gating.isAllowed('U_TEMP')).toBe(false)
+  })
+
+  test('pair_user sends code to target DM', async () => {
+    const result = await bridge.handleToolCall('manage_access', {
+      action: 'pair_user',
+      value: 'U_TARGET',
+    })
+    expect(result.content[0].text).toContain('pairing code sent')
+    expect(mockSlack.client.conversations.open).toHaveBeenCalledTimes(1)
+    const openCall = (mockSlack.client.conversations.open as any).mock.calls[0][0]
+    expect(openCall.users).toBe('U_TARGET')
+    expect(mockSlack.client.chat.postEphemeral).toHaveBeenCalledTimes(1)
+    const ephCall = (mockSlack.client.chat.postEphemeral as any).mock.calls[0][0]
+    expect(ephCall.channel).toBe('D_TARGET_DM')
+    expect(ephCall.user).toBe('U_TARGET')
+  })
+})
+
+describe('Bridge - manage_channels success paths', () => {
+  let bridge: Bridge
+  let mockSlack: ReturnType<typeof createMockSlackApp>
+  let settings: Settings
+
+  beforeEach(async () => {
+    settings = {
+      gating: { mode: 'per-user', allowedUsers: ['U_ADMIN'] },
+      watchedChannels: [],
+    }
+    const gating = new Gating(settings)
+    const mockMcp = createMockMcp()
+    mockSlack = createMockSlackApp()
+    bridge = new Bridge(mockSlack as any, gating, settings)
+    bridge.setMcpServer(mockMcp as any)
+
+    await bridge.handleMessage({
+      text: 'setup',
+      user: 'U_ADMIN',
+      channel: 'D_ADMIN_DM',
+      channel_type: 'im',
+      ts: '100.001',
+    })
+  })
+
+  test('watch joins channel then adds to watchedChannels', async () => {
+    const result = await bridge.handleToolCall('manage_channels', {
+      action: 'watch',
+      channel_id: 'C_NEW',
+    })
+    expect(result.content[0].text).toContain('watching')
+    expect(mockSlack.client.conversations.join).toHaveBeenCalledTimes(1)
+    expect(settings.watchedChannels).toContain('C_NEW')
+  })
+
+  test('unwatch removes from watchedChannels', async () => {
+    // First watch it
+    await bridge.handleToolCall('manage_channels', {
+      action: 'watch',
+      channel_id: 'C_NEW',
+    })
+    const result = await bridge.handleToolCall('manage_channels', {
+      action: 'unwatch',
+      channel_id: 'C_NEW',
+    })
+    expect(result.content[0].text).toContain('stopped watching')
+    expect(settings.watchedChannels).not.toContain('C_NEW')
+  })
+})
+
+describe('Bridge - bootstrap DM restriction', () => {
+  test('ignores bootstrap messages from non-DM channels', async () => {
+    const gating = new Gating(DEFAULT_SETTINGS)
+    const mockMcp = createMockMcp()
+    const mockSlack = createMockSlackApp()
+    const bridge = new Bridge(mockSlack as any, gating, DEFAULT_SETTINGS)
+    bridge.setMcpServer(mockMcp as any)
+
+    await bridge.handleMessage({
+      text: 'hello',
+      user: 'U_NEW',
+      channel: 'C_PUBLIC',
+      channel_type: 'channel',
+      ts: '100.001',
+    })
+    // Should not send any ephemeral or notification
+    expect(mockSlack.client.chat.postEphemeral).not.toHaveBeenCalled()
+    expect(mockMcp.notification).not.toHaveBeenCalled()
   })
 })

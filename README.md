@@ -93,7 +93,8 @@ The Channels feature lets Claude Code receive and respond to messages directly i
 1. Create a new Slack app at [api.slack.com/apps](https://api.slack.com/apps) and select **Socket Mode**.
 2. Under **OAuth & Permissions**, add the following bot token scopes:
    - `chat:write`, `reactions:write`
-   - `channels:read`, `groups:read`, `im:read`, `im:history`
+   - `channels:join`, `channels:read`, `channels:history`
+   - `groups:read`, `im:read`, `im:history`
    - `users:read`, `app_mentions:read`
 3. Under **Socket Mode**, enable it and generate an **App-Level Token** with the `connections:write` scope. This token begins with `xapp-`.
 4. Under **Event Subscriptions → Subscribe to bot events**, add:

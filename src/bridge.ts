@@ -441,8 +441,15 @@ export class Bridge {
     switch (args.action) {
       case 'watch':
         if (!this.settings.watchedChannels.includes(args.channel_id)) {
-          // Join first — only persist if join succeeds
-          await this.slackApp.client.conversations.join({ channel: args.channel_id })
+          // Try to join — ignore "already_in_channel" or missing scope errors
+          try {
+            await this.slackApp.client.conversations.join({ channel: args.channel_id })
+          } catch (err: any) {
+            const slackError = err?.data?.error || err?.message || ''
+            if (slackError !== 'already_in_channel' && slackError !== 'missing_scope') {
+              throw err
+            }
+          }
           this.settings.watchedChannels.push(args.channel_id)
           await this.persistSettings()
         }

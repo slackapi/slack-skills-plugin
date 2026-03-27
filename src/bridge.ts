@@ -265,7 +265,13 @@ export class Bridge {
     })
   }
 
-  async handlePermissionAction(requestId: string, approved: boolean, channelId: string, messageTs: string): Promise<void> {
+  async handlePermissionAction(requestId: string, approved: boolean, channelId: string, messageTs: string, userId?: string): Promise<void> {
+    // Validate the acting user is in the allowlist
+    if (userId && !this.gating.isAllowed(userId)) {
+      console.error(`[slack-channel] permission action rejected: user ${userId} not in allowlist`)
+      return
+    }
+
     // Emit the verdict
     await this.mcp!.notification({
       method: 'notifications/claude/channel/permission' as any,

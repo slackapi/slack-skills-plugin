@@ -2,7 +2,7 @@
 import { readSettings } from './settings'
 import { Gating } from './gating'
 import { createMcpServer, connectMcp } from './mcp'
-import { createSlackApp, registerEventHandlers, startSlackApp } from './slack'
+import { createSlackApp, registerEventHandlers, getBotUserId, startSlackApp } from './slack'
 import { Bridge } from './bridge'
 
 // --- Validate environment ---
@@ -34,9 +34,12 @@ const bridge = new Bridge(slackApp, gating, settings, settingsPath)
 const mcp = createMcpServer(bridge)
 bridge.setMcpServer(mcp)
 
-// --- Start Slack (Socket Mode) first to validate credentials ---
-const botUserId = await startSlackApp(slackApp)
+// --- Get bot identity and register handlers before connecting ---
+const botUserId = await getBotUserId(slackApp)
 registerEventHandlers(slackApp, bridge, botUserId)
+
+// --- Start Slack (Socket Mode) — handlers already registered ---
+await startSlackApp(slackApp)
 
 // --- Connect MCP (stdio) after Slack is confirmed connected ---
 await connectMcp(mcp)

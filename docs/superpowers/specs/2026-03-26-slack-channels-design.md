@@ -204,7 +204,7 @@ Example prompt sent to Slack:
 > **Claude wants to run `Bash`:** `git pull origin main`
 > Reply `yes abcde` or `no abcde`
 
-Replies matching the `yes/no <id>` pattern (regex: `/^\s*(y|yes|n|no)\s+([a-km-z]{5})\s*$/i`) are intercepted and emitted as `notifications/claude/channel/permission` verdicts instead of being forwarded as chat messages.
+Replies matching the `yes/no <id>` pattern (regex: `/^\s*(y|yes|n|no)\s+([a-km-z0-9]{5})\s*$/i`) are intercepted and emitted as `notifications/claude/channel/permission` verdicts instead of being forwarded as chat messages.
 
 ## Sender Gating & Pairing
 

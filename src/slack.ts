@@ -48,10 +48,11 @@ export function registerEventHandlers(app: App, bridge: Bridge, botUserId: strin
   app.action('permission_approve', async ({ action, body, ack }) => {
     await ack()
     try {
+      const userId = (body as any).user?.id || ''
       const requestId = (action as any).value
       const channelId = (body as any).channel?.id || ''
       const messageTs = (body as any).message?.ts || ''
-      await bridge.handlePermissionAction(requestId, true, channelId, messageTs)
+      await bridge.handlePermissionAction(requestId, true, channelId, messageTs, userId)
     } catch (err) {
       console.error('[slack-channel] error handling permission approve:', err)
     }
@@ -60,10 +61,11 @@ export function registerEventHandlers(app: App, bridge: Bridge, botUserId: strin
   app.action('permission_deny', async ({ action, body, ack }) => {
     await ack()
     try {
+      const userId = (body as any).user?.id || ''
       const requestId = (action as any).value
       const channelId = (body as any).channel?.id || ''
       const messageTs = (body as any).message?.ts || ''
-      await bridge.handlePermissionAction(requestId, false, channelId, messageTs)
+      await bridge.handlePermissionAction(requestId, false, channelId, messageTs, userId)
     } catch (err) {
       console.error('[slack-channel] error handling permission deny:', err)
     }
@@ -88,11 +90,13 @@ export function registerEventHandlers(app: App, bridge: Bridge, botUserId: strin
   })
 }
 
-export async function startSlackApp(app: App): Promise<string> {
-  await app.start()
-  // Get the bot's own user ID for reaction filtering
+export async function getBotUserId(app: App): Promise<string> {
   const authResult = await app.client.auth.test()
-  const botUserId = authResult.user_id || ''
-  console.error(`[slack-channel] connected to Slack as ${authResult.user} (${botUserId})`)
-  return botUserId
+  console.error(`[slack-channel] authenticated as ${authResult.user} (${authResult.user_id})`)
+  return authResult.user_id || ''
+}
+
+export async function startSlackApp(app: App): Promise<void> {
+  await app.start()
+  console.error('[slack-channel] Socket Mode connected')
 }

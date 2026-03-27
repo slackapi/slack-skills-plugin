@@ -25,7 +25,13 @@ export async function readSettings(path: string): Promise<Settings> {
     const parsed = JSON.parse(raw)
     return SettingsSchema.parse(parsed)
   } catch {
-    return { ...DEFAULT_SETTINGS }
+    return {
+      gating: {
+        mode: DEFAULT_SETTINGS.gating.mode,
+        allowedUsers: [...DEFAULT_SETTINGS.gating.allowedUsers],
+      },
+      watchedChannels: [...DEFAULT_SETTINGS.watchedChannels],
+    }
   }
 }
 

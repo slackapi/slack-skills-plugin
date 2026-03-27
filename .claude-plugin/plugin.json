@@ -1,11 +1,11 @@
 {
   "name": "slack",
-  "description": "Slack integration for searching messages, sending communications, managing canvases, and more",
+  "description": "Slack integration for searching messages, sending communications, managing canvases, and real-time bidirectional messaging via Channels",
   "version": "1.0.0",
   "author": {
   "name": "Slack",
   "url": "https://slack.com"
   },
-  "homepage": "https://github.com/slackapi/slack-mcp-cursor-plugin",
+  "homepage": "https://github.com/slackapi/slack-mcp-plugin",
   "license": "MIT"
 }

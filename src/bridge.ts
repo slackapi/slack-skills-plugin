@@ -217,14 +217,79 @@ export class Bridge {
       return
     }
 
-    const prompt =
-      `*Claude wants to run \`${params.tool_name}\`:* ${params.description}\n\n` +
+    const fallbackText =
+      `Claude wants to run \`${params.tool_name}\`: ${params.description}\n` +
       `Reply \`yes ${params.request_id}\` or \`no ${params.request_id}\``
 
     await this.slackApp.client.chat.postMessage({
       channel: this.lastActiveContext.channelId,
-      text: prompt,
+      text: fallbackText,
       thread_ts: this.lastActiveContext.threadTs,
+      blocks: [
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `*Claude wants to run \`${params.tool_name}\`:*\n${params.description}`,
+          },
+        },
+        {
+          type: 'context',
+          elements: [
+            {
+              type: 'mrkdwn',
+              text: `\`${params.input_preview}\``,
+            },
+          ],
+        },
+        {
+          type: 'actions',
+          elements: [
+            {
+              type: 'button',
+              text: { type: 'plain_text', text: 'Approve' },
+              style: 'primary',
+              action_id: 'permission_approve',
+              value: params.request_id,
+            },
+            {
+              type: 'button',
+              text: { type: 'plain_text', text: 'Deny' },
+              style: 'danger',
+              action_id: 'permission_deny',
+              value: params.request_id,
+            },
+          ],
+        },
+      ],
+    })
+  }
+
+  async handlePermissionAction(requestId: string, approved: boolean, channelId: string, messageTs: string): Promise<void> {
+    // Emit the verdict
+    await this.mcp!.notification({
+      method: 'notifications/claude/channel/permission' as any,
+      params: {
+        request_id: requestId,
+        behavior: approved ? 'allow' : 'deny',
+      },
+    })
+
+    // Update the message to remove buttons and show the result
+    const verdict = approved ? 'Approved' : 'Denied'
+    await this.slackApp.client.chat.update({
+      channel: channelId,
+      ts: messageTs,
+      text: `Permission ${verdict.toLowerCase()}`,
+      blocks: [
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `~Permission request~ — *${verdict}*`,
+          },
+        },
+      ],
     })
   }
 

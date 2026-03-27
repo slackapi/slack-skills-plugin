@@ -44,6 +44,31 @@ export function registerEventHandlers(app: App, bridge: Bridge, botUserId: strin
     }
   })
 
+  // Permission approval/denial buttons
+  app.action('permission_approve', async ({ action, body, ack }) => {
+    await ack()
+    try {
+      const requestId = (action as any).value
+      const channelId = (body as any).channel?.id || ''
+      const messageTs = (body as any).message?.ts || ''
+      await bridge.handlePermissionAction(requestId, true, channelId, messageTs)
+    } catch (err) {
+      console.error('[slack-channel] error handling permission approve:', err)
+    }
+  })
+
+  app.action('permission_deny', async ({ action, body, ack }) => {
+    await ack()
+    try {
+      const requestId = (action as any).value
+      const channelId = (body as any).channel?.id || ''
+      const messageTs = (body as any).message?.ts || ''
+      await bridge.handlePermissionAction(requestId, false, channelId, messageTs)
+    } catch (err) {
+      console.error('[slack-channel] error handling permission deny:', err)
+    }
+  })
+
   // Reactions
   app.event('reaction_added', async ({ event }) => {
     try {

@@ -65,14 +65,23 @@ This allows users to DM the bot — required for pairing and direct interaction.
 3. Check **Messages Tab**
 4. Make sure **"Allow users to send Slash commands and messages from the messages tab"** is checked
 
-## 6. Install the App to Your Workspace
+## 6. Enable Interactivity
+
+Required for the permission relay buttons (Approve/Deny).
+
+1. In the left sidebar, click **Interactivity & Shortcuts**
+2. Toggle **Interactivity** to ON
+3. With Socket Mode enabled, no Request URL is needed — Bolt handles it automatically
+4. Click **Save Changes**
+
+## 7. Install the App to Your Workspace
 
 1. In the left sidebar, click **Install App**
 2. Click **Install to Workspace**
 3. Review the permissions and click **Allow**
 4. **Copy the Bot User OAuth Token** — it starts with `xoxb-`. This is your `SLACK_BOT_TOKEN`.
 
-## 7. Configure the Channel Server
+## 8. Configure the Channel Server
 
 Add your tokens to `.mcp.json`:
 
@@ -99,7 +108,7 @@ Add your tokens to `.mcp.json`:
 }
 ```
 
-## 8. Test Standalone (Without Claude Code)
+## 9. Test Standalone (Without Claude Code)
 
 Run the server directly to verify the Slack connection works:
 
@@ -122,7 +131,7 @@ If you see `ready`, the Slack connection is working. Press Ctrl+C to stop.
 - Connection hangs — Verify Socket Mode is enabled in the Slack app settings
 - `not_authed` error — Reinstall the app to your workspace (step 5)
 
-## 9. Test with Claude Code
+## 10. Test with Claude Code
 
 ```bash
 claude --dangerously-load-development-channels server:slack-channel
@@ -133,7 +142,7 @@ Then in Slack:
 2. Reply `pair <CODE>` — you should see "Paired successfully"
 3. Send a message — Claude should receive it and can reply
 
-## 10. Invite the Bot to Channels (Optional)
+## 11. Invite the Bot to Channels (Optional)
 
 The bot only receives messages in channels it's been invited to. To monitor a channel:
 

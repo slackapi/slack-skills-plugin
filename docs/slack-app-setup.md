@@ -97,8 +97,8 @@ Add your tokens to `.mcp.json`:
       }
     },
     "slack-channel": {
-      "command": "bun",
-      "args": ["./src/index.ts"],
+      "command": "npx",
+      "args": ["tsx", "./src/index.ts"],
       "env": {
         "SLACK_BOT_TOKEN": "xoxb-your-token-here",
         "SLACK_APP_TOKEN": "xapp-your-token-here"
@@ -113,7 +113,7 @@ Add your tokens to `.mcp.json`:
 Run the server directly to verify the Slack connection works:
 
 ```bash
-SLACK_BOT_TOKEN=xoxb-... SLACK_APP_TOKEN=xapp-... bun src/index.ts
+SLACK_BOT_TOKEN=xoxb-... SLACK_APP_TOKEN=xapp-... npx tsx src/index.ts
 ```
 
 Expected output on stderr:

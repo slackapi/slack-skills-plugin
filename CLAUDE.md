@@ -17,7 +17,7 @@ This plugin integrates Slack with Claude Code, providing tools to search, read, 
 
 ## Channel Server (Research Preview)
 
-The `slack-channel` MCP server enables real-time Slack messaging as a Claude Code Channel. It runs as a local Bun subprocess using Socket Mode — no public URL needed.
+The `slack-channel` MCP server enables real-time Slack messaging as a Claude Code Channel. It runs as a local subprocess using Socket Mode — no public URL needed.
 
 ### Tools
 

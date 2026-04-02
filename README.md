@@ -84,7 +84,7 @@ Add the following configuration to connect to the remote Slack MCP server:
 
 Save the configuration. You will also see a connect button once added. Click that to authenticate into your Slack Workspace.
 
-## Channels (Research Preview)
+## Channels for Claude Code (Research Preview)
 
 The Channels feature lets Claude Code receive and respond to messages directly in Slack—via DMs or channel mentions—using a locally-run bot server.
 
@@ -117,8 +117,8 @@ Add the `slack-channel` server entry to your `.mcp.json` alongside the existing 
       }
     },
     "slack-channel": {
-      "command": "bun",
-      "args": ["./src/index.ts"],
+      "command": "npx",
+      "args": ["tsx", "./src/index.ts"],
       "env": {
         "SLACK_BOT_TOKEN": "xoxb-your-bot-token",
         "SLACK_APP_TOKEN": "xapp-your-app-token"

@@ -9,8 +9,8 @@
       }
     },
     "slack-channel": {
-      "command": "bun",
-      "args": ["./src/index.ts"],
+      "command": "npx",
+      "args": ["tsx", "./src/index.ts"],
       "env": {
         "SLACK_BOT_TOKEN": "",
         "SLACK_APP_TOKEN": ""

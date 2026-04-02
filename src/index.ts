@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 import { readSettings } from './settings'
 import { Gating } from './gating'
 import { createMcpServer, connectMcp } from './mcp'

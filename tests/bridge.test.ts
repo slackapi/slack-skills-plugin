@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeEach, mock } from 'bun:test'
+import { describe, test, expect, beforeEach, vi } from 'vitest'
 import { Bridge, type ActiveContext } from '../src/bridge'
 import { Gating } from '../src/gating'
 import { DEFAULT_SETTINGS, type Settings } from '../src/settings'
@@ -6,7 +6,7 @@ import { DEFAULT_SETTINGS, type Settings } from '../src/settings'
 // Mock MCP server and Slack app
 function createMockMcp() {
   return {
-    notification: mock(() => Promise.resolve()),
+    notification: vi.fn(() => Promise.resolve()),
   }
 }
 
@@ -14,26 +14,26 @@ function createMockSlackApp() {
   return {
     client: {
       chat: {
-        postMessage: mock(() => Promise.resolve({ ok: true })),
-        postEphemeral: mock(() => Promise.resolve({ ok: true })),
+        postMessage: vi.fn(() => Promise.resolve({ ok: true })),
+        postEphemeral: vi.fn(() => Promise.resolve({ ok: true })),
       },
       reactions: {
-        add: mock(() => Promise.resolve({ ok: true })),
+        add: vi.fn(() => Promise.resolve({ ok: true })),
       },
       users: {
-        info: mock(() => Promise.resolve({
+        info: vi.fn(() => Promise.resolve({
           ok: true,
           user: { id: 'U123', name: 'alice', real_name: 'Alice' },
         })),
       },
       conversations: {
-        info: mock(() => Promise.resolve({
+        info: vi.fn(() => Promise.resolve({
           ok: true,
           channel: { id: 'C123', name: 'general' },
         })),
-        join: mock(() => Promise.resolve({ ok: true })),
-        open: mock(() => Promise.resolve({ ok: true, channel: { id: 'D_TARGET_DM' } })),
-        history: mock(() => Promise.resolve({
+        join: vi.fn(() => Promise.resolve({ ok: true })),
+        open: vi.fn(() => Promise.resolve({ ok: true, channel: { id: 'D_TARGET_DM' } })),
+        history: vi.fn(() => Promise.resolve({
           ok: true,
           messages: [{ text: 'Original message text', ts: '1234.5678' }],
         })),

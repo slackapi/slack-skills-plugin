@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeEach } from 'bun:test'
+import { describe, test, expect, beforeEach } from 'vitest'
 import { Gating } from '../src/gating'
 import { DEFAULT_SETTINGS, type Settings } from '../src/settings'
 

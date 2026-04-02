@@ -1,30 +1,30 @@
-import { describe, test, expect, mock } from 'bun:test'
+import { describe, test, expect, vi } from 'vitest'
 import { Gating } from '../src/gating'
 import { Bridge } from '../src/bridge'
 import { TOOL_DEFINITIONS } from '../src/mcp'
 import { DEFAULT_SETTINGS } from '../src/settings'
 
 function createMocks() {
-  const mcp = { notification: mock(() => Promise.resolve()) }
+  const mcp = { notification: vi.fn(() => Promise.resolve()) }
   const slack = {
     client: {
       chat: {
-        postMessage: mock(() => Promise.resolve({ ok: true })),
-        postEphemeral: mock(() => Promise.resolve({ ok: true })),
+        postMessage: vi.fn(() => Promise.resolve({ ok: true })),
+        postEphemeral: vi.fn(() => Promise.resolve({ ok: true })),
       },
-      reactions: { add: mock(() => Promise.resolve({ ok: true })) },
+      reactions: { add: vi.fn(() => Promise.resolve({ ok: true })) },
       users: {
-        info: mock(() =>
+        info: vi.fn(() =>
           Promise.resolve({ ok: true, user: { id: 'U1', name: 'alice', real_name: 'Alice' } })
         ),
       },
       conversations: {
-        info: mock(() =>
+        info: vi.fn(() =>
           Promise.resolve({ ok: true, channel: { id: 'C1', name: 'general' } })
         ),
-        join: mock(() => Promise.resolve({ ok: true })),
-        open: mock(() => Promise.resolve({ ok: true, channel: { id: 'D_DM' } })),
-        history: mock(() => Promise.resolve({ ok: true, messages: [] })),
+        join: vi.fn(() => Promise.resolve({ ok: true })),
+        open: vi.fn(() => Promise.resolve({ ok: true, channel: { id: 'D_DM' } })),
+        history: vi.fn(() => Promise.resolve({ ok: true, messages: [] })),
       },
     },
   }

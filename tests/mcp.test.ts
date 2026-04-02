@@ -1,4 +1,4 @@
-import { describe, test, expect } from 'bun:test'
+import { describe, test, expect } from 'vitest'
 import { TOOL_DEFINITIONS, CHANNEL_INSTRUCTIONS } from '../src/mcp'
 
 describe('MCP tool definitions', () => {

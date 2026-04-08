@@ -1,0 +1,8 @@
+{
+  "name": "slack",
+  "description": "USER LEVEL: You search channels, post updates, and follow threads without switching to the Slack app mid-flow. PROJECT LEVEL: Agents can notify channels, pull context from conversations, and keep the team informed as part of automated workflows. Slack workspace through MCP—search channels and history, post and thread messages, and run everyday Slack actions from your assistant. BEST SUITED FOR: • Teams where Slack is the primary communication hub • Automated workflows that post status updates or alerts • Projects where conversation history is useful agent context",
+  "mcpServers": "../.cursor-mcp.json",
+  "author": {
+    "name": "Slack"
+  }
+}

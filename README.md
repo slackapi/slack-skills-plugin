@@ -84,6 +84,82 @@ Add the following configuration to connect to the remote Slack MCP server:
 
 Save the configuration. You will also see a connect button once added. Click that to authenticate into your Slack Workspace.
 
+## Channels for Claude Code (Research Preview)
+
+The Channels feature lets Claude Code receive and respond to messages directly in Slack—via DMs or channel mentions—using a locally-run bot server.
+
+### Slack App Setup
+
+1. Create a new Slack app at [api.slack.com/apps](https://api.slack.com/apps) and select **Socket Mode**.
+2. Under **OAuth & Permissions**, add the following bot token scopes:
+   - `chat:write`, `reactions:write`
+   - `channels:join`, `channels:read`, `channels:history`
+   - `groups:read`, `im:read`, `im:history`
+   - `users:read`, `app_mentions:read`
+3. Under **Socket Mode**, enable it and generate an **App-Level Token** with the `connections:write` scope. This token begins with `xapp-`.
+4. Under **Event Subscriptions → Subscribe to bot events**, add:
+   - `message.im`, `message.channels`, `app_mention`, `reaction_added`
+5. Install the app to your workspace and copy the **Bot User OAuth Token** (`xoxb-...`).
+
+### Configuration
+
+Add the `slack-channel` server entry to your `.mcp.json` alongside the existing `slack` remote server:
+
+```json
+{
+  "mcpServers": {
+    "slack": {
+      "type": "http",
+      "url": "https://mcp.slack.com/mcp",
+      "oauth": {
+        "clientId": "1601185624273.8899143856786",
+        "callbackPort": 3118
+      }
+    },
+    "slack-channel": {
+      "command": "npx",
+      "args": ["tsx", "./src/index.ts"],
+      "env": {
+        "SLACK_BOT_TOKEN": "xoxb-your-bot-token",
+        "SLACK_APP_TOKEN": "xapp-your-app-token"
+      }
+    }
+  }
+}
+```
+
+Alternatively, set `SLACK_BOT_TOKEN` and `SLACK_APP_TOKEN` as environment variables.
+
+To pre-configure which Slack users are allowed to interact with the bot, create `~/.slack-channel/settings.json`:
+
+```json
+{
+  "gating": {
+    "mode": "per-user",
+    "allowedUsers": ["U012AB3CD", "U098ZY7WX"]
+  },
+  "watchedChannels": []
+}
+```
+
+### Running
+
+Start Claude Code with the channel server enabled:
+
+```
+claude --dangerously-load-development-channels server:slack-channel
+```
+
+### Pairing
+
+On the first run with an empty allowlist, DM the bot in Slack. It will reply with a pairing code. Send:
+
+```
+pair <CODE>
+```
+
+This completes pairing and adds you to the allowlist. Once paired, you can ask Claude to pair additional users on your behalf.
+
 ## Usage Examples
 
 Once configured, you can interact with Slack through your AI assistant using natural language:

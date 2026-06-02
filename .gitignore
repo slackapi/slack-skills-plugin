@@ -1,1 +1,4 @@
 .claude/
+.env
+node_modules/
+bun.lock

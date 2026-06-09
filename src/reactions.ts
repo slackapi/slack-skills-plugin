@@ -2,16 +2,16 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { ListToolsRequestSchema, CallToolRequestSchema } from '@modelcontextprotocol/sdk/types.js'
 import { WebClient } from '@slack/web-api'
+import { fileURLToPath } from 'node:url'
 
-const token = process.env.SLACK_BOT_TOKEN
-if (!token?.startsWith('xoxb-')) {
-  console.error('[slack-reactions] SLACK_BOT_TOKEN is missing or invalid (must start with xoxb-)')
-  process.exit(1)
+interface SlackReactionsClient {
+  reactions: {
+    add: (params: { channel: string; timestamp: string; name: string }) => Promise<unknown>
+    remove: (params: { channel: string; timestamp: string; name: string }) => Promise<unknown>
+  }
 }
 
-const slack = new WebClient(token)
-
-const TOOLS = [
+export const TOOLS = [
   {
     name: 'slack_add_reaction',
     description: 'Add an emoji reaction to a Slack message',
@@ -40,25 +40,19 @@ const TOOLS = [
   },
 ]
 
-const server = new Server(
-  { name: 'slack-reactions', version: '1.0.0' },
-  { capabilities: { tools: {} } },
-)
-
-server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: TOOLS }))
-
-server.setRequestHandler(CallToolRequestSchema, async (req) => {
-  const { name, arguments: args } = req.params
-  const a = args as Record<string, string>
-
+export async function handleToolCall(
+  slack: SlackReactionsClient,
+  name: string,
+  args: Record<string, string>,
+): Promise<{ content: Array<{ type: string; text: string }>; isError?: boolean }> {
   try {
     switch (name) {
       case 'slack_add_reaction':
-        await slack.reactions.add({ channel: a.channel_id, timestamp: a.message_ts, name: a.emoji_name })
+        await slack.reactions.add({ channel: args.channel_id, timestamp: args.message_ts, name: args.emoji_name })
         return { content: [{ type: 'text', text: 'reaction added' }] }
 
       case 'slack_remove_reaction':
-        await slack.reactions.remove({ channel: a.channel_id, timestamp: a.message_ts, name: a.emoji_name })
+        await slack.reactions.remove({ channel: args.channel_id, timestamp: args.message_ts, name: args.emoji_name })
         return { content: [{ type: 'text', text: 'reaction removed' }] }
 
       default:
@@ -67,6 +61,32 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
   } catch (err) {
     return { content: [{ type: 'text', text: `error: ${(err as Error).message}` }], isError: true }
   }
-})
+}
 
-await server.connect(new StdioServerTransport())
+export function createServer(slack: SlackReactionsClient): Server {
+  const server = new Server(
+    { name: 'slack-reactions', version: '1.0.0' },
+    { capabilities: { tools: {} } },
+  )
+
+  server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: TOOLS }))
+
+  server.setRequestHandler(CallToolRequestSchema, async (req) => {
+    const { name, arguments: args } = req.params
+    return handleToolCall(slack, name, args as Record<string, string>)
+  })
+
+  return server
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  const token = process.env.SLACK_BOT_TOKEN
+  if (!token?.startsWith('xoxb-')) {
+    console.error('[slack-reactions] SLACK_BOT_TOKEN is missing or invalid (must start with xoxb-)')
+    process.exit(1)
+  }
+
+  const slack = new WebClient(token)
+  const server = createServer(slack)
+  await server.connect(new StdioServerTransport())
+}

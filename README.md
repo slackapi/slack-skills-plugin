@@ -84,6 +84,57 @@ Add the following configuration to connect to the remote Slack MCP server:
 
 Save the configuration. You will also see a connect button once added. Click that to authenticate into your Slack Workspace.
 
+## Emoji Reactions
+
+The remote Slack MCP server does not support emoji reactions. This repo ships a lightweight local server (`src/reactions.ts`) that adds `slack_add_reaction` and `slack_remove_reaction` by calling the Slack Web API directly.
+
+### Slack App Setup
+
+1. Go to [api.slack.com/apps](https://api.slack.com/apps), open your app (or create one from scratch).
+2. Under **OAuth & Permissions → Bot Token Scopes**, add `reactions:write`.
+3. Reinstall the app to your workspace and copy the **Bot User OAuth Token** (`xoxb-...`).
+
+### Configuration
+
+Install the local dependencies:
+
+```bash
+npm install
+```
+
+Add your bot token to the `slack-reactions` entry in `.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "slack": {
+      "type": "http",
+      "url": "https://mcp.slack.com/mcp",
+      "oauth": {
+        "clientId": "1601185624273.8899143856786",
+        "callbackPort": 3118
+      }
+    },
+    "slack-reactions": {
+      "command": "npx",
+      "args": ["tsx", "./src/reactions.ts"],
+      "env": {
+        "SLACK_BOT_TOKEN": "xoxb-your-token-here"
+      }
+    }
+  }
+}
+```
+
+### Tools
+
+| Tool | Parameters | Description |
+|------|-----------|-------------|
+| `slack_add_reaction` | `channel_id`, `message_ts`, `emoji_name` | Add an emoji reaction to a message |
+| `slack_remove_reaction` | `channel_id`, `message_ts`, `emoji_name` | Remove an emoji reaction from a message |
+
+`emoji_name` is the emoji name without colons — e.g. `thumbsup`, `white_check_mark`, `eyes`.
+
 ## Usage Examples
 
 Once configured, you can interact with Slack through your AI assistant using natural language:

@@ -7,6 +7,13 @@
         "clientId": "1601185624273.8899143856786",
         "callbackPort": 3118
       }
+    },
+    "slack-reactions": {
+      "command": "npx",
+      "args": ["tsx", "./src/reactions.ts"],
+      "env": {
+        "SLACK_BOT_TOKEN": ""
+      }
     }
   }
 }

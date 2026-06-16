@@ -1,0 +1,50 @@
+name: CI Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+env:
+  SUPPORTED_PY: "3.14"
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+      - name: Set up Python ${{ env.SUPPORTED_PY }}
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: ${{ env.SUPPORTED_PY }}
+      - name: Install tools
+        run: make install-tools
+      - name: Run lint
+        run: make lint
+
+  test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+      - name: Set up Python ${{ env.SUPPORTED_PY }}
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: ${{ env.SUPPORTED_PY }}
+      - name: Install test dependencies
+        run: make install-test
+      - name: Run unit tests
+        run: make test-unit

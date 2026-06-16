@@ -1,0 +1,40 @@
+[project]
+name = "slack-skills-tests"
+version = "0.0.0"
+description = "Unite tests and evaluations for Slack Skills"
+requires-python = ">=3.14"
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8.0,<10.0",
+    # 4.0.6 ships a broken CLI: deepeval/cli/test/command.py imports the
+    # non-existent `deepeval.deepeval.config.settings`, so `deepeval test run`
+    # (used by `make test-eval`) crashes on import. Exclude that one release.
+    "deepeval>=4.0,<5.0,!=4.0.6",
+    "ollama>=0.4,<1.0",
+    "pyyaml>=6.0,<7.0",
+]
+tools = ["ruff>=0.11,<1.0"]
+
+# This project is installed only to run the test suite; the importable package
+# is `tests`. Scope discovery to it so setuptools' flat-layout autodiscovery
+# doesn't trip over the sibling `skills/` and `commands/` directories.
+[tool.setuptools.packages.find]
+include = ["tests*"]
+
+[tool.pytest.ini_options]
+addopts = "-p no:deepeval"
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "PT"]
+ignore = ["PT011"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["tests"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"

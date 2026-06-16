@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(make help *)",
+      "Bash(make install *)",
+      "Bash(make install-test *)",
+      "Bash(make install-tools *)",
+      "Bash(make clean *)",
+      "Bash(make lint *)",
+      "Bash(make format *)",
+      "Bash(make test *)",
+      "Bash(make test-unit *)",
+      "Bash(make test-eval *)",
+      "Bash(gh issue view:*)",
+      "Bash(gh label list:*)",
+      "Bash(gh pr checks:*)",
+      "Bash(gh pr diff:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh pr status:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh search code:*)",
+      "Bash(git diff:*)",
+      "Bash(git grep:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git status:*)",
+      "Bash(grep:*)",
+      "Bash(ls:*)",
+      "Bash(tree:*)",
+      "WebFetch(domain:code.claude.com)",
+      "WebFetch(domain:cursor.com)",
+      "WebFetch(domain:docs.slack.dev)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)"
+    ]
+  }
+}

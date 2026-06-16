@@ -1,4 +1,5 @@
 ---
+name: slack-messaging
 description: Guidance for composing well-formatted, effective Slack messages using standard markdown
 ---
 

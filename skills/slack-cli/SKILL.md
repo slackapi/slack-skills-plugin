@@ -1,0 +1,198 @@
+---
+name: slack-cli
+description: Use the Slack CLI to create, run, and manage Slack apps from the terminal. Use this skill whenever Slack CLI commands are needed — local development with `slack run`, managing app lifecycle, or the manifest — or when searching the Slack developer documentation for any topic (socket mode, the Events API, OAuth, manifests, Bolt).
+---
+
+# Slack CLI
+
+Use the Slack CLI to create, run, and manage Slack apps — including calling Web API methods directly and searching Slack developer documentation from the terminal.
+
+For initial setup (sandbox creation, project scaffolding from templates), use the `slack-developer:create-slack-app` skill instead.
+
+---
+
+## Step 1: Detect the Slack CLI
+
+Resolve the path to the **public** Slack CLI before running any other command. We refer to the resolved value as `SLACK_CMD` — substitute it everywhere below. **Try 1a → 1b → 1c in order; do not skip ahead.**
+
+### 1a. Standard install path (preferred — no verification needed)
+
+The official install scripts place the binary at a fixed per-user path. If the file exists, use it directly: only the install script writes to that path.
+
+- macOS / Linux: `~/.slack/bin/slack`
+- Windows: `%USERPROFILE%\AppData\Local\slack-cli\bin\slack.exe` (or `%USERPROFILE%\.slack-cli\bin\slack.exe` as a fallback)
+
+POSIX shell:
+
+```bash
+[ -x "$HOME/.slack/bin/slack" ] && echo "$HOME/.slack/bin/slack"
+```
+
+PowerShell:
+
+```powershell
+$p = "$env:USERPROFILE\AppData\Local\slack-cli\bin\slack.exe"
+if (Test-Path $p) { $p } elseif (Test-Path "$env:USERPROFILE\.slack-cli\bin\slack.exe") { "$env:USERPROFILE\.slack-cli\bin\slack.exe" }
+```
+
+If a path is returned, set `SLACK_CMD` to that **absolute path** and proceed to Step 2. Do not also run `_fingerprint`.
+
+### 1b. `slack` on PATH (verify with fingerprint)
+
+If 1a found nothing, try `slack` on PATH:
+
+```bash
+slack _fingerprint 2>/dev/null
+```
+
+If it outputs `d41d8cd98f00b204e9800998ecf8427e`, set `SLACK_CMD=slack` and proceed.
+
+### 1c. Ask about an alias, or install
+
+If 1b fails or returns a different value, ask the developer using AskUserQuestion:
+
+- "The `slack` command on your system doesn't appear to be the public Slack CLI. Do you have it installed under a different name or alias?"
+- Options: "Yes, it's aliased as..." (let them provide the alias), "No, I need to install it"
+- If they provide an alias, verify it with `<alias> _fingerprint 2>/dev/null` and set `SLACK_CMD=<alias>`.
+- If they need to install it, run:
+  ```
+  curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash
+  ```
+  Then re-run **1a** — the install script will have written `~/.slack/bin/slack`.
+
+**Common mistakes:** Don't use `which slack` to discover the binary — `which` resolves any shell alias and defeats the point of 1a. In Git Bash on Windows, use the POSIX probe form, not PowerShell.
+
+---
+
+## Step 2: Command Discovery via Help
+
+**Always run `SLACK_CMD <command> --help` before constructing a command you have not used in the current session.** Do not guess at flags — the help output is the source of truth.
+
+- `SLACK_CMD help` — lists all available command groups
+- `SLACK_CMD <command> --help` — shows subcommands, flags, and usage examples
+
+### Resolving `--app` and `--team` values
+
+When a command requires `--app` or `--team`:
+
+- **App ID**: Run `SLACK_CMD app list` from the project directory to see installed apps and their IDs.
+- **Team ID**: Run `SLACK_CMD auth list` to see authenticated workspaces and their team IDs.
+
+---
+
+## Step 3: Searching Documentation (`slack docs search`)
+
+Search Slack's developer documentation directly from the terminal.
+
+```bash
+SLACK_CMD docs search "<query>" --output=text --limit=5
+```
+
+Use `--output=text` for concise terminal-readable results. Use this:
+
+- Before implementing a Slack feature you have not used before
+- When the developer asks "how does X work in Slack?"
+- To verify API behavior or required scopes
+- To look up Block Kit elements, event types, or method parameters
+
+---
+
+## Step 4: Calling Web API Methods (`slack api`)
+
+Call any Slack Web API method directly. Run `SLACK_CMD api --help` for full details and examples.
+
+Parameters are passed as positional `key=value` pairs (NOT `--key=value` flags):
+
+```bash
+SLACK_CMD api chat.postMessage channel=C0123456789 text="Hello from the CLI"
+```
+
+**Important distinction**: `--team`, `--token`, `--json`, and `--data` are meta-flags (prefixed with `--`). API method parameters use positional `key=value` syntax without dashes.
+
+**Reference**: Full method list at https://docs.slack.dev/reference/methods.md.
+
+---
+
+## Step 5: Authentication (`slack auth`)
+
+### Check current auth status
+
+```bash
+SLACK_CMD auth list
+```
+
+### If not authenticated
+
+`slack login` is **interactive** — it requires browser interaction and **cannot be run by the coding agent or in the background**. Tell the developer to run in a **new terminal window**:
+
+```
+SLACK_CMD login
+```
+
+This will:
+
+1. Generate a `/slackauthticket` command
+2. The developer pastes it into any Slack workspace message box
+3. Confirms via the browser
+
+Wait for the developer to confirm login succeeded, then verify with `SLACK_CMD auth list`.
+
+Use `--team <team_id>` on individual commands to target a specific workspace without switching globally.
+
+---
+
+## Step 6: Running an App Locally (`slack run`)
+
+Run `SLACK_CMD run --help` for all available flags.
+
+### Resolve the app or team target
+
+Run `SLACK_CMD app list` from the project directory to check for installed apps:
+
+- **If an app exists**: Use `--app=<app_id>` in the run command.
+- **If no apps are listed**: Use `--team=<team_id>` instead (get the team ID from `SLACK_CMD auth list`).
+
+### Start the dev server in the background
+
+Run this command as a **background process** so the developer can continue working:
+
+**If an app ID was found:**
+
+```bash
+cd <project-dir> && SLACK_CMD run --org-workspace-grant=all --app=<app_id>
+```
+
+**If no apps — use the team ID:**
+
+```bash
+cd <project-dir> && SLACK_CMD run --org-workspace-grant=all --team=<team_id>
+```
+
+Tell the developer the app is running in the background. They can ask:
+
+- "What's the status of the dev server?" — to check on it
+- "Show me the output from slack run" — to see activity logs
+- "Stop the dev server" — to terminate the process
+
+---
+
+## Step 7: Managing the Manifest
+
+Run `SLACK_CMD manifest --help` for subcommands (`validate`, `info`) and the `--source local|remote` flag.
+
+Use `SLACK_CMD manifest validate` before deploying or when something seems wrong with the app configuration.
+
+---
+
+## Step 8: Other Commands
+
+For any other command group (e.g., `trigger`, `datastore`, `env`, `collaborator`, `external-auth`, `deploy`), run `SLACK_CMD <command> --help` to discover subcommands and flags. Run `SLACK_CMD help` to see all available command groups.
+
+---
+
+## Notes
+
+- `SLACK_CMD` is a placeholder — always substitute the actual command name resolved in Step 1.
+- **Always run `--help`** before constructing a command you have not used in the current session.
+- Interactive commands (e.g., `slack login`, `slack trigger create` without `--trigger-def`) cannot be run in the background. Tell the developer to run these in a **new terminal window**.
+- `slack run` runs locally for development. `slack deploy` deploys to Slack's hosted infrastructure. These are different operations — do not confuse them.

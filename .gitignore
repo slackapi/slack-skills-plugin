@@ -1,1 +1,58 @@
-.claude/
+# macOS
+.DS_Store
+
+# Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Node
+node_modules/
+package-lock.json
+*.tgz
+
+# Build
+dist/
+
+# Worktrees
+.worktrees/
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Nix
+.direnv
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Pyenv
+.python-version
+
+# Ollama (project-local)
+.ollama/
+
+# DeepEval
+.deepeval/
+
+# Misc
+.private-journal/
+triage/

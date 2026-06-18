@@ -17,8 +17,12 @@ OLLAMA_MODEL := $(or $(OLLAMA_MODEL_NAME),gemma4)
 
 UNAME_S := $(shell uname -s)
 
-TARGETS := help install install-test install-tools clean lint format test test-unit test-eval
-ARGS := $(filter-out $(TARGETS),$(MAKECMDGOALS))
+TARGETS := help install install-test install-tools clean lint format test test-unit test-eval cursor
+# Positional: the first goal is the command (the target), everything after it is
+# arguments forwarded to that target's recipe. Unlike a $(filter-out)-based
+# approach this passes through words that happen to match a target name (e.g.
+# `make cursor wipe`), since only the leading goal is treated as the command.
+ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
 .PHONY: $(TARGETS)
 
@@ -64,8 +68,12 @@ install-tools: $(VENV) ## Install linting/formatting tools (ruff)
 	$(PIP) install --upgrade pip
 	$(PIP) install -e ".[tools]"
 
-clean: ## Remove virtual environment and Ollama installation
+clean: ## Remove virtual environment, Ollama, and local Cursor install
+	-$(PYTHON) scripts/cursor.py wipe
 	rm -rf $(VENV) $(OLLAMA_DIR)
+
+cursor: $(VENV) ## Manage the local Cursor install: make cursor sync | make cursor wipe
+	$(PYTHON) scripts/cursor.py $(ARGS)
 
 lint: ## Run ruff linter checks
 	$(RUFF) check .

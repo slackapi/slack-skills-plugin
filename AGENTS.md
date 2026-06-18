@@ -25,6 +25,8 @@ Requires Python 3.14+. Run `make install` before first use to set up the virtual
 | `make test-eval` | LLM-judged tests (starts Ollama, runs DeepEval, stops Ollama) |
 | `make test` | Both unit + eval tests |
 | `make clean` | Remove .venv and .ollama |
+| `make cursor sync` | Install this plugin into a local Cursor for development |
+| `make cursor wipe` | Remove this plugin from the local Cursor install |
 
 The LLM tests read two environment variables: `OLLAMA_MODEL_NAME` (the DeepEval judge model, defaults to `gemma4`) and `SLACK_MCP_TOKEN` (a Slack MCP bearer token; the MCP tool-selection test is skipped when it's unset). Copy `.env.example` to `.env` and fill in values — the `Makefile` auto-loads `.env` — or pass them inline, e.g. `OLLAMA_MODEL_NAME=<model> make test-eval`.
 

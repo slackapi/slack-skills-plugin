@@ -5,7 +5,7 @@ from pathlib import Path
 SKILLS_ROOT = Path(__file__).parent.parent / "skills"
 
 # Skill inventory (single source of truth)
-EXPECTED_SKILLS = ("create-slack-app", "block-kit", "slack-api", "slack-cli")
+EXPECTED_SKILLS = ("create-slack-app", "block-kit", "slack-api", "slack-cli", "slack-docs")
 
 # Ollama judge model
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL_NAME", "gemma4")

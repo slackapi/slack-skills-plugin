@@ -1,6 +1,6 @@
 ---
 name: slack-cli
-description: Use the Slack CLI to create, run, and manage Slack apps from the terminal. Use this skill whenever Slack CLI commands are needed — local development with `slack run`, managing app lifecycle, or the manifest — or when searching the Slack developer documentation for any topic (socket mode, the Events API, OAuth, manifests, Bolt).
+description: Use the Slack CLI to create, run, and manage Slack apps from the terminal. Use whenever the developer wants to log in, add a team, switch workspaces, or authenticate with Slack; whenever Slack CLI commands are needed (local development with `slack run`, managing app lifecycle, the manifest); or when searching the Slack developer documentation for any topic (socket mode, the Events API, OAuth, manifests, Bolt).
 ---
 
 # Slack CLI
@@ -115,29 +115,86 @@ SLACK_CMD api chat.postMessage channel=C0123456789 text="Hello from the CLI"
 
 ## Step 5: Authentication (`slack auth`)
 
-### Check current auth status
+### When to run this flow
+
+Slack auth is **per-team**, not a single boolean. Run the seamless login flow below whenever any of these is true:
+
+- The developer is not authenticated to any team yet.
+- The developer wants to **add a new team / workspace / sandbox**, even if `SLACK_CMD auth list` already shows other teams.
+- The developer asks to log in, switch teams, or re-authenticate.
+
+`SLACK_CMD auth list` showing other teams is **not** a reason to skip login — those are different teams. Ask the developer which team they want, then run the flow.
+
+### Inspect existing auth (optional)
 
 ```bash
 SLACK_CMD auth list
 ```
 
-### If not authenticated
+Use this to show the developer which teams are already authenticated, or to confirm a successful login. Do not treat a non-empty list as "auth complete" when the developer asked to log in to a new team.
 
-`slack login` is **interactive** — it requires browser interaction and **cannot be run by the coding agent or in the background**. Tell the developer to run in a **new terminal window**:
+### Run the seamless login flow
+
+The agent drives this end-to-end — **no separate terminal window, no browser confirmation**.
+
+`SLACK_CMD login --no-prompt` makes the CLI emit a single-use ticket and exit immediately instead of waiting on stdin. Slack itself renders the challenge code **inside a workspace modal** when the developer sends the `/slackauthticket` slash command — there is no browser step. The agent submits the challenge back to the CLI to complete login.
+
+**1. Start login and capture the ticket**
+
+```bash
+SLACK_CMD login --no-prompt
+```
+
+The CLI prints a `/slackauthticket <ticket>` slash command and exits. Capture the ticket — you will need it in step 4. Sample output:
 
 ```
-SLACK_CMD login
+📋 Run the following slash command from any Slack channel in the workspace
+   you'd like to authenticate
+
+   /slackauthticket eyJ0eXAiOiJKV1QiLCJh…
+
+? Slack will then show you a challenge code. Submit it via:
+   slack login --ticket <ticket> --challenge <code>
 ```
 
-This will:
+**2. Hand the slash command to the developer**
 
-1. Generate a `/slackauthticket` command
-2. The developer pastes it into any Slack workspace message box
-3. Confirms via the browser
+Show the full `/slackauthticket …` line and ask the developer to paste it into the message box of the Slack workspace they want to authenticate, then send it. Slack responds with a modal containing a short challenge code (e.g. `JDt1IK7X`).
 
-Wait for the developer to confirm login succeeded, then verify with `SLACK_CMD auth list`.
+**3. Collect the challenge code**
+
+Use `AskUserQuestion` to ask the developer for the challenge code shown in the Slack modal. Wait for their answer — do not guess or default.
+
+**4. Complete login**
+
+```bash
+SLACK_CMD login --ticket <ticket> --challenge <code>
+```
+
+On success the CLI returns the team name and ID:
+
+```
+✅ You've successfully authenticated! 🎉
+   Team: mbrooks-dev (T0139LMAF8T)
+```
+
+Verify with `SLACK_CMD auth list` and report the team back to the developer.
+
+**Troubleshooting**: tickets are single-use and time-limited. If step 4 fails with an invalid/expired ticket or wrong challenge, restart from step 1 with a fresh `SLACK_CMD login --no-prompt` — do not retry the same ticket.
 
 Use `--team <team_id>` on individual commands to target a specific workspace without switching globally.
+
+### Red flags — STOP
+
+If you catch yourself thinking any of these, you are about to regress to the old broken flow:
+
+| Rationalization | Reality |
+|---|---|
+| "`auth list` already shows teams, so login isn't needed." | Auth is per-team. The developer asked for a *new* team — drive the flow. |
+| "`slack login` needs browser confirmation, so I can't drive it." | False with `--no-prompt`. The challenge code appears in Slack's modal, not a browser. The agent runs both `slack login` invocations itself. |
+| "I should tell the developer to run `slack login` in a separate terminal." | Never. Step 5 is the agent's job from start to finish. |
+
+**All of these mean: run `SLACK_CMD login --no-prompt` yourself and follow the four numbered steps above.**
 
 ---
 
@@ -194,5 +251,5 @@ For any other command group (e.g., `trigger`, `datastore`, `env`, `collaborator`
 
 - `SLACK_CMD` is a placeholder — always substitute the actual command name resolved in Step 1.
 - **Always run `--help`** before constructing a command you have not used in the current session.
-- Interactive commands (e.g., `slack login`, `slack trigger create` without `--trigger-def`) cannot be run in the background. Tell the developer to run these in a **new terminal window**.
+- Interactive commands (e.g., `slack trigger create` without `--trigger-def`) cannot be run in the background. Tell the developer to run these in a **new terminal window**. `slack login` is **not** in this category — drive it inline using the `--no-prompt` / `--ticket` / `--challenge` flow in Step 5.
 - `slack run` runs locally for development. `slack deploy` deploys to Slack's hosted infrastructure. These are different operations — do not confuse them.

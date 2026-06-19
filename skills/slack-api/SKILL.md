@@ -112,7 +112,7 @@ Use the `slack-developer:slack-cli` skill — **Step 1: Detect the Slack CLI** �
 
 Once resolved, use the detected command name for **all** CLI commands in this skill. We refer to it as `SLACK_CMD` — substitute the actual resolved command name everywhere you see `SLACK_CMD`.
 
-Use the `slack-developer:slack-cli` skill — **Step 5: Authentication (`slack auth`)** — to check the developer's login state and, if needed, walk them through `slack login` (which is interactive and must run in a separate terminal window). Authentication mechanics live there.
+Use the `slack-developer:slack-cli` skill — **Step 5: Authentication (`slack auth`)** — to check the developer's login state and, if needed, walk them through `slack login`. Authentication mechanics live there.
 
 ### Path B: No CLI — bring your own token
 

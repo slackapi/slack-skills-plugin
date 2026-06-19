@@ -16,7 +16,7 @@ This skill walks through the full setup: prerequisites, authentication, sandbox 
 
 ### 1a. Detect the Slack CLI command
 
-Use the `slack-developer:slack-cli` skill — **Step 1: Detect the Slack CLI** — to check whether the public Slack CLI is installed and resolve its command name. The fingerprint check, alias fallback, and install instructions all live there; do not duplicate them here.
+Use the `slack:slack-cli` skill — **Step 1: Detect the Slack CLI** — to check whether the public Slack CLI is installed and resolve its command name. The fingerprint check, alias fallback, and install instructions all live there; do not duplicate them here.
 
 Once resolved, use the detected command name for **all** CLI commands throughout the rest of this skill. We refer to it as `SLACK_CMD` below — substitute the actual resolved command name everywhere you see `SLACK_CMD`.
 
@@ -33,7 +33,7 @@ Run `SLACK_CMD version` and print the version to confirm everything is working b
 
 ## Step 2: Authenticate with the Slack CLI
 
-Use the `slack-developer:slack-cli` skill — **Step 5: Authentication (`slack auth`)** — to check the developer's auth status and walk them through `SLACK_CMD login` if they're not already authenticated.
+Use the `slack:slack-cli` skill — **Step 5: Authentication (`slack auth`)** — to check the developer's auth status and walk them through `SLACK_CMD login` if they're not already authenticated.
 
 Wait for confirmation that authentication succeeded before proceeding.
 
@@ -151,7 +151,7 @@ cd my-slack-agent && SLACK_CMD env set ANTHROPIC_API_KEY sk-ant-...
 
 ## Step 5: Run the App Locally
 
-Use the `slack-developer:slack-cli` skill — **Step 6: Running an App Locally (`slack run`)** — to resolve the app or team target and start the dev server in the background.
+Use the `slack:slack-cli` skill — **Step 6: Running an App Locally (`slack run`)** — to resolve the app or team target and start the dev server in the background.
 
 Tell the developer their app is now running and installed in their sandbox workspace, and that file changes will auto-reload it.
 

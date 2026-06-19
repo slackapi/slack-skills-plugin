@@ -1,6 +1,6 @@
 ---
 name: slack-docs
-description: "Search and read the official Slack platform documentation at docs.slack.dev. Use this skill whenever the developer asks how something works in Slack (the Events API, OAuth, Socket Mode, app manifests, incoming webhooks, rate limits, scopes, surfaces like App Home or modals), wants to look up or fetch a specific docs page, pastes a docs.slack.dev link, asks a conceptual or how-to question that is not tied to one specific Web API method, or asks about one of the official tools and SDKs (the Slack CLI, Bolt for JavaScript/Python/Java, the Node/Python/Java Slack SDKs, or the Slack Send GitHub Action). This skill discovers the right page through the docs search API and reads it as raw markdown."
+description: "Search and read the official Slack platform documentation at docs.slack.dev. Use this skill to answer conceptual or how-to questions about Slack features like the Events API, OAuth, Socket Mode, app manifests, webhooks, modals, and App Home. You can also use it to look up, fetch, or summarize specific guide pages from provided docs.slack.dev links."
 argument-hint: "[topic or docs.slack.dev URL]"
 ---
 
@@ -68,7 +68,7 @@ Scan `results` for the best `title`/`url` match, then read it in **Step 2**. A q
 
 - WebFetch `https://docs.slack.dev/llms-sitemap.md`, a flat list of every documentation page's `.md` URL, and scan it for the relevant path.
 - For API reference lookups, the enriched index pages are often faster: `https://docs.slack.dev/reference/methods.md`, `.../events.md`, `.../scopes.md`, `.../objects.md`, and `.../block-kit.md` each list every item with a one-line description and a `.md` link.
-- If the developer has the Slack CLI, `slack docs search "<query>"` does the same discovery from the terminal (see the `slack-developer:slack-cli` skill).
+- If the developer has the Slack CLI, `slack docs search "<query>"` does the same discovery from the terminal (see the `slack:slack-cli` skill).
 
 ---
 

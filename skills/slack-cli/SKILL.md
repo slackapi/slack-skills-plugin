@@ -171,14 +171,7 @@ Use `AskUserQuestion` to ask the developer for the challenge code shown in the S
 SLACK_CMD login --ticket <ticket> --challenge <code>
 ```
 
-On success the CLI returns the team name and ID:
-
-```
-✅ You've successfully authenticated! 🎉
-   Team: mbrooks-dev (T0139LMAF8T)
-```
-
-Verify with `SLACK_CMD auth list` and report the team back to the developer.
+On success the CLI returns the team name and ID. Verify with `SLACK_CMD auth list` and report the team back to the developer.
 
 **Troubleshooting**: tickets are single-use and time-limited. If step 4 fails with an invalid/expired ticket or wrong challenge, restart from step 1 with a fresh `SLACK_CMD login --no-prompt` — do not retry the same ticket.
 

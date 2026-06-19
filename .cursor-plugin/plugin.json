@@ -5,5 +5,6 @@
   "mcpServers": "../.cursor-mcp.json",
   "author": {
     "name": "Slack"
-  }
+  },
+  "skills": "./skills/"
 }

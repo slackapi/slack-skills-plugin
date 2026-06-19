@@ -7,7 +7,7 @@ description: Use the Slack CLI to create, run, and manage Slack apps from the te
 
 Use the Slack CLI to create, run, and manage Slack apps — including calling Web API methods directly and searching Slack developer documentation from the terminal.
 
-For initial setup (sandbox creation, project scaffolding from templates), use the `slack-developer:create-slack-app` skill instead.
+For initial setup (sandbox creation, project scaffolding from templates), use the `slack:create-slack-app` skill instead.
 
 ---
 

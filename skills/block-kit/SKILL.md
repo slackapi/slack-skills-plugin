@@ -180,9 +180,9 @@ Prefer the Slack CLI when it's available, since it reuses the slack-cli skill's 
 
 **Path A: Slack CLI (preferred).**
 
-Use the `slack-developer:slack-cli` skill, **Step 1: Detect the Slack CLI**, to check whether the public CLI is installed and resolve its command (`SLACK_CMD`).
+Use the `slack:slack-cli` skill, **Step 1: Detect the Slack CLI**, to check whether the public CLI is installed and resolve its command (`SLACK_CMD`).
 
-If the CLI is available, use the `slack-developer:slack-cli` skill, **Step 4: Calling Web API Methods (`slack api`)**, to invoke it. That step covers the `SLACK_CMD api <method> key=value …` syntax. Run `SLACK_CMD api --help` first to confirm the syntax **and the flag that skips authentication**. `blocks.validate` needs no token, so call it without authentication. Don't hard-code that flag from memory; read it from the help output so this stays correct if it's ever renamed. Pass the payload as a positional `key=value` argument: `blocks=<JSON array>` for messages, or `view=<JSON view object>` for modals and home tabs.
+If the CLI is available, use the `slack:slack-cli` skill, **Step 4: Calling Web API Methods (`slack api`)**, to invoke it. That step covers the `SLACK_CMD api <method> key=value …` syntax. Run `SLACK_CMD api --help` first to confirm the syntax **and the flag that skips authentication**. `blocks.validate` needs no token, so call it without authentication. Don't hard-code that flag from memory; read it from the help output so this stays correct if it's ever renamed. Pass the payload as a positional `key=value` argument: `blocks=<JSON array>` for messages, or `view=<JSON view object>` for modals and home tabs.
 
 **Path B: curl (fallback, when the CLI isn't installed).**
 
@@ -259,7 +259,7 @@ Present the validated payload, then help the developer put it to use.
 
 ### Send it
 
-Building the payload is this skill's job; sending it (`chat.postMessage`, `views.open`, `views.publish`, and the token/scope handling around them) belongs to the Web API layer. To call the right method — via the Slack CLI, raw curl, or a Bolt SDK — use the `slack-developer:slack-api` skill, **Step 4: Call the Method (Manage)**, passing this payload as the method's `blocks` argument (messages) or `view` argument (modals and home tabs). That skill matches the argument names to the SDK or HTTP call so we don't duplicate them here.
+Building the payload is this skill's job; sending it (`chat.postMessage`, `views.open`, `views.publish`, and the token/scope handling around them) belongs to the Web API layer. To call the right method — via the Slack CLI, raw curl, or a Bolt SDK — use the `slack:slack-api` skill, **Step 4: Call the Method (Manage)**, passing this payload as the method's `blocks` argument (messages) or `view` argument (modals and home tabs). That skill matches the argument names to the SDK or HTTP call so we don't duplicate them here.
 
 ### Preview it
 
@@ -275,5 +275,5 @@ Ask whether the developer wants to add, modify, remove, or reorder blocks, or bu
 
 ## Notes
 
-- **Scope:** this skill owns building and validating the Block Kit payload — choosing the surface, composing the JSON from the live docs, and confirming it with `blocks.validate`. Sending it lives in the Web API layer (`slack-developer:slack-api`), and CLI detection/auth in `slack-developer:slack-cli`.
+- **Scope:** this skill owns building and validating the Block Kit payload — choosing the surface, composing the JSON from the live docs, and confirming it with `blocks.validate`. Sending it lives in the Web API layer (`slack:slack-api`), and CLI detection/auth in `slack:slack-cli`.
 - **`blocks.validate` needs no auth** — it's a public method, so it works without a token whether you call it via the CLI or curl. Always validate before finalizing (Step 5).

@@ -63,7 +63,7 @@ Never publish or call a method name you have not seen on a live page.
 
 ### Searching the docs
 
-When you would rather search by keyword than scan the index, and the Slack CLI is available, use the `slack-developer:slack-cli` skill — **Step 3: Searching Documentation (`slack docs search`)** — to query Slack's docs from the terminal. That step covers the command and flags; results will point you to the method's reference page, which you then read in Step 2. Without the CLI, WebFetch the index (`https://docs.slack.dev/reference/methods.md`) and scan it instead.
+When you would rather search by keyword than scan the index, and the Slack CLI is available, use the `slack:slack-cli` skill — **Step 3: Searching Documentation (`slack docs search`)** — to query Slack's docs from the terminal. That step covers the command and flags; results will point you to the method's reference page, which you then read in Step 2. Without the CLI, WebFetch the index (`https://docs.slack.dev/reference/methods.md`) and scan it instead.
 
 ---
 
@@ -108,11 +108,11 @@ You need a token only when the method requires one. There are two ways to get on
 
 The CLI supplies an authenticated session, so once the developer is logged in you can call methods without handling a token yourself (Step 4, "Via the Slack CLI").
 
-Use the `slack-developer:slack-cli` skill — **Step 1: Detect the Slack CLI** — to check whether the public Slack CLI is installed and resolve its command name. That step also proposes installing the CLI when it is absent. The fingerprint check, alias fallback, and install instructions all live there; do not duplicate them here.
+Use the `slack:slack-cli` skill — **Step 1: Detect the Slack CLI** — to check whether the public Slack CLI is installed and resolve its command name. That step also proposes installing the CLI when it is absent. The fingerprint check, alias fallback, and install instructions all live there; do not duplicate them here.
 
 Once resolved, use the detected command name for **all** CLI commands in this skill. We refer to it as `SLACK_CMD` — substitute the actual resolved command name everywhere you see `SLACK_CMD`.
 
-Use the `slack-developer:slack-cli` skill — **Step 5: Authentication (`slack auth`)** — to check the developer's login state and, if needed, walk them through `slack login` (which is interactive and must run in a separate terminal window). Authentication mechanics live there.
+Use the `slack:slack-cli` skill — **Step 5: Authentication (`slack auth`)** — to check the developer's login state and, if needed, walk them through `slack login`. Authentication mechanics live there.
 
 ### Path B: No CLI — bring your own token
 
@@ -126,7 +126,7 @@ First apply the **execution posture**: if the method changes state (post/update/
 
 ### Via the Slack CLI (if installed)
 
-To call a method from the terminal, use the `slack-developer:slack-cli` skill — **Step 4: Calling Web API Methods (`slack api`)**. That step covers the `SLACK_CMD api <method> key=value …` syntax so that it is not repeated here. Pass the required arguments you gathered from the method's doc page in Step 2.
+To call a method from the terminal, use the `slack:slack-cli` skill — **Step 4: Calling Web API Methods (`slack api`)**. That step covers the `SLACK_CMD api <method> key=value …` syntax so that it is not repeated here. Pass the required arguments you gathered from the method's doc page in Step 2.
 
 The CLI uses the developer's authenticated session, so it is the simplest path once they are logged in (Step 3).
 
@@ -160,7 +160,7 @@ In Bolt and the Slack SDKs, each method is a client function whose arguments mat
 - **JavaScript:** `await client.chat.postMessage({ channel, text, blocks })`
 - **Python:** `client.chat_postMessage(channel=channel, text=text, blocks=blocks)`
 
-(Note the JS dot form `chat.postMessage` vs the Python underscore form `chat_postMessage`.) To construct the `blocks`/`view` payload these calls take, use the `slack-developer:block-kit` skill — this skill treats that payload as an opaque argument and focuses on the method call around it.
+(Note the JS dot form `chat.postMessage` vs the Python underscore form `chat_postMessage`.) To construct the `blocks`/`view` payload these calls take, use the `slack:block-kit` skill — this skill treats that payload as an opaque argument and focuses on the method call around it.
 
 ---
 
@@ -204,4 +204,4 @@ When `ok` is `false`, branch on the `error` string:
 ## Notes
 
 - **Slack Lists** methods use the `slackLists.*` prefix — a bare `lists.*` name does not exist.
-- **Scope:** this skill owns the method layer — which method, its contract, and the call around it. CLI auth and calls are delegated to `slack-developer:slack-cli`; Block Kit payloads to `slack-developer:block-kit`.
+- **Scope:** this skill owns the method layer — which method, its contract, and the call around it. CLI auth and calls are delegated to `slack:slack-cli`; Block Kit payloads to `slack:block-kit`.

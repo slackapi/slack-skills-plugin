@@ -17,12 +17,7 @@ OLLAMA_MODEL := $(or $(OLLAMA_MODEL_NAME),gemma4)
 
 UNAME_S := $(shell uname -s)
 
-TARGETS := help install install-test install-tools clean lint format test test-unit test-eval cursor
-# Positional: the first goal is the command (the target), everything after it is
-# arguments forwarded to that target's recipe. Unlike a $(filter-out)-based
-# approach this passes through words that happen to match a target name (e.g.
-# `make cursor wipe`), since only the leading goal is treated as the command.
-ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+TARGETS := help install install-test install-tools clean lint format test test-unit test-eval cursor-install cursor-uninstall
 
 .PHONY: $(TARGETS)
 
@@ -69,11 +64,14 @@ install-tools: $(VENV) ## Install linting/formatting tools (ruff)
 	$(PIP) install -e ".[tools]"
 
 clean: ## Remove virtual environment, Ollama, and local Cursor install
-	-$(PYTHON) scripts/cursor.py wipe
+	-$(PYTHON) scripts/cursor.py uninstall
 	rm -rf $(VENV) $(OLLAMA_DIR)
 
-cursor: $(VENV) ## Manage the local Cursor install: make cursor sync | make cursor wipe
-	$(PYTHON) scripts/cursor.py $(ARGS)
+cursor-install: $(VENV) ## Install this plugin into a local Cursor for development
+	$(PYTHON) scripts/cursor.py install
+
+cursor-uninstall: $(VENV) ## Uninstall this plugin from the local Cursor install
+	$(PYTHON) scripts/cursor.py uninstall
 
 lint: ## Run ruff linter checks
 	$(RUFF) check .
@@ -82,22 +80,22 @@ format: ## Auto-format code with ruff
 	$(RUFF) format .
 	$(RUFF) check --fix .
 
-test: ## Run all tests (pass a path to route to the correct runner automatically)
-ifdef ARGS
-	@if echo "$(ARGS)" | grep -q "tests/eval"; then \
-		$(MAKE) test-eval $(ARGS); \
+test: ## Run all tests (set testdir=<path> to route to the matching runner)
+ifdef testdir
+	@if echo "$(testdir)" | grep -q "tests/eval"; then \
+		$(MAKE) test-eval testdir="$(testdir)"; \
 	else \
-		$(MAKE) test-unit $(ARGS); \
+		$(MAKE) test-unit testdir="$(testdir)"; \
 	fi
 else
 	@$(MAKE) test-unit
 	@$(MAKE) test-eval
 endif
 
-test-unit: ## Run structural/unit validation tests (pass a path to target specific files)
-	$(PYTHON) -m pytest $(or $(ARGS),tests/unit/) -v
+test-unit: ## Run structural/unit validation tests (set testdir=<path> to target specific files)
+	$(PYTHON) -m pytest $(or $(testdir),tests/unit/) -v
 
-test-eval: ## Run LLM-judged tests (requires Ollama; pass a path to target specific files)
+test-eval: ## Run LLM-judged tests (requires Ollama; set testdir=<path> to target specific files)
 	@OLLAMA_PID=""; \
 	if ! OLLAMA_MODELS=$(OLLAMA_MODELS) $(OLLAMA_BIN) list > /dev/null 2>&1; then \
 		echo "Starting Ollama server..."; \
@@ -108,17 +106,10 @@ test-eval: ## Run LLM-judged tests (requires Ollama; pass a path to target speci
 			sleep 1; \
 		done; \
 	fi; \
-	$(DEEPEVAL) test run $(or $(ARGS),tests/eval/) -v; \
+	$(DEEPEVAL) test run $(or $(testdir),tests/eval/) -v; \
 	TEST_EXIT=$$?; \
 	if [ -n "$$OLLAMA_PID" ]; then \
 		echo "Stopping Ollama server (PID $$OLLAMA_PID)..."; \
 		kill $$OLLAMA_PID 2>/dev/null; \
 	fi; \
 	exit $$TEST_EXIT
-
-# Swallow path arguments (e.g. `make test-unit tests/unit/foo.py`) so they
-# aren't treated as targets. Caveat: this also makes typo'd targets like
-# `make tset-unit` a silent no-op instead of an error — double-check target
-# spelling.
-%:
-	@:

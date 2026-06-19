@@ -4,59 +4,58 @@ import logging
 import shutil
 from pathlib import Path
 
+logger = logging.getLogger(Path(__file__).stem)
+
+INCLUDE: set[str] = {
+    ".claude-plugin/**/*",
+    ".cursor-plugin/**/*",
+    ".mcp.json",
+    ".cursor-mcp.json",
+    "skills/**/*",
+    "commands/**/*",
+}
+EXCLUDE: set[str] = {
+    "**/.DS_Store",
+    "**/__pycache__/**",
+    "**/*.pyc",
+}
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
-CLAUDE_DIR = Path.home() / ".claude"
-INSTALLED = CLAUDE_DIR / "plugins" / "installed_plugins.json"
-SETTINGS = CLAUDE_DIR / "settings.json"
+CLAUDE_HOME_DIR = Path.home() / ".claude"
+CLAUDE_INSTALLED_PLUGINS_PATH = CLAUDE_HOME_DIR / "plugins" / "installed_plugins.json"
+CLAUDE_SETTINGS_PATH = CLAUDE_HOME_DIR / "settings.json"
 
-MARKETPLACE_NAME = "slack-dev"
+CURSOR_PLUGINS_PATH = Path.home() / ".cursor" / "plugins"
 
-logger = logging.getLogger("cursor")
+MARKETPLACE_NAME = "local"
 
 
 def get_plugin_key(plugin_name: str):
     return f"{plugin_name}@{MARKETPLACE_NAME}"
 
 
-def get_target_path():
-    return Path.home() / ".cursor" / "plugins" / MARKETPLACE_NAME
+def get_target_path(plugin_key: str):
+    return CURSOR_PLUGINS_PATH / plugin_key
 
 
 def plugin_name() -> str:
-    """Read the plugin name from the Cursor manifest so renames are picked up."""
-    manifest = json.loads((REPO_ROOT / ".cursor-plugin" / "plugin.json").read_text())
-    return manifest["name"]
+    """Read the plugin name from the Cursor plugin file so renames are picked up."""
+    cursor_plugin = json.loads(
+        (REPO_ROOT / ".cursor-plugin" / "plugin.json").read_text()
+    )
+    return cursor_plugin["name"]
 
 
-PLUGIN_PATHS = (
-    ".claude-plugin",
-    ".cursor-plugin",
-    ".mcp.json",
-    ".cursor-mcp.json",
-    "skills",
-    "commands",
-)
-IGNORED_NAMES = frozenset({".DS_Store", "__pycache__"})
-
-
-def is_ignored(path: Path) -> bool:
-    return path.suffix == ".pyc" or bool(IGNORED_NAMES & set(path.parts))
-
-
-def plugin_files() -> list[Path]:
-    files = []
-    for name in PLUGIN_PATHS:
-        source = REPO_ROOT / name
-        if not source.exists():
-            continue
-        if source.is_file():
-            files.append(source)
-            continue
-        for path in source.rglob("*"):
-            if path.is_file() and not is_ignored(path):
-                files.append(path)
-    return files
+def plugin_files() -> set[Path]:
+    included = {
+        path
+        for pattern in INCLUDE
+        for path in REPO_ROOT.glob(pattern)
+        if path.is_file()
+    }
+    excluded = {path for pattern in EXCLUDE for path in REPO_ROOT.glob(pattern)}
+    return included - excluded
 
 
 def load_json(path: Path) -> dict:
@@ -70,72 +69,86 @@ def save_json(path: Path, data: dict) -> None:
     path.write_text(json.dumps(data, indent=2) + "\n")
 
 
-def sync() -> None:
+def install() -> None:
     name = plugin_name()
     plugin_key = get_plugin_key(name)
-    target = get_target_path()
+    target = get_target_path(plugin_key)
 
-    shutil.rmtree(target, ignore_errors=True)
     files = plugin_files()
     if not files:
-        logger.warning(f"No plugin files found under {REPO_ROOT} — nothing to sync")
+        logger.warning(f"No plugin files found under {REPO_ROOT}; nothing to install")
         return
+
+    shutil.rmtree(target, ignore_errors=True)
     for source in files:
         dest = target / source.relative_to(REPO_ROOT)
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, dest)
-    logger.info(f"Copied {len(files)} files to {target}")
+    logger.info(f"Copied {len(files)} plugin files to {target}")
 
-    installed = load_json(INSTALLED)
-    installed.setdefault("plugins", {})[plugin_key] = [{"scope": "user", "installPath": str(target)}]
-    save_json(INSTALLED, installed)
-    logger.info(f"Registered '{plugin_key}' in {INSTALLED}")
+    installed = load_json(CLAUDE_INSTALLED_PLUGINS_PATH)
+    installed.setdefault("plugins", {})[plugin_key] = [
+        {"scope": "user", "installPath": str(target)}
+    ]
+    save_json(CLAUDE_INSTALLED_PLUGINS_PATH, installed)
+    logger.info(f"Registered '{plugin_key}' in {CLAUDE_INSTALLED_PLUGINS_PATH}")
 
-    settings = load_json(SETTINGS)
+    settings = load_json(CLAUDE_SETTINGS_PATH)
     settings.setdefault("enabledPlugins", {})[plugin_key] = True
-    save_json(SETTINGS, settings)
-    logger.info(f"Enabled '{plugin_key}' in {SETTINGS}")
+    save_json(CLAUDE_SETTINGS_PATH, settings)
+    logger.info(f"Enabled '{plugin_key}' in {CLAUDE_SETTINGS_PATH}")
 
-    logger.info("Reload plugins in Cursor to pick up the changes.")
+    logger.info(
+        f"Installed '{plugin_key}'. Reload plugins in Cursor to pick up the changes."
+    )
 
 
-def wipe() -> None:
+def uninstall() -> None:
     name = plugin_name()
     plugin_key = get_plugin_key(name)
-    target = get_target_path()
+    target = get_target_path(plugin_key)
 
-    shutil.rmtree(target, ignore_errors=True)
-    logger.info(f"Removed {target}")
+    if target.exists():
+        shutil.rmtree(target, ignore_errors=True)
+        logger.info(f"Removed plugin files from {target}")
+    else:
+        logger.warning(f"No plugin files found at {target}; nothing to remove")
 
-    installed = load_json(INSTALLED)
+    installed = load_json(CLAUDE_INSTALLED_PLUGINS_PATH)
     if installed.get("plugins", {}).pop(plugin_key, None) is not None:
-        save_json(INSTALLED, installed)
-        logger.info(f"Wiped '{plugin_key}' from {INSTALLED}")
+        save_json(CLAUDE_INSTALLED_PLUGINS_PATH, installed)
+        logger.info(f"Deregistered '{plugin_key}' from {CLAUDE_INSTALLED_PLUGINS_PATH}")
     else:
-        logger.warning(f"'{plugin_key}' already wiped from {INSTALLED}")
+        logger.warning(
+            f"'{plugin_key}' was not registered in {CLAUDE_INSTALLED_PLUGINS_PATH}; nothing to remove"
+        )
 
-    settings = load_json(SETTINGS)
+    settings = load_json(CLAUDE_SETTINGS_PATH)
     if settings.get("enabledPlugins", {}).pop(plugin_key, None) is not None:
-        save_json(SETTINGS, settings)
-        logger.info(f"Wiped '{plugin_key}' from {SETTINGS}")
+        save_json(CLAUDE_SETTINGS_PATH, settings)
+        logger.info(f"Disabled '{plugin_key}' in {CLAUDE_SETTINGS_PATH}")
     else:
-        logger.warning(f"'{plugin_key}' already wiped from {SETTINGS}")
+        logger.warning(
+            f"'{plugin_key}' was not enabled in {CLAUDE_SETTINGS_PATH}; nothing to remove"
+        )
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        prog="cursor.py",
+        prog=Path(__file__).name,
         description=(
             "Install or remove this plugin in a local Cursor for development. "
-            "Copies the plugin files into ~/.cursor/plugins, then registers and "
-            "enables it via ~/.claude/."
+            f"Copies the plugin files into {CURSOR_PLUGINS_PATH}, then registers and "
+            f"enables it via {CLAUDE_HOME_DIR}"
         ),
     )
     subcommands = parser.add_subparsers(dest="command", required=True)
-    subcommands.add_parser("sync", help="Install this plugin into a local Cursor (~/.cursor/plugins)").set_defaults(
-        func=sync
-    )
-    subcommands.add_parser("wipe", help="Remove this plugin from a local Cursor install").set_defaults(func=wipe)
+    subcommands.add_parser(
+        "install", help=f"Install this plugin into local Cursor ({CURSOR_PLUGINS_PATH})"
+    ).set_defaults(func=install)
+    subcommands.add_parser(
+        "uninstall", help="Uninstall this plugin from local Cursor"
+    ).set_defaults(func=uninstall)
 
     logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 

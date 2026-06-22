@@ -15,16 +15,16 @@ description: Generate a standup update based on your recent Slack activity
 
 5. Format the standup as:
    ```
-   *Standup for <display name> — <today's date>*
+   **Standup for <display name> — <today's date>**
 
-   *Done:*
+   **Done:**
    - Item 1
    - Item 2
 
-   *Doing:*
+   **Doing:**
    - Item 1
 
-   *Blockers:*
+   **Blockers:**
    - None / Item 1
    ```
 

@@ -12,7 +12,7 @@ Given the topic or context provided in $ARGUMENTS:
    - What tone is appropriate — formal, casual, or urgent?
 
 2. Compose the announcement following Slack formatting best practices:
-   - Use Slack's mrkdwn syntax: `*bold*` for emphasis (not `**bold**`), `_italic_` for secondary emphasis, `>` for callouts.
+   - Use standard markdown: `**bold**` for emphasis, `_italic_` for secondary emphasis, `>` for callouts.
    - Lead with the most important information — don't bury the point.
    - Use a clear, descriptive opening line that works as a headline.
    - Keep paragraphs short (2-3 sentences max).

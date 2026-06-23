@@ -1,6 +1,5 @@
 import json
 import logging
-import re
 from pathlib import Path
 
 logger = logging.getLogger(Path(__file__).stem)

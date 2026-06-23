@@ -1,12 +1,5 @@
 name: Release
 
-# Drives the changesets release flow. On every push to main:
-#   - If changesets are pending, open/update a "chore: release" PR that bumps the
-#     version (package.json + both plugin manifests) and writes CHANGELOG.md.
-#   - Once that PR is merged (no changesets remain), tag the release and publish a
-#     GitHub release. The package is private, so npm publish is skipped.
-# See .changeset/README.md and .github/maintainers_guide.md for the full process.
-
 on:
   push:
     branches:
@@ -16,43 +9,37 @@ on:
 # Don't let two release runs race on the same branch.
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
-permissions:
-  contents: write # create commits, tags, and releases
-  pull-requests: write # open/update the version PR
-
 env:
-  SUPPORTED_PY: "3.14"
-  NODE_VERSION: "20"
+  PY_VERSION: "3.14"
+  NODE_VERSION: "26"
 
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
-          # Full history so changesets can resolve changed files; credentials are
-          # persisted (the action pushes the version commit and the release tag).
           fetch-depth: 0
       - name: Set up Node ${{ env.NODE_VERSION }}
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - name: Set up Python ${{ env.SUPPORTED_PY }}
+      - name: Set up Python ${{ env.PY_VERSION }}
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: ${{ env.SUPPORTED_PY }}
-      - name: Seed ephemeral package.json
-        # Generates a gitignored package.json from .claude-plugin/plugin.json so the
-        # Node-based changesets tooling has the root manifest it requires.
-        run: python scripts/seed_package_json.py
+          python-version: ${{ env.PY_VERSION }}
       - name: Changesets release
-        uses: changesets/action@3841a0683d3cfa6dae0f9bb335290003010fe3f0 # v1.9.0
+        uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0
         with:
           version: bash scripts/changeset_version.sh
           publish: npx --yes @changesets/cli publish
           commit: "chore: release"
           title: "chore: release"
+          prDraft: create
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

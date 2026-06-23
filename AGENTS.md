@@ -53,9 +53,9 @@ LLM-judged tests are not run in CI (Ollama + model download would exceed time bu
 
 Releases are driven by [changesets](https://github.com/changesets/changesets). The
 plugin runtime stays pure Python — Node is only needed for changesets tooling (`make
-changeset` locally and the release workflow in CI), and no `package.json` is committed
-(it's generated on the fly by `scripts/seed_package_json.py` and gitignored).
-`.claude-plugin/plugin.json` is the version source of truth.
+changeset` locally and the release workflow in CI). A minimal `package.json` (committed at
+the repo root) is the version source of truth; `scripts/sync_versions.py` propagates
+its version into both `plugin.json` manifests.
 
 **Per change:** every PR with a user-facing change adds a changeset. Run `make changeset`
 (or hand-write a `.changeset/<name>.md`); see the
@@ -66,8 +66,8 @@ how to pick a bump level.
 
 1. If changesets are pending, the `changesets/action` opens/updates a **"chore: release"**
    PR that runs `changeset version` — bumping `package.json`, syncing the version into
-   both `plugin.json` manifests (`scripts/sync_plugin_versions.py`), writing `CHANGELOG.md`,
-   and deleting the consumed changesets.
+   both `plugin.json` manifests (`scripts/sync_versions.py`),
+   writing `CHANGELOG.md`, and deleting the consumed changesets.
 2. Merging that PR (no changesets left) triggers `changeset publish`, which — because the
    package is `private` — skips npm, creates the `v<version>` git tag, and publishes a
    GitHub release with notes from `CHANGELOG.md`.

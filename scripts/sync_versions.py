@@ -1,11 +1,14 @@
 import json
 import logging
+import re
 from pathlib import Path
 
 logger = logging.getLogger(Path(__file__).stem)
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
+# package.json (committed at the repo root) is the version source of truth; changesets
+# bumps it, then this script synchronizes the version out to everywhere else its defined.
 PACKAGE_JSON_PATH = REPO_ROOT / "package.json"
 CLAUDE_PLUGIN_PATH = REPO_ROOT / ".claude-plugin" / "plugin.json"
 CURSOR_PLUGIN_PATH = REPO_ROOT / ".cursor-plugin" / "plugin.json"
@@ -17,7 +20,7 @@ def read_version(package_path: Path) -> str:
 
 
 def write_version(plugin_path: Path, version: str) -> None:
-    """Set the ``version`` field of a plugin file, preserving order and formatting."""
+    """Set the ``version`` field of a JSON plugin manifest."""
     manifest = json.loads(plugin_path.read_text())
     manifest["version"] = version
     plugin_path.write_text(json.dumps(manifest, indent=2) + "\n")

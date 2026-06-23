@@ -17,7 +17,7 @@ OLLAMA_MODEL := $(or $(OLLAMA_MODEL_NAME),gemma4)
 
 UNAME_S := $(shell uname -s)
 
-TARGETS := help install install-test install-tools clean lint format test test-unit test-eval cursor-install cursor-uninstall
+TARGETS := help install install-test install-tools clean lint format test test-unit test-eval cursor-install cursor-uninstall changeset
 
 .PHONY: $(TARGETS)
 
@@ -72,6 +72,9 @@ cursor-install: $(VENV) ## Install this plugin into a local Cursor for developme
 
 cursor-uninstall: $(VENV) ## Uninstall this plugin from the local Cursor install
 	$(PYTHON) scripts/cursor.py uninstall
+
+changeset: ## Create a changeset describing a user-facing change (for the next release)
+	$(PYTHON) scripts/new_changeset.py
 
 lint: ## Run ruff linter checks
 	$(RUFF) check .

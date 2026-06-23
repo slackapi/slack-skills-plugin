@@ -11,6 +11,9 @@
 node_modules/
 package-lock.json
 *.tgz
+# Ephemeral root manifest seeded by scripts/seed_package_json.py during release.
+# plugin.json is the source of truth; this is never committed.
+/package.json
 
 # Build
 dist/

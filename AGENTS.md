@@ -27,6 +27,7 @@ Requires Python 3.14+. Run `make install` before first use to set up the virtual
 | `make clean` | Remove .venv and .ollama |
 | `make cursor-install` | Install this plugin into a local Cursor for development |
 | `make cursor-uninstall` | Uninstall this plugin from the local Cursor install |
+| `make changeset` | Create a changeset for the next release (see Releasing) |
 
 The LLM tests read two environment variables: `OLLAMA_MODEL_NAME` (the DeepEval judge model, defaults to `gemma4`) and `SLACK_MCP_TOKEN` (a Slack MCP bearer token; the MCP tool-selection test is skipped when it's unset). Copy `.env.example` to `.env` and fill in values — the `Makefile` auto-loads `.env` — or pass them inline, e.g. `OLLAMA_MODEL_NAME=<model> make test-eval`.
 
@@ -47,3 +48,27 @@ GitHub Actions (`.github/workflows/ci-build.yml`) gates every PR with:
 - **Test** — `make test-unit` (pytest)
 
 LLM-judged tests are not run in CI (Ollama + model download would exceed time budget).
+
+## Releasing
+
+Releases are driven by [changesets](https://github.com/changesets/changesets). The
+runtime stays pure Python — Node only runs inside the release workflow, and no
+`package.json` is committed (it's generated on the fly by `scripts/seed_package_json.py`
+and gitignored). `.claude-plugin/plugin.json` is the version source of truth.
+
+**Per change:** every PR with a user-facing change adds a changeset. Run `make changeset`
+(or hand-write a `.changeset/<name>.md`); see `.changeset/README.md` for the format and
+how to pick a bump level.
+
+**On merge to `main`** (`.github/workflows/release.yml`):
+
+1. If changesets are pending, the `changesets/action` opens/updates a **"chore: release"**
+   PR that runs `changeset version` — bumping `package.json`, syncing the version into
+   both `plugin.json` manifests (`scripts/sync_plugin_versions.py`), writing `CHANGELOG.md`,
+   and deleting the consumed changesets.
+2. Merging that PR (no changesets left) triggers `changeset publish`, which — because the
+   package is `private` — skips npm, creates the `v<version>` git tag, and publishes a
+   GitHub release with notes from `CHANGELOG.md`.
+
+A one-time repo setting is required: **Settings → Actions → "Allow GitHub Actions to
+create and approve pull requests."**

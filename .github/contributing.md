@@ -39,6 +39,7 @@ For your contribution to be accepted:
 - [x] The test suite must be complete and pass.
 - [x] The changes must be approved by code review.
 - [x] Commits should be atomic and messages must be descriptive. Related issues should be mentioned by Issue number.
+- [x] User-facing changes include a changeset (run `make changeset`). See [`.changeset/README.md`](../.changeset/README.md) for the format; releases are automated from these.
 
 If the contribution doesn't meet the above criteria, you may fail our automated checks or a maintainer will discuss it with you. You can continue to improve a Pull Request by adding commits to the branch from which the PR was created.
 

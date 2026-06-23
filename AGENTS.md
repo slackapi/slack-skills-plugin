@@ -51,26 +51,8 @@ LLM-judged tests are not run in CI (Ollama + model download would exceed time bu
 
 ## Releasing
 
-Releases are driven by [changesets](https://github.com/changesets/changesets). The
-plugin runtime stays pure Python — Node is only needed for changesets tooling (`make
-changeset` locally and the release workflow in CI). A minimal `package.json` (committed at
-the repo root) is the version source of truth; `scripts/sync_versions.py` propagates
-its version into both `plugin.json` manifests.
+Releases are automated and run in CI — **you never run a release yourself.** Your only release-related task is adding a changeset when a PR makes a user-facing change.
 
-**Per change:** every PR with a user-facing change adds a changeset. Run `make changeset`
-(or hand-write a `.changeset/<name>.md`); see the
-[maintainers guide](.github/maintainers_guide.md#-updating-changesets) for the format and
-how to pick a bump level.
+See the [maintainers guide](.github/maintainers_guide.md#-updating-changesets) for the format.
 
-**On merge to `main`** (`.github/workflows/release.yml`):
-
-1. If changesets are pending, the `changesets/action` opens/updates a **"chore: release"**
-   PR that runs `changeset version` — bumping `package.json`, syncing the version into
-   both `plugin.json` manifests (`scripts/sync_versions.py`),
-   writing `CHANGELOG.md`, and deleting the consumed changesets.
-2. Merging that PR (no changesets left) triggers `changeset publish`, which — because the
-   package is `private` — skips npm, creates the `v<version>` git tag, and publishes a
-   GitHub release with notes from `CHANGELOG.md`.
-
-A one-time repo setting is required: **Settings → Actions → "Allow GitHub Actions to
-create and approve pull requests."**
+Everything after that is handled by [changesets](https://github.com/changesets/changesets) and `scripts/changeset_version.sh`: merging to `main` opens a "chore: release" PR, and merging that PR publishes the release.

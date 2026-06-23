@@ -2,8 +2,6 @@ import importlib.util
 import json
 from pathlib import Path
 
-import pytest
-
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 SCRIPTS_DIR = REPO_ROOT / "scripts"
 
@@ -18,7 +16,6 @@ def _load(module_name: str):
 
 seed_package_json = _load("seed_package_json")
 sync_plugin_versions = _load("sync_plugin_versions")
-new_changeset = _load("new_changeset")
 
 
 def _write_manifest(path: Path, version: str, **extra) -> None:
@@ -99,32 +96,6 @@ class TestSyncPluginVersions:
         sync_plugin_versions.sync(package_path=package, manifests=(manifest,))
 
         assert manifest.read_text().endswith("}\n")
-
-
-class TestNewChangeset:
-    @pytest.mark.parametrize("bump", ["patch", "minor", "major"])
-    def test_render_frontmatter(self, bump):
-        content = new_changeset.render(bump, "Add a thing")
-
-        assert content == f'---\n"slack": {bump}\n---\n\nAdd a thing\n'
-
-    def test_render_strips_summary(self):
-        assert new_changeset.render("patch", "  trimmed  ").endswith("\n\ntrimmed\n")
-
-    def test_write_changeset_creates_parseable_file(self, tmp_path):
-        path = new_changeset.write_changeset("minor", "New command", directory=tmp_path)
-
-        assert path.parent == tmp_path
-        assert path.suffix == ".md"
-        text = path.read_text()
-        assert text.startswith("---\n")
-        assert '"slack": minor' in text
-        assert "New command" in text
-
-    def test_package_name_matches_seed(self):
-        # The changeset frontmatter key must equal the seeded package.json name,
-        # or `changeset version` won't bump our package.
-        assert new_changeset.PACKAGE_NAME == seed_package_json.PACKAGE_NAME
 
 
 class TestVersionRoundTrip:

@@ -52,12 +52,14 @@ LLM-judged tests are not run in CI (Ollama + model download would exceed time bu
 ## Releasing
 
 Releases are driven by [changesets](https://github.com/changesets/changesets). The
-runtime stays pure Python — Node only runs inside the release workflow, and no
-`package.json` is committed (it's generated on the fly by `scripts/seed_package_json.py`
-and gitignored). `.claude-plugin/plugin.json` is the version source of truth.
+plugin runtime stays pure Python — Node is only needed for changesets tooling (`make
+changeset` locally and the release workflow in CI), and no `package.json` is committed
+(it's generated on the fly by `scripts/seed_package_json.py` and gitignored).
+`.claude-plugin/plugin.json` is the version source of truth.
 
 **Per change:** every PR with a user-facing change adds a changeset. Run `make changeset`
-(or hand-write a `.changeset/<name>.md`); see `.changeset/README.md` for the format and
+(or hand-write a `.changeset/<name>.md`); see the
+[maintainers guide](.github/maintainers_guide.md#-updating-changesets) for the format and
 how to pick a bump level.
 
 **On merge to `main`** (`.github/workflows/release.yml`):

@@ -73,8 +73,9 @@ cursor-install: $(VENV) ## Install this plugin into a local Cursor for developme
 cursor-uninstall: $(VENV) ## Uninstall this plugin from the local Cursor install
 	$(PYTHON) scripts/cursor.py uninstall
 
-changeset: ## Create a changeset describing a user-facing change (for the next release)
-	$(PYTHON) scripts/new_changeset.py
+changeset: $(VENV) ## Create a changeset describing a user-facing change (for the next release)
+	$(PYTHON) scripts/seed_package_json.py
+	npx --yes @changesets/cli add
 
 lint: ## Run ruff linter checks
 	$(RUFF) check .

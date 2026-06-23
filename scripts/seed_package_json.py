@@ -1,15 +1,3 @@
-"""Seed an ephemeral root ``package.json`` for the release workflow.
-
-Changesets (and the ``changesets/action``) are Node tools that require a
-``package.json`` at the repo root to operate. We don't want a Node artifact
-committed here, so the release workflow generates one on the fly, seeded from the
-real source of truth: the ``version`` in ``.claude-plugin/plugin.json``. The file
-is gitignored and never enters a commit or PR.
-
-The package is marked ``private`` so ``changeset publish`` skips npm and only
-creates the git tag + GitHub release.
-"""
-
 import json
 import logging
 from pathlib import Path
@@ -31,21 +19,15 @@ def read_version(plugin_path: Path) -> str:
     return manifest["version"]
 
 
-def seed(plugin_path: Path = CLAUDE_PLUGIN_PATH, package_path: Path = PACKAGE_JSON_PATH) -> str:
-    """Write an ephemeral ``package.json`` seeded from the plugin manifest.
-
-    Returns the version that was written.
-    """
-    version = read_version(plugin_path)
-    package = {"name": PACKAGE_NAME, "version": version, "private": True}
-    package_path.write_text(json.dumps(package, indent=2) + "\n")
-    logger.info(f"Seeded {package_path} at version {version}")
-    return version
-
-
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
-    seed()
+    version = read_version(CLAUDE_PLUGIN_PATH)
+
+    package = {"name": PACKAGE_NAME, "version": version, "private": True}
+
+    PACKAGE_JSON_PATH.write_text(json.dumps(package, indent=2) + "\n")
+
+    logger.info(f"Seeded {PACKAGE_JSON_PATH} at version {version}")
 
 
 if __name__ == "__main__":

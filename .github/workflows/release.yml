@@ -23,7 +23,6 @@ permissions:
 env:
   SUPPORTED_PY: "3.14"
   NODE_VERSION: "20"
-  CHANGESETS_CLI: "@changesets/cli@^2.27"
 
 jobs:
   release:
@@ -52,7 +51,7 @@ jobs:
         uses: changesets/action@3841a0683d3cfa6dae0f9bb335290003010fe3f0 # v1.9.0
         with:
           version: bash scripts/changeset_version.sh
-          publish: npx --yes ${{ env.CHANGESETS_CLI }} publish
+          publish: npx --yes @changesets/cli publish
           commit: "chore: release"
           title: "chore: release"
         env:

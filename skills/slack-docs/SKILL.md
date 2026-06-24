@@ -30,13 +30,7 @@ If `$0` is provided, it is either a `docs.slack.dev` URL (jump to the **Fast Pat
 
 ## Fast Path (the developer already has a URL)
 
-If the developer pasted a `https://docs.slack.dev/...` link, skip discovery:
-
-1. Append `.md` to the page path (drop any `#anchor` first), e.g.
-   `https://docs.slack.dev/apis/events-api` → `https://docs.slack.dev/apis/events-api.md`.
-2. **WebFetch** that `.md` URL and answer from its contents.
-
-The server lowercases `.md` requests, so casing does not matter. `chat.postMessage.md` and `chat.postmessage.md` both resolve.
+If the developer pasted a `https://docs.slack.dev/...` link, skip discovery and go straight to **Step 2** to fetch and read it.
 
 ---
 
@@ -96,10 +90,13 @@ If a categorized search returns no good hit, widen it: try the other likely cate
 
 ## Step 2: Read the Page (fetch markdown)
 
-Take any `url` from Step 1 (they are site-relative paths) and read its markdown:
+Given a page reference (a `url` from Step 1, or a link the developer pasted), read its markdown:
 
-1. Build the full URL: `https://docs.slack.dev` + the `url`, then append `.md`.
-   e.g. `/apis/events-api/using-socket-mode` → `https://docs.slack.dev/apis/events-api/using-socket-mode.md`
+1. Normalize the reference to its `.md` URL:
+   - A site-relative path from Step 1 (e.g. `/apis/events-api/using-socket-mode`): prepend `https://docs.slack.dev`.
+   - A full URL the developer pasted: drop any `#anchor` first.
+   - Append `.md`, e.g. `…/using-socket-mode` → `https://docs.slack.dev/apis/events-api/using-socket-mode.md`.
+   The server lowercases `.md` requests, so casing does not matter: `chat.postMessage.md` and `chat.postmessage.md` both resolve.
 2. **WebFetch** it. The page opens with `Source: <original-url>`; the rest is the page body in markdown.
 3. Answer the developer from the fetched content, and cite the `Source` URL.
 

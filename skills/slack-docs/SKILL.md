@@ -8,7 +8,7 @@ argument-hint: "[topic or docs.slack.dev URL]"
 
 Help the developer **find** the right page on the official Slack documentation site (`https://docs.slack.dev`) and **read** it as clean markdown, so answers come from the live docs rather than memory. The site exposes three machine-readable surfaces an agent can use directly, with no authentication and no Slack workspace:
 
-- A **search API method**: `GET https://docs.slack.dev/api/v1/search?query=<q>` returns ranked page hits as JSON.
+- A **search API method**: `GET https://docs.slack.dev/api/v1/search?query=<q>&category=<c>` returns ranked page hits as JSON. Scope every search with a `category` (guides, reference, a specific SDK, etc.); an uncategorized search skews heavily toward SDK pages.
 - **Per-page markdown**: every page is available at its URL **+ `.md`** (e.g. `/quickstart.md`).
 - **Index files**: `/llms.txt` (a curated overview) and `/llms-sitemap.md` (a list of every markdown page).
 
@@ -42,19 +42,25 @@ The server lowercases `.md` requests, so casing does not matter. `chat.postMessa
 
 ## Step 1: Discover the Page (search)
 
-Use the docs **search API** to find candidate pages. WebFetch (or `curl` via the Bash tool) this URL, with the query URL-encoded:
+Use the docs **search API** to find candidate pages. WebFetch (or `curl` via the Bash tool) this URL, with the query URL-encoded and a `category` to scope the results:
 
 ```
-https://docs.slack.dev/api/v1/search?query=<url-encoded query>&limit=5
+https://docs.slack.dev/api/v1/search?query=<url-encoded query>&category=<category>&limit=5
 ```
 
-For example, `socket mode` → `https://docs.slack.dev/api/v1/search?query=socket%20mode&limit=5`.
+**Always start with a `category`.** An uncategorized search is dominated by SDK reference pages (a query like `socket mode` or `oauth` can return a top 10 that is entirely Bolt/Node pages), which buries the conceptual and reference content most questions are actually about. Pick the starting category from the developer's intent:
+
+- **`guides`** — the default for "how do I…", "what is…", and conceptual platform questions (Events API, OAuth, Socket Mode, manifests, modals, App Home). Start here when in doubt.
+- **`reference`** — for a specific method, event, scope, object, or Block Kit element, especially an exact name like `chat.postMessage`.
+- **A tool/SDK category** (`python`, `javascript`, `java`, `slack_cli`, `slack_github_action`, `deno_slack_sdk`) — only once you know the developer's tool. See **Step 3**.
+
+So `socket mode` as a concept → `https://docs.slack.dev/api/v1/search?query=socket%20mode&category=guides&limit=5`.
 
 The response is JSON:
 
 ```json
 {
-  "total_results": 98,
+  "total_results": 12,
   "results": [
     { "url": "/apis/events-api/using-socket-mode", "title": "Using Socket Mode" }
   ],
@@ -62,7 +68,23 @@ The response is JSON:
 }
 ```
 
-Scan `results` for the best `title`/`url` match, then read it in **Step 2**. A query is **required**. Calling the endpoint with no `query` returns a `400` with an `error` field.
+Scan `results` for the best `title`/`url` match, then read it in **Step 2**. A query is **required**; calling the endpoint with no `query` returns a `400` with an `error` field.
+
+Full set of categories:
+
+| Category | Scopes results to |
+|----------|-------------------|
+| `guides` | Conceptual and how-to guides |
+| `reference` | API reference: methods, events, scopes, objects, Block Kit |
+| `changelog` | Changelog and release notes |
+| `python` | Python tools (Bolt for Python, Python Slack SDK) |
+| `javascript` | JavaScript tools (Bolt for JS, Node Slack SDK) |
+| `java` | Java tools (Bolt for Java, Java Slack SDK) |
+| `slack_cli` | Slack CLI docs |
+| `slack_github_action` | Slack Send GitHub Action docs |
+| `deno_slack_sdk` | Deno Slack SDK docs |
+
+If a categorized search returns no good hit, widen it: try the other likely category (`guides` ⇄ `reference`), then drop `category` entirely as a last resort. An unrecognized value returns a `400` with an `error` field listing the valid categories, so re-run with one of those or with no category.
 
 **Fallbacks** when search does not surface a good hit, or returns a `500`/temporary error (the endpoint is rate-limited and cached ~5 minutes):
 
@@ -89,15 +111,17 @@ If a page is long and the developer asked something narrow, fetch it and quote o
 
 Implementation details differ significantly between the official tools, so **establish which one the developer is using first**, then scope your reading to that tool's doc subtree. Each lives under `https://docs.slack.dev/tools/<name>` and its pages are fetchable as `.md` like any other (e.g. `https://docs.slack.dev/tools/bolt-js/concepts.md`). If the developer has not said, ask before assuming.
 
-| Tool | Docs path | Use when the developer… |
-|------|-----------|--------------------------|
-| **Slack CLI** | `/tools/slack-cli` | scaffolds, runs, or manages an app from the terminal; mentions `slack` commands or app manifests |
-| **Bolt for JavaScript** | `/tools/bolt-js` | builds an app in Node/TypeScript with the Bolt framework |
-| **Bolt for Python** | `/tools/bolt-python` | builds an app in Python with the Bolt framework |
-| **Bolt for Java** | `/tools/java-slack-sdk` | builds an app in Java with Bolt (Bolt for Java lives in the Java SDK docs) |
-| **Node Slack SDK** | `/tools/node-slack-sdk` | wants lower-level Node clients (`@slack/web-api`, `@slack/socket-mode`) without the full Bolt framework |
-| **Python Slack SDK** | `/tools/python-slack-sdk` | wants the lower-level Python client without Bolt |
-| **Java Slack SDK** | `/tools/java-slack-sdk` | wants Java clients, or is using Bolt for Java |
-| **Slack Send GitHub Action** | `/tools/slack-github-action` | sends data to Slack from a GitHub Actions workflow |
+| Tool | Docs path | Search `category` | Use when the developer… |
+|------|-----------|-------------------|--------------------------|
+| **Slack CLI** | `/tools/slack-cli` | `slack_cli` | scaffolds, runs, or manages an app from the terminal; mentions `slack` commands or app manifests |
+| **Bolt for JavaScript** | `/tools/bolt-js` | `javascript` | builds an app in Node/TypeScript with the Bolt framework |
+| **Bolt for Python** | `/tools/bolt-python` | `python` | builds an app in Python with the Bolt framework |
+| **Bolt for Java** | `/tools/java-slack-sdk` | `java` | builds an app in Java with Bolt (Bolt for Java lives in the Java SDK docs) |
+| **Node Slack SDK** | `/tools/node-slack-sdk` | `javascript` | wants lower-level Node clients (`@slack/web-api`, `@slack/socket-mode`) without the full Bolt framework |
+| **Python Slack SDK** | `/tools/python-slack-sdk` | `python` | wants the lower-level Python client without Bolt |
+| **Java Slack SDK** | `/tools/java-slack-sdk` | `java` | wants Java clients, or is using Bolt for Java |
+| **Slack Send GitHub Action** | `/tools/slack-github-action` | `slack_github_action` | sends data to Slack from a GitHub Actions workflow |
+
+Once you know the tool, narrow discovery with the matching `category` from Step 1, e.g. `…?query=middleware&category=javascript`. Note the languages group: both Bolt for JavaScript and the Node Slack SDK fall under `javascript` (likewise `python` and `java` each cover their Bolt framework plus lower-level SDK), so the category scopes to the language family, not a single subtree.
 
 **Bolt** is the framework built upon the matching language **SDK**. When unsure which subtree a topic lives in, fall back to the search API (Step 1) as it indexes all of these.

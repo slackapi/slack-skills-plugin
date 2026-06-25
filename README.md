@@ -79,13 +79,11 @@ Once installed, talk to your assistant in natural language:
 
 - **Workspace admin approval.** Your Slack workspace admin must approve MCP integration before you can authenticate.
 
-## Issues
-
-Found a bug or have an idea? Open an [issue](https://github.com/slackapi/slack-mcp-plugin/issues) or [pull request](https://github.com/slackapi/slack-mcp-plugin/pulls).
-
 ## Contributing
 
-Contributions are welcome - see [`.github/contributing.md`](.github/contributing.md). Maintainers should also read [`.github/maintainers_guide.md`](.github/maintainers_guide.md).
+We welcome contributions from everyone! Please check out our [contributor's guide](.github/contributing.md) for guidelines on opening issues and pull requests.
+
+Working on the plugin itself? See the [maintainer's guide](.github/maintainers_guide.md) for local development setup.
 
 [claude-code]: https://claude.com/claude-code
 [cursor]: https://cursor.com

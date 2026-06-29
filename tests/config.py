@@ -1,8 +1,13 @@
+import json
 import os
 from pathlib import Path
 
 # Filesystem
 SKILLS_ROOT = Path(__file__).parent.parent / "skills"
+
+# Plugin namespace (single source of truth: the plugin manifest)
+PLUGIN_MANIFEST = Path(__file__).parent.parent / ".claude-plugin" / "plugin.json"
+PLUGIN_NAME = json.loads(PLUGIN_MANIFEST.read_text())["name"]
 
 # Skill inventory (single source of truth)
 EXPECTED_SKILLS = ("create-slack-app", "block-kit", "slack-api", "slack-cli", "slack-docs")

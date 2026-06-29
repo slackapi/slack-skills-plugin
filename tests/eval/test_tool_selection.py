@@ -1,3 +1,4 @@
+import time
 from typing import TypedDict
 
 import pytest
@@ -193,6 +194,12 @@ class TestToolSelection:
         # round-trip, and skills are read from disk.
         cls.model = make_judge_model()
         cls.available_tools = get_slack_mcp_tools() + get_all_skill_tools()
+
+    def teardown_method(self):
+        # Gemini's free tier allows only 15 requests/minute. Each scenario makes one
+        # model.generate() call, so sleep between scenarios to stay well under the
+        # limit (~12 req/min) and avoid HTTP 429 / RESOURCE_EXHAUSTED.
+        time.sleep(5)
 
     @pytest.mark.parametrize(
         "scenario",

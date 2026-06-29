@@ -46,9 +46,9 @@ See `skills/create-slack-app/SKILL.md` Step 1a for an example.
 Two test layers validate skills:
 
 1. **Unit** (`tests/unit/`) — validates frontmatter fields, naming, and markdown structure. Fast, runs in CI on every PR.
-2. **Eval** (`tests/eval/`) — uses DeepEval's `ToolCorrectnessMetric` (threshold 0.8) with a Gemini model to judge whether a skill produces useful output for a sample prompt. Local-only, not in CI.
+2. **Eval** (`tests/eval/`) — LLM-judged tests that use a Gemini model. `tests/eval/test_tool_selection.py` asks the model to pick the expected tool/skill for each of a set of prompts. Because Gemini's free tier caps at 15 requests/minute, the test sleeps ~5s between scenarios (see its `teardown_method`) to stay under the limit.
 
-To add an LLM test for a new skill, create `tests/eval/skills/test_<skill_name>.py` following the pattern in `test_block_kit.py`: define a `PROMPT`, load the skill with `load_skill()`, and assert with `ToolCorrectnessMetric`.
+To add an eval scenario, append a `Scenario` (prompt + expected tool) to `SCENARIOS` in `tests/eval/test_tool_selection.py`.
 
 ## CI
 
@@ -56,5 +56,6 @@ GitHub Actions (`.github/workflows/ci-build.yml`) gates every PR with:
 
 - **Lint** — `make lint` (Ruff)
 - **Test** — `make test-unit` (pytest)
+- **Eval** — `make test-eval` (DeepEval + Gemini)
 
-LLM-judged tests are not run in CI (they require a `GEMINI_API_KEY`).
+The eval job runs only when its secrets are configured: `GEMINI_API_KEY` is required, and the tool-selection scenarios are skipped unless `SLACK_MCP_TOKEN` is also set.

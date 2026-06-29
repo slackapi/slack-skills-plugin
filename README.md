@@ -1,6 +1,6 @@
 # Slack MCP and Skills Plugin
 
-A plugin for [Claude Code][claude-code] and [Cursor][cursor] that brings Slack into your AI assistant - through the [Slack MCP server][slack-mcp-docs] for direct workspace actions and a curated set of Slack skills for both users and developers.
+A [Claude Code][claude-code] and [Cursor][cursor] plugin that brings Slack into your AI tools with a [Slack MCP Server][slack-mcp-docs] and set of Slack skills for both users and developers.
 
 [![CI Build](https://github.com/slackapi/slack-mcp-plugin/actions/workflows/ci-build.yml/badge.svg)](https://github.com/slackapi/slack-mcp-plugin/actions/workflows/ci-build.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)

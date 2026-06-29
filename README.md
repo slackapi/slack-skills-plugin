@@ -29,7 +29,7 @@ After install, Cursor surfaces a connect button - use it to authenticate to your
 
 ### MCP Server
 
-The plugin connects your AI assistant to Slack's hosted [MCP server][slack-mcp-docs]:
+The plugin connects your AI tool to Slack's hosted [MCP server][slack-mcp-docs]:
 
 - **Search** - find messages, files, users, and channels (public and private)
 - **Messaging** - send and schedule messages, read channels, follow threads, add reactions

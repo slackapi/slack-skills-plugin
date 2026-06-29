@@ -92,7 +92,9 @@ class MCPClient:
         }
         if self._session_id:
             headers["mcp-session-id"] = self._session_id
-        req = urllib.request.Request(self._url, data=json.dumps(data).encode(), headers=headers, method="POST")
+        req = urllib.request.Request(
+            self._url, data=json.dumps(data).encode(), headers=headers, method="POST"
+        )
 
         resp: http.client.HTTPResponse
         with urllib.request.urlopen(req, timeout=30) as resp:

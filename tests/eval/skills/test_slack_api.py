@@ -1,18 +1,21 @@
+import pytest
 from deepeval import assert_test
 from deepeval.metrics import ToolCorrectnessMetric
 from deepeval.test_case import LLMTestCase, ToolCall
 
-from tests.config import OLLAMA_MODEL
+from tests.config import GEMINI_API_KEY
 from tests.skill import load_skill
-from tests.support.ollama import NoThinkOllamaModel
+from tests.support.judge import make_judge_model
 
 PROMPT = "Which Slack API method lists the members of a channel, and what scopes does it need?"
 
 
 class TestSlackApi:
     def setup_method(self):
+        if not GEMINI_API_KEY:
+            pytest.fail("GEMINI_API_KEY not set")
         self.skill = load_skill("slack-api")
-        self.model = NoThinkOllamaModel(model=OLLAMA_MODEL)
+        self.model = make_judge_model()
 
     def test_skill_is_usable(self):
         skill_tool = ToolCall(

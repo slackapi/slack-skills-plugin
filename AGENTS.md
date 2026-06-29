@@ -31,6 +31,17 @@ Requires Python 3.14+. Run `make install` before first use to set up the virtual
 
 The LLM tests read two environment variables: `OLLAMA_MODEL_NAME` (the DeepEval judge model, defaults to `gemma4`) and `SLACK_MCP_TOKEN` (a Slack MCP bearer token; the MCP tool-selection test is skipped when it's unset). Copy `.env.example` to `.env` and fill in values — the `Makefile` auto-loads `.env` — or pass them inline, e.g. `OLLAMA_MODEL_NAME=<model> make test-eval`.
 
+## Cross-Skill References
+
+When one `SKILL.md` references another skill (e.g., to delegate a step instead of duplicating content), follow these rules:
+
+- Use the backticked `plugin:skill` form, e.g. `` `slack:slack-cli` ``.
+- When pointing at a specific step, include the step's heading text, not just the number — references survive future reordering.
+- Add a sentence of prose explaining what the referenced section does and why you're delegating to it.
+- Don't use markdown anchor links (`[text](#step-1)`), `@`-include syntax (`@path/to/SKILL.md`), or bare file paths — none are idiomatic in installed skills, and `@`-includes force-load context.
+
+See `skills/create-slack-app/SKILL.md` Step 1a for an example.
+
 ## Testing
 
 Two test layers validate skills:

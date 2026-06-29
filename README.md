@@ -59,7 +59,7 @@ Five slash commands for common Slack workflows:
 
 ## Usage examples
 
-Once installed, talk to your assistant in natural language:
+Once installed, talk to your tool in natural language:
 
 - "Search for messages about the product launch from the last week"
 - "Send a message to #general saying the deployment is complete"

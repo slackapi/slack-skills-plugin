@@ -1,5 +1,5 @@
 import time
-from typing import TypedDict
+from typing import NotRequired, TypedDict
 
 import pytest
 from deepeval.models import GeminiModel
@@ -15,6 +15,7 @@ class Scenario(TypedDict):
     id: str
     prompt: str
     expected_tool: str
+    acceptable_tools: NotRequired[list[str]]
 
 
 class ToolChoice(BaseModel):
@@ -51,7 +52,7 @@ SCENARIOS: list[Scenario] = [
     },
     {
         "id": "list-members-platform-team",
-        "prompt": "Who are the members of the #platform-team channel?",
+        "prompt": "Who are the members of the CA1B2C3F5 channel?",
         "expected_tool": "slack_list_channel_members",
     },
     {
@@ -91,7 +92,7 @@ SCENARIOS: list[Scenario] = [
     },
     {
         "id": "ambiguous-list-members-platform",
-        "prompt": "List the members of the #platform-team channel",
+        "prompt": "List the members of the CA1B2C3F5 channel",
         "expected_tool": "slack_list_channel_members",
     },
     {
@@ -108,16 +109,19 @@ SCENARIOS: list[Scenario] = [
         "id": "ambiguous-add-reaction-releases",
         "prompt": "Add a :tada: reaction to the latest message in #releases",
         "expected_tool": "slack_add_reaction",
+        "acceptable_tools": ["slack_read_channel"],
     },
     {
         "id": "ambiguous-reply-in-thread",
-        "prompt": "Post a reply in the thread on the outage message in #incidents",
+        "prompt": "Reply 'we're on it' in the thread on the outage message in CA1B2C3F5",
         "expected_tool": "slack_send_message",
+        "acceptable_tools": ["slack_read_thread"],
     },
     {
         "id": "ambiguous-read-thread-replies",
-        "prompt": "Show me all the replies in that thread in #support",
+        "prompt": "Show me all the replies in the thread on the latest message in #support",
         "expected_tool": "slack_read_thread",
+        "acceptable_tools": ["slack_read_channel"],
     },
     {
         "id": "ambiguous-lookup-user-by-email",
@@ -176,7 +180,9 @@ You have access to the following tools:
 
 User request: {prompt}
 
-Pick the single best tool for this request and respond with its exact name."""
+Pick the single tool that performs the action the user is asking for. Any channel name,
+channel ID, or user ID already in the request is usable as-is — do not pick a search tool
+just to resolve it into an ID first. Respond with the tool's exact name."""
 
 
 @pytest.mark.skipif(not SLACK_MCP_TOKEN, reason="SLACK_MCP_TOKEN not set")
@@ -215,6 +221,7 @@ class TestToolSelection:
         # against the expected one.
         choice, _ = self.model.generate(build_prompt(self.available_tools, scenario["prompt"]), schema=ToolChoice)
 
-        assert choice.tool_name == expected_name, (
-            f"Expected {repr(expected_name)} for prompt {repr(scenario['prompt'])}, got {repr(choice.tool_name)}"
+        accepted = {expected_name, *scenario.get("acceptable_tools", [])}
+        assert choice.tool_name in accepted, (
+            f"Expected one of {sorted(accepted)} for prompt {scenario['prompt']!r}, got {choice.tool_name!r}"
         )

@@ -47,6 +47,15 @@ Not supported:
 - **Post in the channel** (not a thread) when starting a new topic, making an announcement, or asking a question to the whole group.
 - **Don't start a new thread** to continue an existing conversation — find and reply to the original message.
 
+## Delivery Errors
+
+- If `slack_send_message` fails with `mcp_externally_shared_channel_restricted`, the hosted Slack MCP server is blocking
+  the send because the target is an externally shared Slack Connect channel. Do not retry the same MCP send. Tell the
+  user that Slack Connect sends are currently restricted through MCP, and suggest sending the message directly in Slack
+  or using a workspace-approved non-MCP integration for that channel.
+- If sending is blocked, preserve the drafted message text so the user can post it manually without asking you to
+  reconstruct it.
+
 ## Tone and Audience
 
 - Match the tone to the channel — `#general` is usually more formal than `#random`.

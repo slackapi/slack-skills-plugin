@@ -78,6 +78,10 @@ Once installed, talk to your tool in natural language:
 ## Limitations
 
 - **Workspace admin approval.** Your Slack workspace admin must approve MCP integration before you can authenticate.
+- **Slack Connect message sends.** The hosted Slack MCP server currently rejects `slack_send_message` calls to
+  externally shared Slack Connect channels and returns `mcp_externally_shared_channel_restricted`. The channel may
+  still be searchable and readable if your authenticated user has access, but sending through MCP is blocked. Send the
+  message in Slack directly or use a workspace-approved non-MCP integration for that workflow.
 
 ## Contributing
 

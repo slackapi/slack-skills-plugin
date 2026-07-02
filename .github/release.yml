@@ -9,7 +9,7 @@ changelog:
         - bug
     - title: 📚 Documentation
       labels:
-        - documentation
+        - docs
     - title: 🧪 Tests
       labels:
         - test

@@ -58,4 +58,12 @@ GitHub Actions (`.github/workflows/ci-build.yml`) gates every PR with:
 - **Test** — `make test-unit` (pytest)
 - **Eval** — `make test-eval` (DeepEval + Gemini)
 
-The eval job runs only when its secrets are configured: `GEMINI_API_KEY` is required, and the tool-selection scenarios are skipped unless `SLACK_MCP_TOKEN` is also set.
+LLM-judged tests are not run in CI (Ollama + model download would exceed time budget).
+
+## Releasing
+
+Releases are automated and run in CI — **you never run a release yourself.** Your only release-related task is adding a changeset when a PR makes a user-facing change.
+
+See the [maintainers guide](.github/maintainers_guide.md#-updating-changesets) for the format.
+
+Everything after that is handled by [changesets](https://github.com/changesets/changesets) and `scripts/changeset_version.sh`: merging to `main` opens a "chore: release" PR, and merging that PR publishes the release.

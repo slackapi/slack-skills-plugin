@@ -17,7 +17,7 @@ OLLAMA_MODEL := $(or $(OLLAMA_MODEL_NAME),gemma4)
 
 UNAME_S := $(shell uname -s)
 
-TARGETS := help install install-test install-tools clean lint format test test-unit test-eval cursor-install cursor-uninstall changeset
+TARGETS := help install install-test install-tools clean lint format test test-unit test-eval cursor-install cursor-uninstall
 
 .PHONY: $(TARGETS)
 
@@ -65,16 +65,13 @@ install-tools: $(VENV) ## Install linting/formatting tools (ruff)
 
 clean: ## Remove virtual environment, Ollama, and local Cursor install
 	-$(PYTHON) scripts/cursor.py uninstall
-	rm -rf $(VENV) $(OLLAMA_DIR)
+	rm -rf $(VENV) $(OLLAMA_DIR) node_modules
 
 cursor-install: $(VENV) ## Install this plugin into a local Cursor for development
 	$(PYTHON) scripts/cursor.py install
 
 cursor-uninstall: $(VENV) ## Uninstall this plugin from the local Cursor install
 	$(PYTHON) scripts/cursor.py uninstall
-
-changeset: ## Create a changeset describing a user-facing change (for the next release)
-	npx --yes @changesets/cli add
 
 lint: ## Run ruff linter checks
 	$(RUFF) check .

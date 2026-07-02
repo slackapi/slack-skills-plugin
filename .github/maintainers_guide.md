@@ -55,7 +55,7 @@ This project uses [Changesets](https://github.com/changesets/changesets) to trac
 Each changeset describes a change to the package and its [semver][semver] impact, and a new changeset should be added when updating the package with some change that affects consumers:
 
 ```sh
-make changeset
+npx changeset add
 ```
 
 Alternatively, hand-write a file named `.changeset/<anything>.md`, with this format:

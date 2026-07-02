@@ -1,108 +1,93 @@
-# Slack Plugin
+# Slack MCP and Skills Plugin
 
-This repository contains the configuration needed to integrate Slack with Cursor IDE and Claude Code. The plugin enables your agents to interact directly with your Slack workspace, allowing you to search messages, send communications, manage canvases, and more—all through natural language.
+A [Claude Code][claude-code] and [Cursor][cursor] plugin that brings Slack into your AI tools with a [Slack MCP Server][slack-mcp-docs] and set of Slack skills for both users and developers.
 
-## Features
-
-The Slack MCP server provides the following capabilities:
-
-- **Search**: Find messages, files, users, and channels (both public and private)
-- **Messaging**: Send messages, retrieve channel histories, and access threaded conversations
-- **Canvas**: Create and share formatted documents, export content as markdown
-- **User Management**: Retrieve user profiles including custom fields and status information
-
-## Prerequisites
-
-Before setting up the Slack MCP server, ensure you have:
-
-- Cursor IDE or Claude Code CLI installed
-- Access to a Slack workspace with MCP integration approved by your workspace admin
+[![CI Build](https://github.com/slackapi/slack-mcp-plugin/actions/workflows/ci-build.yml/badge.svg)](https://github.com/slackapi/slack-mcp-plugin/actions/workflows/ci-build.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## Installation
 
-Choose the installation method for your IDE:
-
 ### Claude Code
 
-If you're using Claude Code CLI, you can install this as a plugin by cloning it locally:
+The plugin is published on the [official Claude marketplace](https://claude.com/plugins/slack). Install it from inside Claude Code:
 
-```bash
-git clone https://github.com/slackapi/slack-mcp-plugin.git
-cd slack-mcp-plugin
-claude --plugin-dir ./
+```
+/plugin install slack@claude-plugins-official
 ```
 
-The Slack MCP server will be automatically configured when the plugin loads. You will be prompted to authenticate into your Slack workspace via OAuth.
-
-The Claude plugin uses the following MCP configuration (`.mcp.json`):
-
-```json
-{
-  "mcpServers": {
-    "slack": {
-      "type": "http",
-      "url": "https://mcp.slack.com/mcp",
-      "oauth": {
-        "clientId": "1601185624273.8899143856786",
-        "callbackPort": 3118
-      }
-    }
-  }
-}
-```
+The Slack MCP server is configured automatically. You'll be prompted to authenticate to your Slack workspace via OAuth on first use.
 
 ### Cursor
 
-You can use the following Add to Cursor button or follow the steps below to manually configure the Slack MCP server in Cursor:
+Click the button below to add the Slack MCP server to Cursor:
 
 [![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/en-US/install-mcp?name=slack&config=eyJ1cmwiOiJodHRwczovL21jcC5zbGFjay5jb20vbWNwIiwiYXV0aCI6eyJDTElFTlRfSUQiOiIzNjYwNzUzMTkyNjI2Ljg5MDM0NjkyMjg5ODIifX0%3D)
 
-#### Step 1: Open Cursor Settings
+After install, Cursor surfaces a connect button - use it to authenticate to your Slack workspace.
 
-Navigate to **Cursor → Settings → Cursor Settings** (or use the keyboard shortcut `Cmd+,` on macOS, `Ctrl+,` on Windows/Linux).
+## Features
 
-#### Step 2: Navigate to MCP Tab
+### MCP Server
 
-In the Settings interface, click on the **MCP** tab to access MCP server configurations.
+The plugin connects your AI tool to Slack's hosted [MCP server][slack-mcp-docs]:
 
-#### Step 3: Add Slack MCP Configuration
+- **Search** - find messages, files, users, and channels (public and private)
+- **Messaging** - send and schedule messages, read channels, follow threads, add reactions
+- **Canvas** - create, read, and update canvas documents
+- **Users** - read profiles and list channel members
 
-Add the following configuration to connect to the remote Slack MCP server:
+### Skills
 
-```json
-{
-  "mcpServers": {
-    "slack": {
-      "url": "https://mcp.slack.com/mcp",
-      "auth": {
-        "CLIENT_ID": "3660753192626.8903469228982"
-      }
-    }
-  }
-}
-```
+Six skills load on demand to handle messaging tasks and developer workflows:
 
-Save the configuration. You will also see a connect button once added. Click that to authenticate into your Slack Workspace.
+- [`slack:slack-messaging`](skills/slack-messaging/SKILL.md) - composing well-formatted, effective Slack messages
+- [`slack:slack-search`](skills/slack-search/SKILL.md) - finding messages, files, channels, and people
+- [`slack:slack-api`](skills/slack-api/SKILL.md) - discovering and calling Slack Web API methods
+- [`slack:slack-cli`](skills/slack-cli/SKILL.md) - using the [Slack CLI][slack-cli] to create, run, and manage apps
+- [`slack:create-slack-app`](skills/create-slack-app/SKILL.md) - building a Slack app or agent with the CLI and [Bolt][bolt]
+- [`slack:block-kit`](skills/block-kit/SKILL.md) - building and validating [Block Kit][block-kit] layouts
 
-## Usage Examples
+### Commands
 
-Once configured, you can interact with Slack through your AI assistant using natural language:
+Five slash commands for common Slack workflows:
 
-- **Search messages**: "Search for messages about the product launch in the last week"
-- **Send messages**: "Send a message to #general channel saying the deployment is complete"
-- **Find users**: "Who is the user with email john@example.com?"
-- **Access threads**: "Show me the conversation thread from that message"
-- **Create canvases**: "Create a canvas document with our meeting notes"
+- `/slack:summarize-channel <channel-name>` - Summarize recent activity in a Slack channel
+- `/slack:find-discussions <topic>` - Find discussions about a specific topic across Slack channels
+- `/slack:draft-announcement <topic>` - Draft a well-formatted Slack announcement and save it as a draft
+- `/slack:standup` - Generate a standup update based on your recent Slack activity
+- `/slack:channel-digest <channel1, channel2, ...>` - Get a digest of recent activity across multiple Slack channels
 
-## Documentation & Resources
+## Usage examples
 
-- [Official Slack MCP Server Documentation](https://docs.slack.dev/ai/mcp-server/)
+Once installed, talk to your tool in natural language:
 
-## Notes & Limitations
+- "Search for messages about the product launch from the last week"
+- "Send a message to #general saying the deployment is complete"
+- "Summarize the last day of activity in #engineering"
+- "Draft an announcement about the new pricing page"
+- "Create a new Slack app using Bolt for Python"
+- "Build a Block Kit feedback modal with a rating select and a comments field"
+- "Validate the Block Kit JSON in ./modal.json"
 
-- **Remote server only**: This configuration connects to Slack's hosted MCP server. No local installation is required or supported.
-- **Admin approval required**: Your Slack workspace administrator must approve MCP integration before you can use this feature.
+## Documentation
 
-## Questions or Issues?
+- [Slack MCP server][slack-mcp-docs]
+- [Slack developer docs](https://docs.slack.dev/)
+- [Block Kit Builder][block-kit]
 
-For questions about the Slack MCP server or integration issues, please refer to the [official Slack documentation](https://docs.slack.dev/ai/mcp-server/) or contact your workspace administrator.
+## Limitations
+
+- **Workspace admin approval.** Your Slack workspace admin must approve MCP integration before you can authenticate.
+
+## Contributing
+
+We welcome contributions from everyone! Please check out our [contributor's guide](.github/contributing.md) for guidelines on opening issues and pull requests.
+
+Working on the plugin itself? See the [maintainer's guide](.github/maintainers_guide.md) for local development setup.
+
+[claude-code]: https://claude.com/claude-code
+[cursor]: https://cursor.com
+[slack-mcp-docs]: https://docs.slack.dev/ai/mcp-server/
+[slack-cli]: https://tools.slack.dev/slack-cli
+[bolt]: https://tools.slack.dev/bolt-js
+[block-kit]: https://app.slack.com/block-kit-builder

@@ -41,6 +41,7 @@ jobs:
         with:
           version: bash scripts/changeset_version.sh
           publish: npx changeset publish
+          createGithubReleases: true
           commit: "chore: release"
           title: "chore: release"
           prDraft: create

@@ -86,7 +86,7 @@ New official package versions are published when the release PR created from cha
 
 3. **Review the release PR**: Verify that the version bump matches expectations, `CHANGELOG` entries are clear, and CI checks pass.
 
-4. **Merge and approve**: Merge the release PR. It may take up to 24 hours before you see you release in [plugins/slack](https://claude.com/plugins/slack).
+4. **Merge and approve**: Merge the release PR. It may take up to 24 hours before you see you release in the [Claude Plugins](https://claude.com/plugins/slack) directory.
 
 5. **Communicate the release**:
    - **External**: Post in relevant channels (e.g. #lang-javascript, #tools-bolt) on [Slack Community](https://community.slack.com/). Include a link to the release notes.

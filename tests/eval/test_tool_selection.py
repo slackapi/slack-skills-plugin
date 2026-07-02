@@ -185,7 +185,6 @@ channel ID, or user ID already in the request is usable as-is — do not pick a 
 just to resolve it into an ID first. Respond with the tool's exact name."""
 
 
-@pytest.mark.skipif(not SLACK_MCP_TOKEN, reason="SLACK_MCP_TOKEN not set")
 class TestToolSelection:
     """Assert the model selects the expected tool for each scenario."""
 
@@ -196,6 +195,8 @@ class TestToolSelection:
     def setup_class(cls):
         if not GEMINI_API_KEY:
             pytest.fail("GEMINI_API_KEY not set")
+        if not SLACK_MCP_TOKEN:
+            pytest.fail("SLACK_MCP_TOKEN not set")
         # Fetch tools once for the whole class: the MCP list is one network
         # round-trip, and skills are read from disk.
         cls.model = make_judge_model()

@@ -65,7 +65,7 @@ install-tools: $(VENV) ## Install linting/formatting tools (ruff)
 
 clean: ## Remove virtual environment, Ollama, and local Cursor install
 	-$(PYTHON) scripts/cursor.py uninstall
-	rm -rf $(VENV) $(OLLAMA_DIR)
+	rm -rf $(VENV) $(OLLAMA_DIR) node_modules
 
 cursor-install: $(VENV) ## Install this plugin into a local Cursor for development
 	$(PYTHON) scripts/cursor.py install

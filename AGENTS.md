@@ -58,7 +58,7 @@ GitHub Actions (`.github/workflows/ci-build.yml`) gates every PR with:
 - **Test** — `make test-unit` (pytest)
 - **Eval** — `make test-eval` (DeepEval + Gemini)
 
-LLM-judged tests are not run in CI (Ollama + model download would exceed time budget).
+The eval job reads the `GEMINI_API_KEY` and `SLACK_MCP_TOKEN` repository secrets; it skips on PRs from forks, which don't receive secrets. The workflow also runs nightly on a schedule, and a `notifications` job posts to Slack (via `SLACK_REGRESSION_FAILURES_WEBHOOK_URL`) when a job fails on `main`.
 
 ## Releasing
 

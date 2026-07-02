@@ -1,9 +1,6 @@
 # https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes#configuring-automatically-generated-release-notes
 changelog:
   categories:
-    - title: 🔒 Security
-      labels:
-        - security
     - title: 🚀 Enhancements
       labels:
         - enhancement
@@ -22,6 +19,9 @@ changelog:
     - title: ⬆️ Dependencies
       labels:
         - dependencies
+    - title: 🔒 Security
+      labels:
+        - security
     - title: 📦 Other changes
       labels:
         - "*"

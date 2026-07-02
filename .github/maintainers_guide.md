@@ -26,7 +26,7 @@ brew update
 brew install pyenv
 ```
 
-Install necessary Python runtimes for development/testing. You can rely on GitHub Actions workflows for testing with various major versions. <https://github.com/slackapi/bolt-python/tree/main/.github/workflows>
+Install necessary Python runtime for development/testing.
 
 ```sh
 $ pyenv install 3.14 # select the latest patch version
@@ -52,7 +52,7 @@ Follow the [conventional commit specification][conv-commits]. PR titles and comm
 
 This project uses [Changesets](https://github.com/changesets/changesets) to track changes and automate releases.
 
-Each changeset describes a change to the package and its [semver](https://semver.org/) impact, and a new changeset should be added when updating the package with some change that affects consumers:
+Each changeset describes a change to the package and its [semver][semver] impact, and a new changeset should be added when updating the package with some change that affects consumers:
 
 ```sh
 make changeset
@@ -68,7 +68,7 @@ Alternatively, hand-write a file named `.changeset/<anything>.md`, with this for
 Add the channel-digest command
 ```
 
-The frontmatter key is always `"slack"`, the value is the [semver](https://semver.org/) bump level. The body becomes the changelog entry, so write it for a reader of the release notes.
+The frontmatter key is always `"slack"`; the value is the [semver][semver] bump level, like `patch`, `minor`, or `major`. The body becomes the changelog entry, so write it for a reader of the release notes.
 
 Updates to documentation, tests, or CI might not require new entries.
 
@@ -119,4 +119,3 @@ Patch and minor updates are auto-approved and auto-merged via the
 [gh-cli]: https://cli.github.com
 [conv-commits]: https://www.conventionalcommits.org
 [semver]: https://semver.org
-[changesets]: https://github.com/changesets/changesets

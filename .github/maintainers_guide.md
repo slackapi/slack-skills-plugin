@@ -111,7 +111,7 @@ Patch and minor updates are auto-approved and auto-merged via the
 - Feature requests for new skills should be discussed in the issue before
   implementation begins.
 - Labels: `bug` for confirmed issues, `enhancement` for feature requests,
-  `build` for CI/tooling changes.
+  `chore` for CI/tooling changes.
 
 ---
 

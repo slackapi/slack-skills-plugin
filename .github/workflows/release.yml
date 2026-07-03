@@ -37,6 +37,7 @@ jobs:
       - name: Install Node dependencies
         run: npm install
       - name: Changesets release
+        id: changesets
         uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0
         with:
           version: bash scripts/changeset_version.sh
@@ -47,3 +48,22 @@ jobs:
           prDraft: create
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Get publication details
+        id: release
+        if: steps.changesets.outputs.published == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PUBLISHED_PACKAGES: ${{ steps.changesets.outputs.publishedPackages }}
+        run: |
+          echo "url=$(gh release view --json url -q .url)" >> "$GITHUB_OUTPUT"
+          echo "message=$(echo "$PUBLISHED_PACKAGES" | jq -r '.[] | "\(.name)@\(.version)"' | paste -sd ', ' -)" >> "$GITHUB_OUTPUT"
+      - name: Notify Slack
+        if: steps.changesets.outputs.published == 'true'
+        uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3.0.3
+        with:
+          webhook: ${{ secrets.SLACK_RELEASE_ANNOUNCEMENTS_WEBHOOK_URL }}
+          webhook-type: webhook-trigger
+          payload: |
+            action_url: "${{ steps.release.outputs.url }}"
+            message: "${{ steps.release.outputs.message }}"
+            repository: "${{ github.repository }}"

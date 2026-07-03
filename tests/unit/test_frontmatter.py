@@ -9,17 +9,17 @@ class TestFrontmatter:
 
     def test_required_fields_present(self):
         for skill in self.skills:
-            assert skill.metadata.name
-            assert skill.metadata.description
+            assert skill.frontmatter.name
+            assert skill.frontmatter.description
 
     def test_name_matches_directory(self):
         for skill in self.skills:
-            assert skill.metadata.name == skill.path.parent.name
+            assert skill.frontmatter.name == skill.path.parent.name
 
     def test_name_is_kebab_case(self):
         for skill in self.skills:
-            assert re.search(r"^[a-z][a-z0-9-]*$", skill.metadata.name)
+            assert re.search(r"^[a-z][a-z0-9-]*$", skill.frontmatter.name)
 
     def test_description_is_meaningful(self):
         for skill in self.skills:
-            assert len(skill.metadata.description) > 20
+            assert len(skill.frontmatter.description) > 20

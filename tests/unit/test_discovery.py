@@ -10,6 +10,6 @@ class TestSkillDiscovery:
         assert len(self.skills) > 0, "No skills found"
 
     def test_expected_skills_exist(self):
-        found = [s.metadata.name for s in self.skills]
+        found = [s.frontmatter.name for s in self.skills]
         for expected in EXPECTED_SKILLS:
             assert expected in found

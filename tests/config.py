@@ -19,4 +19,3 @@ GEMINI_MODEL = os.environ.get("GEMINI_MODEL_NAME", "gemini-3.1-flash-lite")
 # Slack MCP server
 SLACK_MCP_URL = "https://mcp.slack.com/mcp"
 SLACK_MCP_TOKEN = os.environ.get("SLACK_MCP_TOKEN", "")
-MCP_PROTOCOL_VERSION = "2025-06-18"

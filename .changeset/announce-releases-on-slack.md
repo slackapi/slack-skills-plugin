@@ -2,4 +2,4 @@
 "slack": patch
 ---
 
-Automate Slack release announcements from the release workflow.
+Automate release announcements to the internal maintainers' Slack channel from the release workflow.

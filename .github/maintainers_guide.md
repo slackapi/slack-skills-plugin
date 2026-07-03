@@ -110,8 +110,16 @@ Patch and minor updates are auto-approved and auto-merged via the
   checking whether the relevant live `docs.slack.dev` page has changed.
 - Feature requests for new skills should be discussed in the issue before
   implementation begins.
-- Labels: `bug` for confirmed issues, `enhancement` for feature requests,
-  `build` for CI/tooling changes.
+- Labels:
+  - `bug` — confirmed defects
+  - `enhancement` — feature requests and new functionality
+  - `docs` — documentation-only changes
+  - `test` — test-only changes
+  - `build` — CI, GitHub Actions, and build/compilation processes
+  - `chore` — repo structure, required files, release scaffolding, general maintenance
+  - `dependencies` — dependency updates (Dependabot applies this automatically)
+  - `security` — vulnerability fixes, hardening, and security audit findings
+    (apply alongside `bug`/`build`/`dependencies` as appropriate)
 
 ---
 

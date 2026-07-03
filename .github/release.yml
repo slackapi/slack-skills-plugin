@@ -10,6 +10,9 @@ changelog:
     - title: 📚 Documentation
       labels:
         - docs
+    - title: 🤖 Build
+      labels:
+        - build
     - title: 🧪 Tests
       labels:
         - test

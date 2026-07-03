@@ -52,14 +52,11 @@ jobs:
         id: release
         if: steps.changesets.outputs.published == 'true'
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PUBLISHED_PACKAGES: ${{ steps.changesets.outputs.publishedPackages }}
         run: |
-          message=$(echo "$PUBLISHED_PACKAGES" | jq -r 'map("\(.name)@\(.version)") | join(", ")')
-          action_url=$(echo "$PUBLISHED_PACKAGES" | jq -r --arg repo "${{ github.server_url }}/${{ github.repository }}" 'map("\($repo)/releases/tag/\(.name)@\(.version)") | join(", ")')
-          {
-            echo "message=$message"
-            echo "action_url=$action_url"
-          } >> "$GITHUB_OUTPUT"
+          echo "url=$(gh release view --json url -q .url)" >> "$GITHUB_OUTPUT"
+          echo "message=$(echo "$PUBLISHED_PACKAGES" | jq -r '.[] | "\(.name)@\(.version)"' | paste -sd ', ' -)" >> "$GITHUB_OUTPUT"
       - name: Notify Slack
         if: steps.changesets.outputs.published == 'true'
         uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3.0.3
@@ -67,6 +64,6 @@ jobs:
           webhook: ${{ secrets.SLACK_RELEASE_ANNOUNCEMENTS_WEBHOOK_URL }}
           webhook-type: webhook-trigger
           payload: |
-            action_url: "${{ steps.release.outputs.action_url }}"
+            action_url: "${{ steps.release.outputs.url }}"
             message: "${{ steps.release.outputs.message }}"
             repository: "${{ github.repository }}"

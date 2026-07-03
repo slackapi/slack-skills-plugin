@@ -7,6 +7,9 @@ changelog:
     - title: 🐛 Bug Fixes
       labels:
         - bug
+    - title: 🔒 Security
+      labels:
+        - security
     - title: 📚 Documentation
       labels:
         - docs
@@ -22,9 +25,6 @@ changelog:
     - title: ⬆️ Dependencies
       labels:
         - dependencies
-    - title: 🔒 Security
-      labels:
-        - security
     - title: 📦 Other changes
       labels:
         - "*"

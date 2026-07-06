@@ -7,7 +7,7 @@ from tests.config import SKILLS_ROOT
 
 
 @dataclasses.dataclass
-class Metadata:
+class Frontmatter:
     #: The skill name extracted from the frontmatter `name` field.
     name: str
 
@@ -22,7 +22,7 @@ class Metadata:
 @dataclasses.dataclass
 class Skill:
     #: Parsed frontmatter fields.
-    metadata: Metadata
+    frontmatter: Frontmatter
 
     #: The markdown content below the frontmatter delimiters.
     body: str
@@ -44,7 +44,7 @@ class Skill:
                 frontmatter = yaml.safe_load(parts[1]) or {}
                 body = parts[2].strip()
         return cls(
-            metadata=Metadata(
+            frontmatter=Frontmatter(
                 name=frontmatter.get("name", ""),
                 description=frontmatter.get("description", ""),
                 argument_hint=frontmatter.get("argument-hint"),

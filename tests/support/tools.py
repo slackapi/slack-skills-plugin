@@ -16,7 +16,9 @@ _CLIENT_INFO = types.Implementation(name="slack-mcp-skills-tests", version="0.0.
 
 def get_all_skill_tools() -> list[ToolCall]:
     """Convert every discovered plugin skill into a `ToolCall`."""
-    return [ToolCall(name=skill.metadata.name, description=skill.metadata.description) for skill in discover_skills()]
+    return [
+        ToolCall(name=skill.frontmatter.name, description=skill.frontmatter.description) for skill in discover_skills()
+    ]
 
 
 async def _list_slack_mcp_tools() -> list[types.Tool]:

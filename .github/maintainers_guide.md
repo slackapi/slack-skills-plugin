@@ -52,9 +52,8 @@ commands by hand.
 
 ### Setup
 
-Run the one-time setup, which creates the virtualenv, installs the test and lint
-dependencies, and downloads a project-local Ollama instance plus the `gemma4`
-judge model used by the eval tests (requires Python 3.14+, see above):
+Run the one-time setup, which creates the virtualenv and installs the test and
+lint dependencies (requires Python 3.14+, see above):
 
 ```sh
 make install

@@ -99,8 +99,11 @@ only**: nothing is written to your settings, and the installed version is
 untouched when you exit. After editing a skill or command, run `/reload-plugins`
 inside the session to pick up the change without restarting.
 
-To check the plugin's structure without launching a session, run `claude plugin
-validate`.
+Check the plugin's structure without launching a session:
+
+```sh
+claude plugin validate
+```
 
 ### Testing in Cursor
 

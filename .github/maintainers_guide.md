@@ -44,6 +44,85 @@ source .venv/bin/activate
 
 ---
 
+## Local Development & Testing
+
+Before you release (or open a PR), exercise your changes locally: run the test
+suite, and load the plugin into Claude Code or Cursor to try the skills and
+commands by hand.
+
+### Setup
+
+Run the one-time setup, which creates the virtualenv, installs the test and lint
+dependencies, and downloads a project-local Ollama instance plus the `gemma4`
+judge model used by the eval tests (requires Python 3.14+, see above):
+
+```sh
+make install
+```
+
+The LLM-judged tests read two environment variables. Copy the example file and
+fill in what you need — the `Makefile` auto-loads `.env`:
+
+```sh
+cp .env.example .env
+```
+
+- `OLLAMA_MODEL_NAME` — the DeepEval judge model. Defaults to `gemma4`.
+- `SLACK_MCP_TOKEN` — a Slack MCP bearer token, needed only for the MCP
+  tool-selection eval test. That test is skipped when it's unset.
+
+### Running the tests
+
+Always use the `make` targets — never invoke `pytest`, `ruff`, or `python`
+directly. The targets manage the virtualenv, load `.env`, and start and stop the
+local Ollama instance for you.
+
+```sh
+make test-unit   # fast structural + frontmatter checks (this is what CI runs)
+make test-eval   # LLM-judged DeepEval tests; starts and stops Ollama (local only)
+make test        # both
+make lint        # Ruff linter (line-length 120)
+make format      # Ruff auto-format + fix
+```
+
+Unit tests run on every PR in CI; the eval tests do not (downloading Ollama and
+the model would blow the CI time budget), so run `make test-eval` yourself before
+a release.
+
+### Testing in Claude Code
+
+Load your working checkout into Claude Code for a single session with the
+`--plugin-dir` flag:
+
+```sh
+claude --plugin-dir ./
+```
+
+This loads the `slack` plugin from your checkout — all six skills, five commands,
+and the HTTP MCP server from `.mcp.json`. If you already have the published
+`slack` plugin installed, the local copy takes precedence **for that session
+only**: nothing is written to your settings, and the installed version is
+untouched when you exit. After editing a skill or command, run `/reload-plugins`
+inside the session to pick up the change without restarting.
+
+To check the plugin's structure without launching a session, run `claude plugin
+validate`.
+
+### Testing in Cursor
+
+Install the plugin into your local Cursor, then reload plugins in Cursor to pick
+up the changes:
+
+```sh
+make cursor-install
+```
+
+This copies the plugin into `~/.cursor/plugins/slack@local` and registers it. To
+remove it, run `make cursor-uninstall`. (`make clean` also runs the Cursor
+uninstall, in addition to removing `.venv`, `.ollama`, and `node_modules`.)
+
+---
+
 ## Versioning
 
 Follow the [conventional commit specification][conv-commits]. PR titles and commit messages use prefixes like `feat:`, `fix:`, `chore:`, `docs:`, etc. First letter after the prefix is lowercase unless it's a proper noun.
@@ -80,7 +159,7 @@ Releasing can feel intimidating at first, but don't fret! Venture on!
 
 New official package versions are published when the release PR created from changesets is merged. Follow these steps to build confidence:
 
-1. **Run the tests locally**: Before merging the release PR please run all the tests especially the eval ones. If they no longer pass we may need fix it before releasing the changes.
+1. **Run the tests locally**: Before merging the release PR please run all the tests (see [Local Development & Testing](#local-development--testing)), especially the eval ones. If they no longer pass we may need fix it before releasing the changes.
 
 2. **Check GitHub**: Please check if issues or pull requests are still open either decide to postpone the release or save those changes for a future update.
 

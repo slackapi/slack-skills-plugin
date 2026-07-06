@@ -124,7 +124,7 @@ Confirm the project was created successfully by checking that the directory exis
 
 ### 4c. Set required environment variables (agent templates only)
 
-If the developer chose an agent template (Starter Agent or Support Agent), they need to set the required API key for their chosen AI provider. Ask for the key value using AskUserQuestion, then set it using the Slack CLI from within the project directory.
+If the developer chose an agent template (Starter Agent or Support Agent), they need to set the required API key for their chosen AI provider in the Slack project's sandboxed environment.
 
 **Required environment variables by provider:**
 
@@ -134,18 +134,33 @@ If the developer chose an agent template (Starter Agent or Support Agent), they 
 | `openai-agents-sdk` | `OPENAI_API_KEY` | OpenAI API key |
 | `pydantic-ai` | `OPENAI_API_KEY` | OpenAI API key (required). Optionally also `ANTHROPIC_API_KEY` if using Anthropic as the backend — if both are set, Anthropic is used by default. |
 
-Use AskUserQuestion to ask the developer for their API key value(s). Then set each one:
+**For each required variable**, follow this order — prefer the shell environment over prompting:
 
-```bash
-cd <project-name> && SLACK_CMD env set <ENV_VAR_NAME> <value>
-```
+1. **Probe the developer's shell environment first.** Check whether the variable is already exported, using a form that does NOT print the value:
 
-For example:
-```bash
-cd my-slack-agent && SLACK_CMD env set ANTHROPIC_API_KEY sk-ant-...
-```
+   ```bash
+   [ -n "$ANTHROPIC_API_KEY" ] && echo present || echo missing
+   ```
 
-**Important**: Do NOT store or echo API key values in logs or output. Only pass them directly to `SLACK_CMD env set`.
+   Never run `echo $ANTHROPIC_API_KEY` or otherwise expand the value into output — it would leak the key into the chat transcript.
+
+2. **If the probe reports `present`**, pass the value through to the Slack CLI by reference. Bash expands the variable into the command at run time; the literal value never appears in the chat:
+
+   ```bash
+   cd <project-name> && SLACK_CMD env set ANTHROPIC_API_KEY "$ANTHROPIC_API_KEY"
+   ```
+
+   Tell the developer the key was picked up from the shell environment. Do not re-prompt.
+
+3. **If the probe reports `missing`**, fall back to asking with `AskUserQuestion` and then set the value:
+
+   ```bash
+   cd <project-name> && SLACK_CMD env set ANTHROPIC_API_KEY <value>
+   ```
+
+   When prompting, mention that the developer can avoid pasting keys into chat in future sessions by exporting the variable in their shell ahead of time (e.g., `export ANTHROPIC_API_KEY=...`) — the skill will detect it automatically.
+
+**Important**: Do NOT store, echo, log, or read back API key values. That includes `echo $ANTHROPIC_API_KEY`, `printenv ANTHROPIC_API_KEY`, and `SLACK_CMD env list` (which prints stored values). Only pass keys directly to `SLACK_CMD env set`, either by shell-variable reference (preferred) or as a literal value from `AskUserQuestion`.
 
 ---
 

@@ -16,14 +16,14 @@ class TestCreateSlackApp:
 
     def test_skill_is_usable(self):
         skill_tool = ToolCall(
-            name=self.skill.metadata.name,
-            description=self.skill.metadata.description,
+            name=self.skill.frontmatter.name,
+            description=self.skill.frontmatter.description,
             input_parameters={"request": PROMPT},
             output=self.skill.body,
         )
 
         expected_tool = ToolCall(
-            name=self.skill.metadata.name,
+            name=self.skill.frontmatter.name,
             input_parameters={"request": PROMPT},
             output=self.skill.body,
         )

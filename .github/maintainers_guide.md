@@ -13,6 +13,8 @@ Maintaining this repo requires:
 - **[Claude Code][claude-code]**: the primary development and maintenance tool.
   Most tasks (authoring skills, reviewing diffs) are performed through Claude
   Code rather than traditional CLI tooling.
+- **[Cursor][cursor]**: an alternative agentic coding environment. Useful for
+  verifying that skills and commands work outside Claude Code before release.
 - **Git**: standard version control.
 - **[GitHub CLI (`gh`)][gh-cli]**: for creating PRs as drafts and managing
   issues.
@@ -200,6 +202,7 @@ Patch and minor updates are auto-approved and auto-merged via the
 ---
 
 [claude-code]: https://claude.ai/code
+[cursor]: https://cursor.com
 [gh-cli]: https://cli.github.com
 [conv-commits]: https://www.conventionalcommits.org
 [semver]: https://semver.org

@@ -59,34 +59,30 @@ lint dependencies (requires Python 3.14+, see above):
 make install
 ```
 
-The LLM-judged tests read two environment variables. Copy the example file and
-fill in what you need — the `Makefile` auto-loads `.env`:
+The tests read configuration from environment variables. Copy the example file
+and fill in what you need — each variable is documented inline, and the
+`Makefile` auto-loads `.env`:
 
 ```sh
 cp .env.example .env
 ```
 
-- `OLLAMA_MODEL_NAME` — the DeepEval judge model. Defaults to `gemma4`.
-- `SLACK_MCP_TOKEN` — a Slack MCP bearer token, needed only for the MCP
-  tool-selection eval test. That test is skipped when it's unset.
-
 ### Running the tests
 
 Always use the `make` targets — never invoke `pytest`, `ruff`, or `python`
-directly. The targets manage the virtualenv, load `.env`, and start and stop the
-local Ollama instance for you.
+directly. The targets manage the virtualenv, load `.env`, and set up the test
+dependencies for you.
 
 ```sh
 make test-unit   # fast structural + frontmatter checks (this is what CI runs)
-make test-eval   # LLM-judged DeepEval tests; starts and stops Ollama (local only)
+make test-eval   # LLM-judged skill evaluations (local only)
 make test        # both
 make lint        # Ruff linter (line-length 120)
 make format      # Ruff auto-format + fix
 ```
 
-Unit tests run on every PR in CI; the eval tests do not (downloading Ollama and
-the model would blow the CI time budget), so run `make test-eval` yourself before
-a release.
+Unit tests run on every PR in CI; the eval tests do not (they would blow the CI
+time budget), so run `make test-eval` yourself before a release.
 
 ### Testing in Claude Code
 
@@ -118,7 +114,7 @@ make cursor-install
 
 This copies the plugin into `~/.cursor/plugins/slack@local` and registers it. To
 remove it, run `make cursor-uninstall`. (`make clean` also runs the Cursor
-uninstall, in addition to removing `.venv`, `.ollama`, and `node_modules`.)
+uninstall, in addition to removing the virtualenv and other generated files.)
 
 ---
 

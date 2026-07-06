@@ -65,6 +65,8 @@ and fill in what you need — each variable is documented inline, and the
 
 ```sh
 cp .env.example .env
+vim .env
+# Set the environment variables
 ```
 
 ### Running the tests
@@ -81,20 +83,17 @@ make lint        # Ruff linter (line-length 120)
 make format      # Ruff auto-format + fix
 ```
 
-Unit tests run on every PR in CI; the eval tests do not (they would blow the CI
-time budget), so run `make test-eval` yourself before a release.
-
 ### Testing in Claude Code
 
-Load your working checkout into Claude Code for a single session with the
+Load your local changes into Claude Code for a single session with the
 `--plugin-dir` flag:
 
 ```sh
 claude --plugin-dir ./
 ```
 
-This loads the `slack` plugin from your checkout — all six skills, five commands,
-and the HTTP MCP server from `.mcp.json`. If you already have the published
+This loads the `slack` plugin from your checkout — its skills and commands, and
+the HTTP MCP server from `.mcp.json`. If you already have the published
 `slack` plugin installed, the local copy takes precedence **for that session
 only**: nothing is written to your settings, and the installed version is
 untouched when you exit. After editing a skill or command, run `/reload-plugins`
@@ -112,8 +111,9 @@ up the changes:
 make cursor-install
 ```
 
-This copies the plugin into `~/.cursor/plugins/slack@local` and registers it. To
-remove it, run `make cursor-uninstall`. (`make clean` also runs the Cursor
+This copies the plugin into `~/.cursor/plugins/slack@local` and registers it.
+
+To remove it, run `make cursor-uninstall`. (`make clean` also runs the Cursor
 uninstall, in addition to removing the virtualenv and other generated files.)
 
 ---

@@ -15,7 +15,8 @@ CURSOR_PLUGIN_PATH = REPO_ROOT / ".cursor-plugin" / "plugin.json"
 
 def read_version(package_path: Path) -> str:
     """Return the ``version`` field from ``package.json``."""
-    return json.loads(package_path.read_text())["version"]
+    version: str = json.loads(package_path.read_text())["version"]
+    return version
 
 
 def write_version(plugin_path: Path, version: str) -> None:

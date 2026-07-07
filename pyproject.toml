@@ -16,7 +16,7 @@ test = [
     "pyyaml>=6.0,<7.0",
     "mcp>=1.13,<2.0",
 ]
-tools = ["ruff>=0.11,<1.0"]
+tools = ["ruff>=0.11,<1.0", "mypy>=1.11,<2.0", "types-PyYAML>=6.0,<7.0"]
 
 # This project is installed only to run the test suite; the importable package
 # is `tests`. Scope discovery to it so setuptools' flat-layout autodiscovery
@@ -39,3 +39,12 @@ known-first-party = ["tests"]
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
+
+[tool.mypy]
+python_version = "3.14"
+files = ["tests", "scripts"]
+plugins = ["pydantic.mypy"]
+disallow_untyped_defs = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_return_any = true

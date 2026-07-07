@@ -188,7 +188,7 @@ class TestToolSelection:
     available_tools: list[ToolCall]
 
     @classmethod
-    def setup_class(cls):
+    def setup_class(cls) -> None:
         if not GEMINI_API_KEY:
             pytest.fail("GEMINI_API_KEY not set")
         if not SLACK_MCP_TOKEN:
@@ -198,7 +198,7 @@ class TestToolSelection:
         cls.model = make_judge_model()
         cls.available_tools = get_slack_mcp_tools() + get_all_skill_tools()
 
-    def teardown_method(self):
+    def teardown_method(self) -> None:
         # Gemini's free tier allows only 15 requests/minute. Each scenario makes one
         # model.generate() call, so sleep between scenarios to stay well under the
         # limit (~12 req/min) and avoid HTTP 429 / RESOURCE_EXHAUSTED.
@@ -209,7 +209,7 @@ class TestToolSelection:
         SCENARIOS,
         ids=[s["id"] for s in SCENARIOS],
     )
-    def test_tool_selection(self, scenario: Scenario):
+    def test_tool_selection(self, scenario: Scenario) -> None:
         accepted_tools = scenario["accepted_tools"]
         available_names = {t.name for t in self.available_tools}
         for accepted_tool in accepted_tools:

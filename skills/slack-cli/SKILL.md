@@ -55,9 +55,11 @@ If 1b fails or returns a different value, ask the developer using AskUserQuestio
 - Options: "Yes, it's aliased as..." (let them provide the alias), "No, I need to install it"
 - If they provide an alias, verify it with `<alias> _fingerprint 2>/dev/null` and set `SLACK_CMD=<alias>`.
 - If they need to install it, run:
-  ```
+
+  ```text
   curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash
   ```
+
   Then re-run **1a** — the install script will have written `~/.slack/bin/slack`.
 
 **Common mistakes:** Don't use `which slack` to discover the binary — `which` resolves any shell alias and defeats the point of 1a. In Git Bash on Windows, use the POSIX probe form, not PowerShell.
@@ -109,7 +111,7 @@ SLACK_CMD api chat.postMessage channel=C0123456789 text="Hello from the CLI"
 
 **Important distinction**: `--team`, `--token`, `--json`, and `--data` are meta-flags (prefixed with `--`). API method parameters use positional `key=value` syntax without dashes.
 
-**Reference**: Full method list at https://docs.slack.dev/reference/methods.md.
+**Reference**: Full method list at <https://docs.slack.dev/reference/methods.md>.
 
 ---
 
@@ -147,7 +149,7 @@ SLACK_CMD login --no-prompt
 
 The CLI prints a `/slackauthticket <ticket>` slash command and exits. Capture the ticket — you will need it in step 4. Sample output:
 
-```
+```text
 📋 Run the following slash command from any Slack channel in the workspace
    you'd like to authenticate
 
@@ -183,7 +185,7 @@ If you catch yourself thinking any of these, you are about to regress to the old
 
 | Rationalization | Reality |
 |---|---|
-| "`auth list` already shows teams, so login isn't needed." | Auth is per-team. The developer asked for a *new* team — drive the flow. |
+| "`auth list` already shows teams, so login isn't needed." | Auth is per-team. The developer asked for a _new_ team — drive the flow. |
 | "`slack login` needs browser confirmation, so I can't drive it." | False with `--no-prompt`. The challenge code appears in Slack's modal, not a browser. The agent runs both `slack login` invocations itself. |
 | "I should tell the developer to run `slack login` in a separate terminal." | Never. Step 5 is the agent's job from start to finish. |
 

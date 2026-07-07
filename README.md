@@ -11,7 +11,7 @@ A [Claude Code][claude-code] and [Cursor][cursor] plugin that brings Slack into 
 
 The plugin is published on the [official Claude marketplace](https://claude.com/plugins/slack). Install it from inside Claude Code:
 
-```
+```text
 /plugin install slack@claude-plugins-official
 ```
 

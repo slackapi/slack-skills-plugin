@@ -53,7 +53,7 @@ Map the developer's intent to a family, then to a candidate method.
 
 WebFetch the live method index:
 
-```
+```text
 https://docs.slack.dev/reference/methods.md
 ```
 
@@ -71,7 +71,7 @@ When you would rather search by keyword than scan the index, and the Slack CLI i
 
 Fetch the method's doc page with WebFetch. Either follow the method's link from the index (Step 1) or construct the URL — the path segment is **all-lowercase** and ends in `.md`:
 
-```
+```text
 https://docs.slack.dev/reference/methods/<method-lowercased>.md
 ```
 

@@ -14,7 +14,7 @@ This plugin integrates Slack with Ai tools, providing tools to search, read, and
 
 Requires Python 3.14+. Run `make install` before first use to set up the virtual environment and test dependencies.
 
-**Always use the `make` targets — never invoke `python`, `pytest`, or `ruff` directly.** The targets manage the virtualenv and load `.env` for you; running the underlying tools by hand skips that setup and will behave differently. If a `make` command is broken or missing something you need, fix the `Makefile` rather than working around it with the raw command.
+**Always use the `make` targets — never invoke `python`, `pytest`, or `ruff` directly.** The targets manage the virtualenv for you; running the underlying tools by hand skips that setup and will behave differently. (The test suite loads `.env` itself, so env vars are available either way — see below.) If a `make` command is broken or missing something you need, fix the `Makefile` rather than working around it with the raw command.
 
 | Command | Purpose |
 |---------|---------|
@@ -28,7 +28,7 @@ Requires Python 3.14+. Run `make install` before first use to set up the virtual
 | `make cursor-install` | Install this plugin into a local Cursor for development |
 | `make cursor-uninstall` | Uninstall this plugin from the local Cursor install |
 
-The LLM tests read `GEMINI_API_KEY` (required — the eval suite fails when it's unset) and `SLACK_MCP_TOKEN` (a Slack MCP bearer token; the MCP tool-selection test is skipped when it's unset). The DeepEval judge model defaults to `gemini-3.1-flash-lite`, overridable via `GEMINI_MODEL_NAME`. Copy `.env.example` to `.env` and fill in values — the `Makefile` auto-loads `.env` — or pass them inline, e.g. `GEMINI_MODEL_NAME=<model> make test-eval`.
+The LLM tests read `GEMINI_API_KEY` (required — the eval suite fails when it's unset) and `SLACK_MCP_TOKEN` (a Slack MCP bearer token; the MCP tool-selection test is skipped when it's unset). The DeepEval judge model defaults to `gemini-3.1-flash-lite`, overridable via `GEMINI_MODEL_NAME`. Copy `.env.example` to `.env` and fill in values — the test suite loads `.env` from the repo root via `python-dotenv` (`tests/config.py`), so values load the same however tests are launched. Real environment variables take precedence over `.env`, so you can also override inline, e.g. `GEMINI_MODEL_NAME=<model> make test-eval`.
 
 ## Cross-Skill References
 

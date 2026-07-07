@@ -4,12 +4,6 @@ PIP := $(VENV)/bin/pip
 RUFF := $(VENV)/bin/ruff
 DEEPEVAL := $(VENV)/bin/deepeval
 
-# Load .env if present (see .env.example) and export its vars to recipe
-# subprocesses. The leading `-` no-ops when .env is absent; bare `export` only
-# exports *defined* vars, so a missing .env never shadows the in-code defaults.
--include .env
-export
-
 TARGETS := help install install-test install-tools clean lint format test test-unit test-eval cursor-install cursor-uninstall
 
 .PHONY: $(TARGETS)

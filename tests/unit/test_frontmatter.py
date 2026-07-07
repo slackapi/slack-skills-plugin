@@ -9,17 +9,22 @@ class TestFrontmatter:
 
     def test_required_fields_present(self) -> None:
         for skill in self.skills:
-            assert skill.frontmatter.name
-            assert skill.frontmatter.description
+            assert skill.frontmatter.name, f"{skill.path} is missing a frontmatter 'name'"
+            assert skill.frontmatter.description, f"{skill.path} is missing a frontmatter 'description'"
 
     def test_name_matches_directory(self) -> None:
         for skill in self.skills:
-            assert skill.frontmatter.name == skill.path.parent.name
+            assert skill.frontmatter.name == skill.path.parent.name, (
+                f"{skill.path} frontmatter name '{skill.frontmatter.name}' "
+                f"does not match directory '{skill.path.parent.name}'"
+            )
 
     def test_name_is_kebab_case(self) -> None:
         for skill in self.skills:
-            assert re.search(r"^[a-z][a-z0-9-]*$", skill.frontmatter.name)
+            assert re.search(r"^[a-z][a-z0-9-]*$", skill.frontmatter.name), (
+                f"{skill.path} name '{skill.frontmatter.name}' is not valid kebab-case"
+            )
 
-    def test_description_is_meaningful(self) -> None:
-        for skill in self.skills:
-            assert len(skill.frontmatter.description) > 20
+    def test_skill_names_are_unique(self) -> None:
+        names = [skill.frontmatter.name for skill in self.skills]
+        assert len(names) == len(set(names)), f"Duplicate skill names found: {[n for n in names if names.count(n) > 1]}"

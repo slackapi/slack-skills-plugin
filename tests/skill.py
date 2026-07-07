@@ -1,8 +1,6 @@
 import dataclasses
-from collections.abc import Iterator
 from pathlib import Path
 
-import markdown
 import yaml
 
 from tests.config import SKILLS_ROOT
@@ -73,22 +71,3 @@ def load_skill(skill_name: str) -> Skill:
     if not skill_path.exists():
         raise FileNotFoundError(f"Skill not found: {skill_path}")
     return Skill.from_path(skill_path)
-
-
-def headings(body: str) -> list[tuple[int, str]]:
-    """Return (level, text) for each heading, ignoring ``#`` lines inside code fences.
-
-    Uses Python-Markdown's ``toc`` extension which only considers actual ATX
-    headings outside of fenced code blocks.
-    """
-    md = markdown.Markdown(extensions=["fenced_code", "toc"])
-    md.convert(body)
-
-    def _flatten(tokens: list[dict]) -> Iterator[tuple[int, str]]:
-        for tok in tokens:
-            yield (tok["level"], tok["name"])
-            yield from _flatten(tok.get("children", []))
-
-    # `toc_tokens` is added to the Markdown instance at runtime by the `toc`
-    # extension, so it isn't present in the type stubs.
-    return list(_flatten(md.toc_tokens))  # type: ignore[attr-defined]

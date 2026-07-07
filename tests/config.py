@@ -2,6 +2,11 @@ import json
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+# Load .env from the repo root (if present) before reading the environment
+load_dotenv(Path(__file__).parent.parent / ".env")
+
 # Filesystem
 SKILLS_ROOT = Path(__file__).parent.parent / "skills"
 

@@ -2,6 +2,7 @@ VENV := .venv
 PYTHON := $(VENV)/bin/python
 PIP := $(VENV)/bin/pip
 RUFF := $(VENV)/bin/ruff
+MYPY := $(VENV)/bin/mypy
 DEEPEVAL := $(VENV)/bin/deepeval
 
 # Load .env if present (see .env.example) and export its vars to recipe
@@ -10,7 +11,7 @@ DEEPEVAL := $(VENV)/bin/deepeval
 -include .env
 export
 
-TARGETS := help install install-test install-tools clean lint format test test-unit test-eval cursor-install cursor-uninstall
+TARGETS := help install install-test install-tools clean lint format typecheck test test-unit test-eval cursor-install cursor-uninstall
 
 .PHONY: $(TARGETS)
 
@@ -47,6 +48,9 @@ lint: ## Run ruff linter checks
 format: ## Auto-format code with ruff
 	$(RUFF) format .
 	$(RUFF) check --fix .
+
+typecheck: ## Run mypy static type checks
+	$(MYPY)
 
 test: ## Run all tests (set testdir=<path> to route to the matching runner)
 ifdef testdir

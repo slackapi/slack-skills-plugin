@@ -21,6 +21,7 @@ Requires Python 3.14+. Run `make install` before first use to set up the virtual
 | `make install` | Full setup: venv + deps |
 | `make lint` | Ruff linter (line-length=120) |
 | `make format` | Ruff auto-format + fix |
+| `make typecheck` | Mypy static type checks |
 | `make test-unit` | Fast validation tests (pytest) |
 | `make test-eval` | LLM-judged tests (runs DeepEval against Gemini) |
 | `make test` | Both unit + eval tests |
@@ -55,6 +56,7 @@ To add an eval scenario, append a `Scenario` (prompt + expected tool) to `SCENAR
 GitHub Actions (`.github/workflows/ci-build.yml`) gates every PR with:
 
 - **Lint** — `make lint` (Ruff)
+- **Typecheck** — `make typecheck` (mypy)
 - **Test** — `make test-unit` (pytest)
 - **Eval** — `make test-eval` (DeepEval + Gemini)
 

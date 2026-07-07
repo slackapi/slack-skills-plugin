@@ -31,11 +31,11 @@ CURSOR_PLUGINS_PATH = Path.home() / ".cursor" / "plugins"
 MARKETPLACE_NAME = "local"
 
 
-def get_plugin_key(plugin_name: str):
+def get_plugin_key(plugin_name: str) -> str:
     return f"{plugin_name}@{MARKETPLACE_NAME}"
 
 
-def get_target_path(plugin_key: str):
+def get_target_path(plugin_key: str) -> Path:
     return CURSOR_PLUGINS_PATH / plugin_key
 
 
@@ -44,7 +44,8 @@ def plugin_name() -> str:
     cursor_plugin = json.loads(
         (REPO_ROOT / ".cursor-plugin" / "plugin.json").read_text()
     )
-    return cursor_plugin["name"]
+    name: str = cursor_plugin["name"]
+    return name
 
 
 def plugin_files() -> set[Path]:
@@ -61,7 +62,8 @@ def plugin_files() -> set[Path]:
 def load_json(path: Path) -> dict:
     if not path.exists() or not path.read_text().strip():
         return {}
-    return json.loads(path.read_text())
+    data: dict = json.loads(path.read_text())
+    return data
 
 
 def save_json(path: Path, data: dict) -> None:

@@ -19,8 +19,8 @@ Requires Python 3.14+. Run `make install` before first use to set up the virtual
 | Command | Purpose |
 |---------|---------|
 | `make install` | Full setup: venv + deps |
-| `make lint` | Ruff linter (line-length=120) |
-| `make format` | Ruff auto-format + fix |
+| `make lint` | Ruff (Python) + rumdl (Markdown) linter checks |
+| `make format` | Auto-format: Ruff for Python, rumdl --fix for Markdown |
 | `make typecheck` | Mypy static type checks |
 | `make test-unit` | Fast validation tests (pytest) |
 | `make test-eval` | LLM-judged tests (runs DeepEval against Gemini) |

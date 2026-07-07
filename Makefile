@@ -2,6 +2,7 @@ VENV := .venv
 PYTHON := $(VENV)/bin/python
 PIP := $(VENV)/bin/pip
 RUFF := $(VENV)/bin/ruff
+RUMDL := $(VENV)/bin/rumdl
 MYPY := $(VENV)/bin/mypy
 DEEPEVAL := $(VENV)/bin/deepeval
 
@@ -36,12 +37,14 @@ cursor-install: $(VENV) ## Install this plugin into a local Cursor for developme
 cursor-uninstall: $(VENV) ## Uninstall this plugin from the local Cursor install
 	$(PYTHON) scripts/cursor.py uninstall
 
-lint: ## Run ruff linter checks
+lint: ## Run linter checks (ruff for Python, rumdl for Markdown)
 	$(RUFF) check .
+	$(RUMDL) check .
 
-format: ## Auto-format code with ruff
+format: ## Auto-format code (ruff for Python, rumdl for Markdown)
 	$(RUFF) format .
 	$(RUFF) check --fix .
+	$(RUMDL) check --fix .
 
 typecheck: ## Run mypy static type checks
 	$(MYPY)

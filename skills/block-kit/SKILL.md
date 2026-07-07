@@ -13,7 +13,7 @@ This skill walks through surface selection, layout planning, JSON generation, an
 > **Common Block Kit mistakes (and why):** A few errors recur often enough to flag up front. Most others are caught by `blocks.validate` in Step 5, so lean on validation rather than memorizing rules.
 >
 > - **`"type": "text"` is not a thing.** Text is a composition object: `{ "type": "plain_text", "text": "..." }` or `{ "type": "mrkdwn", "text": "..." }`.
-> - **`markdown` is a _block_ type, not a text type.** A `markdown` block holds standard markdown; text objects inside other blocks use `mrkdwn` (see **mrkdwn vs. the `markdown` block** in Step 4). Slack's `mrkdwn` is `*bold*` / `_italic_` / `~strike~`, not `**bold**`.
+> - **`markdown` is a *block* type, not a text type.** A `markdown` block holds standard markdown; text objects inside other blocks use `mrkdwn` (see **mrkdwn vs. the `markdown` block** in Step 4). Slack's `mrkdwn` is `*bold*` / `_italic_` / `~strike~`, not `**bold**`.
 > - **Messages need a top-level `text` fallback.** `blocks.validate` won't flag a missing one, but notifications and screen readers display it instead of the blocks — so summarize what the layout conveys rather than leaving it empty.
 
 ---
@@ -127,13 +127,15 @@ Based on the developer's description:
    - Check `references/common-patterns.md` (the one local reference file) if the request matches a common pattern; start from the template instead of building from scratch.
    - Defer reading individual component pages until Step 4, when you build each block's fields.
 2. Propose a numbered block outline. For example:
-   ```
+
+   ```text
    1. header: "Weekly Report"
    2. section: Summary text with a datepicker accessory
    3. divider
    4. section: Status fields (Name, Role, Team)
    5. actions: "Approve" button (primary) and "Reject" button (danger)
    ```
+
 3. Present the outline to the developer and ask for approval or changes before generating JSON.
 
 **Surface constraints to check:**

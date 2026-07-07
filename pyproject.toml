@@ -16,7 +16,7 @@ test = [
     "pyyaml>=6.0,<7.0",
     "mcp>=1.13,<2.0",
 ]
-tools = ["ruff>=0.11,<1.0", "mypy>=1.11,<2.0", "types-PyYAML>=6.0,<7.0"]
+tools = ["ruff>=0.11,<1.0", "rumdl>=0.2,<1.0", "mypy>=1.11,<2.0", "types-PyYAML>=6.0,<7.0"]
 
 # This project is installed only to run the test suite; the importable package
 # is `tests`. Scope discovery to it so setuptools' flat-layout autodiscovery
@@ -39,6 +39,18 @@ known-first-party = ["tests"]
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
+
+# rumdl: markdownlint-compatible linter for the plugin's authored markdown.
+[tool.rumdl]
+include = ["skills/**/*.md", "commands/*.md", "README.md", "AGENTS.md"]
+exclude = [".venv", "node_modules", ".changeset"]
+respect-gitignore = true
+# Disable rules that conflict with the skill-authoring style:
+#   MD013 — prose lines are intentionally long (LLM-consumed, not reflowed)
+#   MD028 — blank lines inside blockquotes are intentional for readability
+#   MD036 — emphasis is used for styled numbered steps, not headings
+#   MD041 — commands use frontmatter before the first heading; skills validated by pytest
+disable = ["MD013", "MD028", "MD036", "MD041"]
 
 [tool.mypy]
 python_version = "3.14"

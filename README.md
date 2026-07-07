@@ -19,7 +19,7 @@ The Slack MCP server is configured automatically. You'll be prompted to authenti
 
 ### Cursor
 
-Click the button below to add the Slack MCP server to Cursor:
+The plugin is published on the [official Cursor Marketplace](https://cursor.com/marketplace/slack). Install it directly into Cursor:
 
 [![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/en-US/install-mcp?name=slack&config=eyJ1cmwiOiJodHRwczovL21jcC5zbGFjay5jb20vbWNwIiwiYXV0aCI6eyJDTElFTlRfSUQiOiIzNjYwNzUzMTkyNjI2Ljg5MDM0NjkyMjg5ODIifX0%3D)
 

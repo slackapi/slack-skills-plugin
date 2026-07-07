@@ -185,7 +185,7 @@ If you catch yourself thinking any of these, you are about to regress to the old
 
 | Rationalization | Reality |
 |---|---|
-| "`auth list` already shows teams, so login isn't needed." | Auth is per-team. The developer asked for a *new* team — drive the flow. |
+| "`auth list` already shows teams, so login isn't needed." | Auth is per-team. The developer asked for a _new_ team — drive the flow. |
 | "`slack login` needs browser confirmation, so I can't drive it." | False with `--no-prompt`. The challenge code appears in Slack's modal, not a browser. The agent runs both `slack login` invocations itself. |
 | "I should tell the developer to run `slack login` in a separate terminal." | Never. Step 5 is the agent's job from start to finish. |
 

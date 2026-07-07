@@ -13,7 +13,7 @@ This skill walks through surface selection, layout planning, JSON generation, an
 > **Common Block Kit mistakes (and why):** A few errors recur often enough to flag up front. Most others are caught by `blocks.validate` in Step 5, so lean on validation rather than memorizing rules.
 >
 > - **`"type": "text"` is not a thing.** Text is a composition object: `{ "type": "plain_text", "text": "..." }` or `{ "type": "mrkdwn", "text": "..." }`.
-> - **`markdown` is a *block* type, not a text type.** A `markdown` block holds standard markdown; text objects inside other blocks use `mrkdwn` (see **mrkdwn vs. the `markdown` block** in Step 4). Slack's `mrkdwn` is `*bold*` / `_italic_` / `~strike~`, not `**bold**`.
+> - **`markdown` is a _block_ type, not a text type.** A `markdown` block holds standard markdown; text objects inside other blocks use `mrkdwn` (see **mrkdwn vs. the `markdown` block** in Step 4). Slack's `mrkdwn` is `*bold*` / `_italic_` / `~strike~`, not `**bold**`.
 > - **Messages need a top-level `text` fallback.** `blocks.validate` won't flag a missing one, but notifications and screen readers display it instead of the blocks — so summarize what the layout conveys rather than leaving it empty.
 
 ---
@@ -158,7 +158,7 @@ Once the layout is approved, build each block from its live doc page, fetching e
 - For modals, include `title`, `submit`, `close`, and `callback_id`; for home tabs, the `type: "home"` wrapper
 - Use `mrkdwn` text for rich formatting, `plain_text` where required (headers, labels, modal title)
 
-**mrkdwn vs. the `markdown` block:** `section` and `context` blocks format text with Slack's `mrkdwn` (`*bold*`, `_italic_`, `~strike~`, `` `code` ``) — use these for short, interactive layouts. The separate `markdown` block (Messages only) renders *standard* markdown (`**bold**`, headings, tables, numbered lists) and is meant for AI/LLM-generated or long-form content that already exists in standard markdown. Reach for it when the developer has such content or needs those features in the message body; there is a cumulative 12,000-character limit across all `markdown` blocks in one message.
+**mrkdwn vs. the `markdown` block:** `section` and `context` blocks format text with Slack's `mrkdwn` (`*bold*`, `_italic_`, `~strike~`, `` `code` ``) — use these for short, interactive layouts. The separate `markdown` block (Messages only) renders _standard_ markdown (`**bold**`, headings, tables, numbered lists) and is meant for AI/LLM-generated or long-form content that already exists in standard markdown. Reach for it when the developer has such content or needs those features in the message body; there is a cumulative 12,000-character limit across all `markdown` blocks in one message.
 
 **Accessibility** is easy to skip and hard to retrofit, so build it in now:
 

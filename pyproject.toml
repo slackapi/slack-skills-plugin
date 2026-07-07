@@ -16,7 +16,12 @@ test = [
     "pyyaml>=6.0,<7.0",
     "mcp>=1.13,<2.0",
 ]
-tools = ["ruff>=0.11,<1.0", "rumdl>=0.2,<1.0", "mypy>=1.11,<2.0", "types-PyYAML>=6.0,<7.0"]
+tools = [
+    "ruff>=0.11,<1.0",
+    "rumdl>=0.2,<1.0",
+    "mypy>=1.11,<2.0",
+    "types-PyYAML>=6.0,<7.0",
+]
 
 # This project is installed only to run the test suite; the importable package
 # is `tests`. Scope discovery to it so setuptools' flat-layout autodiscovery
@@ -51,6 +56,13 @@ respect-gitignore = true
 #   MD036 — emphasis is used for styled numbered steps, not headings
 #   MD041 — commands use frontmatter before the first heading; skills validated by pytest
 disable = ["MD013", "MD028", "MD036", "MD041"]
+
+# Emphasis markers: italics use _underscores_, bold uses **asterisks**.
+[tool.rumdl.MD049]
+style = "underscore"
+
+[tool.rumdl.MD050]
+style = "asterisk"
 
 [tool.mypy]
 python_version = "3.14"

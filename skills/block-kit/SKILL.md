@@ -127,13 +127,15 @@ Based on the developer's description:
    - Check `references/common-patterns.md` (the one local reference file) if the request matches a common pattern; start from the template instead of building from scratch.
    - Defer reading individual component pages until Step 4, when you build each block's fields.
 2. Propose a numbered block outline. For example:
-   ```
+
+   ```text
    1. header: "Weekly Report"
    2. section: Summary text with a datepicker accessory
    3. divider
    4. section: Status fields (Name, Role, Team)
    5. actions: "Approve" button (primary) and "Reject" button (danger)
    ```
+
 3. Present the outline to the developer and ask for approval or changes before generating JSON.
 
 **Surface constraints to check:**
@@ -156,7 +158,7 @@ Once the layout is approved, build each block from its live doc page, fetching e
 - For modals, include `title`, `submit`, `close`, and `callback_id`; for home tabs, the `type: "home"` wrapper
 - Use `mrkdwn` text for rich formatting, `plain_text` where required (headers, labels, modal title)
 
-**mrkdwn vs. the `markdown` block:** `section` and `context` blocks format text with Slack's `mrkdwn` (`*bold*`, `_italic_`, `~strike~`, `` `code` ``) — use these for short, interactive layouts. The separate `markdown` block (Messages only) renders *standard* markdown (`**bold**`, headings, tables, numbered lists) and is meant for AI/LLM-generated or long-form content that already exists in standard markdown. Reach for it when the developer has such content or needs those features in the message body; there is a cumulative 12,000-character limit across all `markdown` blocks in one message.
+**mrkdwn vs. the `markdown` block:** `section` and `context` blocks format text with Slack's `mrkdwn` (`*bold*`, `_italic_`, `~strike~`, `` `code` ``) — use these for short, interactive layouts. The separate `markdown` block (Messages only) renders _standard_ markdown (`**bold**`, headings, tables, numbered lists) and is meant for AI/LLM-generated or long-form content that already exists in standard markdown. Reach for it when the developer has such content or needs those features in the message body; there is a cumulative 12,000-character limit across all `markdown` blocks in one message.
 
 **Accessibility** is easy to skip and hard to retrofit, so build it in now:
 

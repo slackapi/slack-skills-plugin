@@ -81,10 +81,16 @@ dependencies for you.
 make test-unit   # fast structural + frontmatter checks (this is what CI runs)
 make test-eval   # LLM-judged skill evaluations (local only)
 make test        # both
-make lint        # Ruff linter (line-length 120)
-make format      # Ruff auto-format + fix
+make lint        # Ruff (Python) + rumdl (Markdown) linter checks
+make format      # Auto-format: Ruff for Python, rumdl --fix for Markdown
 make typecheck   # Mypy static type checks
 ```
+
+Markdown linting is powered by [rumdl](https://github.com/rvben/rumdl), a
+markdownlint-compatible Rust linter. It validates `skills/`, `commands/`,
+`README.md`, and `AGENTS.md`. Rules and disabled checks are configured under
+`[tool.rumdl]` in `pyproject.toml` — tune that section when a new skill trips a
+rule that isn't worth enforcing.
 
 ### Testing in Claude Code
 

@@ -28,9 +28,10 @@ Slack MCP accepts standard markdown. Use familiar markdown syntax when composing
 | Numbered list | `1. item` |
 
 Not supported:
-  - Tables       
-  - Headers `(#, ##, etc.)`            
-  - Images via markdown `(![alt](url))`
+
+- Tables
+- Headers `(#, ##, etc.)`
+- Images via markdown `(![alt](url))`
 
 ## Message Structure Guidelines
 

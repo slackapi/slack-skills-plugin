@@ -83,6 +83,7 @@ make test-eval   # LLM-judged skill evaluations (local only)
 make test        # both
 make lint        # Ruff linter (line-length 120)
 make format      # Ruff auto-format + fix
+make typecheck   # Mypy static type checks
 ```
 
 ### Testing in Claude Code

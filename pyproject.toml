@@ -27,7 +27,7 @@ tools = [
 
 # This project is installed only to run the test suite; the importable package
 # is `tests`. Scope discovery to it so setuptools' flat-layout autodiscovery
-# doesn't trip over the sibling `skills/` and `commands/` directories.
+# doesn't trip over the sibling `plugins/` and `scripts/` directories.
 [tool.setuptools.packages.find]
 include = ["tests*"]
 
@@ -49,7 +49,7 @@ indent-style = "space"
 
 # rumdl: markdownlint-compatible linter for the plugin's authored markdown.
 [tool.rumdl]
-include = ["skills/**/*.md", "commands/*.md", "README.md", "AGENTS.md"]
+include = ["plugins/slack/skills/**/*.md", "plugins/slack/commands/*.md", "README.md", "AGENTS.md"]
 exclude = [".venv", "node_modules", ".changeset"]
 respect-gitignore = true
 # Disable rules that conflict with the skill-authoring style:

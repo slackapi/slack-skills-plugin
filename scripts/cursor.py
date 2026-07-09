@@ -21,6 +21,9 @@ EXCLUDE: set[str] = {
 }
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+# The plugin lives under plugins/slack/; glob and re-base against it so the installed
+# layout is flattened (no plugins/slack/ prefix), matching what Cursor expects at its root.
+PLUGIN_ROOT = REPO_ROOT / "plugins" / "slack"
 
 CLAUDE_HOME_DIR = Path.home() / ".claude"
 CLAUDE_INSTALLED_PLUGINS_PATH = CLAUDE_HOME_DIR / "plugins" / "installed_plugins.json"
@@ -42,7 +45,7 @@ def get_target_path(plugin_key: str) -> Path:
 def plugin_name() -> str:
     """Read the plugin name from the Cursor plugin file so renames are picked up."""
     cursor_plugin = json.loads(
-        (REPO_ROOT / ".cursor-plugin" / "plugin.json").read_text()
+        (PLUGIN_ROOT / ".cursor-plugin" / "plugin.json").read_text()
     )
     name: str = cursor_plugin["name"]
     return name
@@ -52,10 +55,10 @@ def plugin_files() -> set[Path]:
     included = {
         path
         for pattern in INCLUDE
-        for path in REPO_ROOT.glob(pattern)
+        for path in PLUGIN_ROOT.glob(pattern)
         if path.is_file()
     }
-    excluded = {path for pattern in EXCLUDE for path in REPO_ROOT.glob(pattern)}
+    excluded = {path for pattern in EXCLUDE for path in PLUGIN_ROOT.glob(pattern)}
     return included - excluded
 
 
@@ -78,12 +81,12 @@ def install() -> None:
 
     files = plugin_files()
     if not files:
-        logger.warning(f"No plugin files found under {REPO_ROOT}; nothing to install")
+        logger.warning(f"No plugin files found under {PLUGIN_ROOT}; nothing to install")
         return
 
     shutil.rmtree(target, ignore_errors=True)
     for source in files:
-        dest = target / source.relative_to(REPO_ROOT)
+        dest = target / source.relative_to(PLUGIN_ROOT)
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, dest)
     logger.info(f"Copied {len(files)} plugin files to {target}")

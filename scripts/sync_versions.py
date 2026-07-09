@@ -5,12 +5,14 @@ from pathlib import Path
 logger = logging.getLogger(Path(__file__).stem)
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+PLUGIN_ROOT = REPO_ROOT / "plugins" / "slack"
 
 # package.json (committed at the repo root) is the version source of truth; changesets
-# bumps it, then this script synchronizes the version out to everywhere else its defined.
+# bumps it, then this script synchronizes the version out to the plugin manifests under
+# plugins/slack/.
 PACKAGE_JSON_PATH = REPO_ROOT / "package.json"
-CLAUDE_PLUGIN_PATH = REPO_ROOT / ".claude-plugin" / "plugin.json"
-CURSOR_PLUGIN_PATH = REPO_ROOT / ".cursor-plugin" / "plugin.json"
+CLAUDE_PLUGIN_PATH = PLUGIN_ROOT / ".claude-plugin" / "plugin.json"
+CURSOR_PLUGIN_PATH = PLUGIN_ROOT / ".cursor-plugin" / "plugin.json"
 
 
 def read_version(package_path: Path) -> str:

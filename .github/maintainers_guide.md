@@ -87,10 +87,10 @@ make typecheck   # Mypy static type checks
 ```
 
 Markdown linting is powered by [rumdl](https://github.com/rvben/rumdl), a
-markdownlint-compatible Rust linter. It validates `skills/`, `commands/`,
-`README.md`, and `AGENTS.md`. Rules and disabled checks are configured under
-`[tool.rumdl]` in `pyproject.toml` — tune that section when a new skill trips a
-rule that isn't worth enforcing.
+markdownlint-compatible Rust linter. It validates `plugins/slack/skills/`,
+`plugins/slack/commands/`, `README.md`, and `AGENTS.md`. Rules and disabled
+checks are configured under `[tool.rumdl]` in `pyproject.toml` — tune that
+section when a new skill trips a rule that isn't worth enforcing.
 
 ### Testing in Claude Code
 
@@ -98,20 +98,23 @@ Load your local changes into Claude Code for a single session with the
 `--plugin-dir` flag:
 
 ```sh
-claude --plugin-dir ./
+claude --plugin-dir ./plugins/slack
 ```
 
 This loads the `slack` plugin from your checkout — its skills and commands, and
-the HTTP MCP server from `.mcp.json`. If you already have the published
+the HTTP MCP server from `plugins/slack/.mcp.json`. If you already have the published
 `slack` plugin installed, the local copy takes precedence **for that session
 only**: nothing is written to your settings, and the installed version is
 untouched when you exit. After editing a skill or command, run `/reload-plugins`
 inside the session to pick up the change without restarting.
 
-Check the plugin's structure without launching a session:
+Check the structure without launching a session. Run from the repo root to
+validate the marketplace manifest (`.claude-plugin/marketplace.json`), which
+descends into the plugin, or point at the plugin directory to validate it alone:
 
 ```sh
-claude plugin validate
+claude plugin validate .                # marketplace + the plugin it lists
+claude plugin validate ./plugins/slack  # just the slack plugin
 ```
 
 ### Testing in Cursor

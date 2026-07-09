@@ -40,7 +40,7 @@ When one `SKILL.md` references another skill (e.g., to delegate a step instead o
 - Add a sentence of prose explaining what the referenced section does and why you're delegating to it.
 - Don't use markdown anchor links (`[text](#step-1)`), `@`-include syntax (`@path/to/SKILL.md`), or bare file paths — none are idiomatic in installed skills, and `@`-includes force-load context.
 
-See `skills/create-slack-app/SKILL.md` Step 1a for an example.
+See `plugins/slack/skills/create-slack-app/SKILL.md` Step 1a for an example.
 
 ## Testing
 

@@ -6,7 +6,7 @@ from deepeval.models import GeminiModel
 from deepeval.test_case import ToolCall
 from pydantic import BaseModel
 
-from tests.config import GEMINI_API_KEY, SLACK_MCP_TOKEN
+from tests.config import GEMINI_API_KEY_POOL, SLACK_MCP_TOKEN
 from tests.support.judge import make_judge_model
 from tests.support.tools import get_all_skill_tools, get_slack_mcp_tools
 
@@ -189,14 +189,16 @@ class TestToolSelection:
 
     @classmethod
     def setup_class(cls) -> None:
-        if not GEMINI_API_KEY:
-            pytest.fail("GEMINI_API_KEY not set")
+        if not GEMINI_API_KEY_POOL:
+            pytest.fail("No Gemini API key set (set GEMINI_API_KEY or GEMINI_API_KEY_*)")
         if not SLACK_MCP_TOKEN:
             pytest.fail("SLACK_MCP_TOKEN not set")
         # Fetch tools once for the whole class: the MCP list is one network
         # round-trip, and skills are read from disk.
-        cls.model = make_judge_model()
         cls.available_tools = get_slack_mcp_tools() + get_all_skill_tools()
+
+    def setup_method(self) -> None:
+        self.model = make_judge_model()
 
     def teardown_method(self) -> None:
         # Gemini's free tier allows only 15 requests/minute. Each scenario makes one

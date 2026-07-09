@@ -91,8 +91,11 @@ jobs:
       - name: Run eval tests
         run: make test-eval
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           SLACK_MCP_TOKEN: ${{ secrets.SLACK_MCP_TOKEN }}
+          GEMINI_API_KEY_B: ${{ secrets.GEMINI_API_KEY_BOB }}
+          GEMINI_API_KEY_M: ${{ secrets.GEMINI_API_KEY_MWBROOKS }}
+          GEMINI_API_KEY_E: ${{ secrets.GEMINI_API_KEY_ELAINE }}
+          GEMINI_API_KEY_Z: ${{ secrets.GEMINI_API_KEY_ZIMEG }}
 
   notifications:
     name: Regression notifications

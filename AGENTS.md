@@ -29,7 +29,7 @@ Requires Python 3.14+. Run `make install` before first use to set up the virtual
 | `make cursor-install` | Install this plugin into a local Cursor for development |
 | `make cursor-uninstall` | Uninstall this plugin from the local Cursor install |
 
-The LLM tests read `GEMINI_API_KEY` (required — the eval suite fails when it's unset) and `SLACK_MCP_TOKEN` (a Slack MCP bearer token; the MCP tool-selection test is skipped when it's unset). The DeepEval judge model defaults to `gemini-3.1-flash-lite`, overridable via `GEMINI_MODEL_NAME`. Copy `.env.example` to `.env` and fill in values — the test suite loads `.env` from the repo root via `python-dotenv` (`tests/config.py`), so values load the same however tests are launched. Real environment variables take precedence over `.env`, so you can also override inline, e.g. `GEMINI_MODEL_NAME=<model> make test-eval`.
+The LLM tests read at least one Gemini API key (required — the eval suite fails when none is set) and `SLACK_MCP_TOKEN` (a Slack MCP bearer token; the MCP tool-selection test is skipped when it's unset). To spread requests across the free-tier quota and avoid `RESOURCE_EXHAUSTED`, any env var whose name starts with `GEMINI_API_KEY` (e.g. `GEMINI_API_KEY`, `GEMINI_API_KEY_BOB`) contributes a key to a pool (blank values are skipped), and each eval request picks one at random. The DeepEval judge model defaults to `gemini-3.1-flash-lite`, overridable via `GEMINI_MODEL_NAME`. Copy `.env.example` to `.env` and fill in values — the test suite loads `.env` from the repo root via `python-dotenv` (`tests/config.py`), so values load the same however tests are launched. Real environment variables take precedence over `.env`, so you can also override inline, e.g. `GEMINI_MODEL_NAME=<model> make test-eval`.
 
 ## Cross-Skill References
 
@@ -60,7 +60,7 @@ GitHub Actions (`.github/workflows/ci-build.yml`) gates every PR with:
 - **Test** — `make test-unit` (pytest)
 - **Eval** — `make test-eval` (DeepEval + Gemini)
 
-The eval job reads the `GEMINI_API_KEY` and `SLACK_MCP_TOKEN` repository secrets; it skips on PRs from forks, which don't receive secrets. The workflow also runs nightly on a schedule, and a `notifications` job posts to Slack (via `SLACK_REGRESSION_FAILURES_WEBHOOK_URL`) when a job fails on `main`.
+The eval job reads the `GEMINI_API_KEY_*` (e.g. `GEMINI_API_KEY_BOB`, `GEMINI_API_KEY_MIC`) and `SLACK_MCP_TOKEN` repository secrets; it skips on PRs from forks, which don't receive secrets. The workflow also runs nightly on a schedule, and a `notifications` job posts to Slack (via `SLACK_REGRESSION_FAILURES_WEBHOOK_URL`) when a job fails on `main`.
 
 ## Releasing
 

@@ -11,10 +11,19 @@ test = [
     # non-existent `deepeval.deepeval.config.settings`, so `deepeval test run`
     # (used by `make test-eval`) crashes on import. Exclude that one release.
     "deepeval>=4.0,<5.0,!=4.0.6",
-    "ollama>=0.4,<1.0",
+    "google-genai>=1.0,<2.0",
+    "python-dotenv>=1.0,<2.0",
     "pyyaml>=6.0,<7.0",
+    "markdown>=3.5,<4.0",
+    "mcp>=1.13,<2.0",
 ]
-tools = ["ruff>=0.11,<1.0"]
+tools = [
+    "ruff>=0.11,<1.0",
+    "rumdl>=0.2,<1.0",
+    "mypy>=1.11,<2.0",
+    "types-PyYAML>=6.0,<7.0",
+    "types-Markdown>=3.5,<4.0"
+]
 
 # This project is installed only to run the test suite; the importable package
 # is `tests`. Scope discovery to it so setuptools' flat-layout autodiscovery
@@ -37,3 +46,31 @@ known-first-party = ["tests"]
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
+
+# rumdl: markdownlint-compatible linter for the plugin's authored markdown.
+[tool.rumdl]
+include = ["skills/**/*.md", "commands/*.md", "README.md", "AGENTS.md"]
+exclude = [".venv", "node_modules", ".changeset"]
+respect-gitignore = true
+# Disable rules that conflict with the skill-authoring style:
+#   MD013 — prose lines are intentionally long (LLM-consumed, not reflowed)
+#   MD028 — blank lines inside blockquotes are intentional for readability
+#   MD036 — emphasis is used for styled numbered steps, not headings
+#   MD041 — commands use frontmatter before the first heading; skills validated by pytest
+disable = ["MD013", "MD028", "MD036", "MD041"]
+
+# Emphasis markers: italics use _underscores_, bold uses **asterisks**.
+[tool.rumdl.MD049]
+style = "underscore"
+
+[tool.rumdl.MD050]
+style = "asterisk"
+
+[tool.mypy]
+python_version = "3.14"
+files = ["tests", "scripts"]
+plugins = ["pydantic.mypy"]
+disallow_untyped_defs = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_return_any = true

@@ -5,6 +5,8 @@ on:
     branches:
       - main
   pull_request:
+  schedule:
+    - cron: "17 7 * * *" # nightly, off-peak, off-:00
   workflow_dispatch:
 
 env:
@@ -30,6 +32,27 @@ jobs:
       - name: Run lint
         run: make lint
 
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Set up Python ${{ env.SUPPORTED_PY }}
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: ${{ env.SUPPORTED_PY }}
+      # mypy resolves imports, so it needs the runtime/test deps (deepeval, mcp,
+      # pydantic — all typed) as well as the tools, not just ruff/mypy.
+      - name: Install dependencies
+        run: make install
+      - name: Run typecheck
+        run: make typecheck
+
   test:
     name: Unit tests
     runs-on: ubuntu-latest
@@ -48,3 +71,50 @@ jobs:
         run: make install-test
       - name: Run unit tests
         run: make test-unit
+
+  eval:
+    name: Evaluation tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Set up Python ${{ env.SUPPORTED_PY }}
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: ${{ env.SUPPORTED_PY }}
+      - name: Install test dependencies
+        run: make install-test
+      - name: Run eval tests
+        run: make test-eval
+        env:
+          SLACK_MCP_TOKEN: ${{ secrets.SLACK_MCP_TOKEN }}
+          GEMINI_API_KEY_B: ${{ secrets.GEMINI_API_KEY_BOB }}
+          GEMINI_API_KEY_M: ${{ secrets.GEMINI_API_KEY_MWBROOKS }}
+          GEMINI_API_KEY_E: ${{ secrets.GEMINI_API_KEY_ELAINE }}
+          GEMINI_API_KEY_Z: ${{ secrets.GEMINI_API_KEY_ZIMEG }}
+
+  notifications:
+    name: Regression notifications
+    runs-on: ubuntu-latest
+    needs:
+      - lint
+      - typecheck
+      - test
+      - eval
+    if: ${{ !success() && github.ref == 'refs/heads/main' && github.event_name != 'workflow_dispatch' }}
+    permissions:
+      contents: read
+    steps:
+      - name: Send notifications of failing tests
+        uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3.0.3
+        with:
+          errors: true
+          webhook: ${{ secrets.SLACK_REGRESSION_FAILURES_WEBHOOK_URL }}
+          webhook-type: webhook-trigger
+          payload: |
+            action_url: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            repository: "${{ github.repository }}"

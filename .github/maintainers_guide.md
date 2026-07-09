@@ -13,6 +13,8 @@ Maintaining this repo requires:
 - **[Claude Code][claude-code]**: the primary development and maintenance tool.
   Most tasks (authoring skills, reviewing diffs) are performed through Claude
   Code rather than traditional CLI tooling.
+- **[Cursor][cursor]**: an alternative agentic coding environment. Useful for
+  verifying that skills and commands work outside Claude Code before release.
 - **Git**: standard version control.
 - **[GitHub CLI (`gh`)][gh-cli]**: for creating PRs as drafts and managing
   issues.
@@ -41,6 +43,90 @@ Then, you can create a new Virtual Environment this way:
 python -m venv .venv
 source .venv/bin/activate
 ```
+
+---
+
+## Local Development & Testing
+
+Before you release (or open a PR), exercise your changes locally: run the test
+suite, and load the plugin into Claude Code or Cursor to try the skills and
+commands by hand.
+
+### Setup
+
+Run the one-time setup, which creates the virtualenv and installs the test and
+lint dependencies (requires Python 3.14+, see above):
+
+```sh
+make install
+```
+
+The tests read configuration from environment variables. Copy the example file
+and fill in what you need — each variable is documented inline, and the
+`Makefile` auto-loads `.env`:
+
+```sh
+cp .env.example .env
+vim .env
+# Set the environment variables
+```
+
+### Running the tests
+
+Always use the `make` targets — never invoke `pytest`, `ruff`, or `python`
+directly. The targets manage the virtualenv, load `.env`, and set up the test
+dependencies for you.
+
+```sh
+make test-unit   # fast structural + frontmatter checks (this is what CI runs)
+make test-eval   # LLM-judged skill evaluations (local only)
+make test        # both
+make lint        # Ruff (Python) + rumdl (Markdown) linter checks
+make format      # Auto-format: Ruff for Python, rumdl --fix for Markdown
+make typecheck   # Mypy static type checks
+```
+
+Markdown linting is powered by [rumdl](https://github.com/rvben/rumdl), a
+markdownlint-compatible Rust linter. It validates `skills/`, `commands/`,
+`README.md`, and `AGENTS.md`. Rules and disabled checks are configured under
+`[tool.rumdl]` in `pyproject.toml` — tune that section when a new skill trips a
+rule that isn't worth enforcing.
+
+### Testing in Claude Code
+
+Load your local changes into Claude Code for a single session with the
+`--plugin-dir` flag:
+
+```sh
+claude --plugin-dir ./
+```
+
+This loads the `slack` plugin from your checkout — its skills and commands, and
+the HTTP MCP server from `.mcp.json`. If you already have the published
+`slack` plugin installed, the local copy takes precedence **for that session
+only**: nothing is written to your settings, and the installed version is
+untouched when you exit. After editing a skill or command, run `/reload-plugins`
+inside the session to pick up the change without restarting.
+
+Check the plugin's structure without launching a session:
+
+```sh
+claude plugin validate
+```
+
+### Testing in Cursor
+
+Install the plugin into your local Cursor, then reload plugins in Cursor to pick
+up the changes:
+
+```sh
+make cursor-install
+```
+
+This copies the plugin into `~/.cursor/plugins/slack@local` and registers it.
+
+To remove it, run `make cursor-uninstall`. (`make clean` also runs the Cursor
+uninstall, in addition to removing the virtualenv and other generated files.)
 
 ---
 
@@ -80,7 +166,7 @@ Releasing can feel intimidating at first, but don't fret! Venture on!
 
 New official package versions are published when the release PR created from changesets is merged. Follow these steps to build confidence:
 
-1. **Run the tests locally**: Before merging the release PR please run all the tests especially the eval ones. If they no longer pass we may need fix it before releasing the changes.
+1. **Run the tests locally**: Before merging the release PR please run all the tests (see [Local Development & Testing](#local-development--testing)), especially the eval ones. If they no longer pass we may need fix it before releasing the changes.
 
 2. **Check GitHub**: Please check if issues or pull requests are still open either decide to postpone the release or save those changes for a future update.
 
@@ -88,8 +174,7 @@ New official package versions are published when the release PR created from cha
 
 4. **Merge and approve**: Merge the release PR. It may take up to 24 hours before you see you release in the [Claude Plugins](https://claude.com/plugins/slack) directory.
 
-5. **Communicate the release**:
-   - **External**: Post in relevant channels (e.g. #lang-javascript, #tools-bolt) on [Slack Community](https://community.slack.com/). Include a link to the release notes.
+5. **Communicate the release**: A Slack announcement is posted automatically to the release-announcements channel by `.github/workflows/release.yml` when the release PR is merged and a tag is cut. For broader outreach (e.g. `#tools-bolt` on [Slack Community](https://community.slack.com/)), post manually if desired.
 
 ## Everything Else
 
@@ -110,12 +195,21 @@ Patch and minor updates are auto-approved and auto-merged via the
   checking whether the relevant live `docs.slack.dev` page has changed.
 - Feature requests for new skills should be discussed in the issue before
   implementation begins.
-- Labels: `bug` for confirmed issues, `enhancement` for feature requests,
-  `build` for CI/tooling changes.
+- Labels:
+  - `bug` — confirmed defects
+  - `enhancement` — feature requests and new functionality
+  - `docs` — documentation-only changes
+  - `test` — test-only changes
+  - `build` — CI, GitHub Actions, and build/compilation processes
+  - `chore` — repo structure, required files, release scaffolding, general maintenance
+  - `dependencies` — dependency updates (Dependabot applies this automatically)
+  - `security` — vulnerability fixes, hardening, and security audit findings
+    (apply alongside `bug`/`build`/`dependencies` as appropriate)
 
 ---
 
 [claude-code]: https://claude.ai/code
+[cursor]: https://cursor.com
 [gh-cli]: https://cli.github.com
 [conv-commits]: https://www.conventionalcommits.org
 [semver]: https://semver.org

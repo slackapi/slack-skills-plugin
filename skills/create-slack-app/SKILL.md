@@ -26,8 +26,8 @@ Run `SLACK_CMD version` and print the version to confirm everything is working b
 
 ### 1c. Check language runtime
 
-- **If `$0` is `bolt-js`**: Run `node --version` to verify Node.js is installed (v18+ required). If not installed, suggest `brew install node` or point to https://nodejs.org.
-- **If `$0` is `bolt-python`**: Run `python3 --version` to verify Python is installed (3.6+ required). If not installed, suggest `brew install python3` or point to https://python.org.
+- **If `$0` is `bolt-js`**: Run `node --version` to verify Node.js is installed (v18+ required). If not installed, suggest `brew install node` or point to <https://nodejs.org>.
+- **If `$0` is `bolt-python`**: Run `python3 --version` to verify Python is installed (3.6+ required). If not installed, suggest `brew install python3` or point to <https://python.org>.
 
 ---
 
@@ -45,10 +45,12 @@ Run `SLACK_CMD sandbox list --experiment=sandboxes` to check if the developer al
 
 - **If a sandbox exists**: Show it and confirm they want to use it.
 - **If no sandbox exists**: Tell the developer to create one:
-  ```
+
+  ```text
   ! SLACK_CMD sandbox create --experiment=sandboxes
   ```
-  Alternatively, they can create one at https://api.slack.com/developer-program/sandboxes or join the Developer Program at https://api.slack.com/developer-program/join.
+
+  Alternatively, they can create one at <https://api.slack.com/developer-program/sandboxes> or join the Developer Program at <https://api.slack.com/developer-program/join>.
 
 Wait for confirmation that a sandbox is available before proceeding.
 
@@ -59,6 +61,7 @@ Wait for confirmation that a sandbox is available before proceeding.
 Ask the developer what kind of app they want to build. Present the available templates based on their chosen framework (`$0`):
 
 ### bolt-js templates
+
 | Template | Repo | Description |
 |----------|------|-------------|
 | Starter Template | `slack-samples/bolt-js-starter-template` | Basic Bolt JS app — great starting point |
@@ -68,6 +71,7 @@ Ask the developer what kind of app they want to build. Present the available tem
 | Examples | `slack-samples/bolt-js-examples` | Unified showcase of Slack features |
 
 ### bolt-python templates
+
 | Template | Repo | Description |
 |----------|------|-------------|
 | Starter Template | `slack-samples/bolt-python-starter-template` | Basic Bolt Python app — great starting point |
@@ -83,12 +87,14 @@ Use AskUserQuestion to let the developer pick a template. Recommend the **Starte
 If the developer picks **Starter Agent** or **Support Agent**, these templates contain subdirectories for different AI providers. Ask the developer which provider they want to use via AskUserQuestion:
 
 **bolt-js subdirectories:**
+
 | Subdir | Description |
 |--------|-------------|
 | `claude-agent-sdk` | Uses Anthropic's Claude Agent SDK |
 | `openai-agents-sdk` | Uses OpenAI's Agents SDK |
 
 **bolt-python subdirectories:**
+
 | Subdir | Description |
 |--------|-------------|
 | `claude-agent-sdk` | Uses Anthropic's Claude Agent SDK |
@@ -102,16 +108,19 @@ Recommend **Claude Agent SDK** as the default option.
 Ask what they want to name their project (suggest a default like `my-slack-app`), then run:
 
 **For templates WITHOUT subdirectories** (Starter Template, Getting Started, Assistant Template, Examples):
+
 ```bash
 SLACK_CMD create <project-name> -t <template-repo>
 ```
 
 **For agent templates WITH subdirectories** (Starter Agent, Support Agent):
+
 ```bash
 SLACK_CMD create <project-name> -t <template-repo> --subdir <chosen-subdir>
 ```
 
 For example:
+
 ```bash
 # Non-agent template
 SLACK_CMD create my-slack-app -t slack-samples/bolt-js-starter-template
@@ -141,6 +150,7 @@ cd <project-name> && SLACK_CMD env set <ENV_VAR_NAME> <value>
 ```
 
 For example:
+
 ```bash
 cd my-slack-agent && SLACK_CMD env set ANTHROPIC_API_KEY sk-ant-...
 ```
@@ -164,7 +174,7 @@ After the app is running, suggest next steps:
 1. **Explore the code**: Read through the project files together — offer to explain the app structure, manifest, listeners, etc.
 2. **Make a change**: Suggest a small modification (like changing a message response) to see hot-reload in action.
 3. **Add features**: Based on the template, suggest relevant Slack features to add (slash commands, events, modals, AI capabilities, etc.).
-4. **Check the docs**: Point to https://docs.slack.dev for the full Slack Platform documentation.
+4. **Check the docs**: Point to <https://docs.slack.dev> for the full Slack Platform documentation.
 
 ---
 
@@ -174,4 +184,3 @@ After the app is running, suggest next steps:
 - This skill focuses on **Bolt for JavaScript** and **Bolt for Python** only. Do not suggest Deno, workflow apps, or `slack deploy` (hosted deployment).
 - `SLACK_CMD sandbox create` is an interactive command that requires user input — it does NOT work with the `! command` prefix in Claude Code. Instead, tell the developer to run it in a **new terminal window**.
 - If the developer hits issues, suggest `SLACK_CMD doctor` to diagnose their setup.
-

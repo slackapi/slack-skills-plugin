@@ -36,6 +36,7 @@ Apply this skill whenever you need to find information in Slack — including wh
 ### Use Multiple Searches
 
 Don't rely on a single search. Break complex questions into smaller searches:
+
 - Search for the topic first
 - Then search for specific people's contributions
 - Then search in specific channels
@@ -43,17 +44,20 @@ Don't rely on a single search. Break complex questions into smaller searches:
 ## Search Modifiers Reference
 
 ### Location Filters
+
 - `in:channel-name` — Search within a specific channel
 - `in:<#C123456>` — Search in channel by ID
 - `-in:channel-name` — Exclude a channel
 - `in:<@U123456>` — Search in DMs with a user
 
 ### User Filters
+
 - `from:<@U123456>` — Messages from a specific user (by ID)
 - `from:username` — Messages from a user (by Slack username)
 - `to:me` — Messages sent directly to you
 
 ### Content Filters
+
 - `is:thread` — Only threaded messages
 - `has:pin` — Pinned messages
 - `has:link` — Messages containing links
@@ -61,12 +65,14 @@ Don't rely on a single search. Break complex questions into smaller searches:
 - `has::emoji:` — Messages with a specific reaction
 
 ### Date Filters
+
 - `before:YYYY-MM-DD` — Messages before a date
 - `after:YYYY-MM-DD` — Messages after a date
 - `on:YYYY-MM-DD` — Messages on a specific date
 - `during:month` — Messages during a specific month (e.g., `during:january`)
 
 ### Text Matching
+
 - `"exact phrase"` — Match an exact phrase
 - `-word` — Exclude messages containing a word
 - `wild*` — Wildcard matching (minimum 3 characters before `*`)
@@ -74,6 +80,7 @@ Don't rely on a single search. Break complex questions into smaller searches:
 ## File Search
 
 To search for files, use the `content_types="files"` parameter with type filters:
+
 - `type:images` — Image files
 - `type:documents` — Document files
 - `type:pdfs` — PDF files
@@ -85,6 +92,7 @@ Example: `content_types="files" type:pdfs budget after:2025-01-01`
 ## Following Up on Results
 
 After finding relevant messages:
+
 - Use `slack_read_thread` to get the full thread context for any threaded message.
 - Use `slack_read_channel` with `oldest`/`latest` timestamps to read surrounding messages for context.
 - Use `slack_read_user_profile` to identify who a user is when their ID appears in results.

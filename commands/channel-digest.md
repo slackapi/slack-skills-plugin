@@ -13,7 +13,7 @@ Given the comma-separated channel names provided in $ARGUMENTS (strip leading `#
 
 3. Present the digest in this format:
 
-   ```
+   ```text
    **Channel Digest — <today's date>**
 
    **#channel-1**

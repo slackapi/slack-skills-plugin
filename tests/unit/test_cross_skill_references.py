@@ -5,19 +5,17 @@ from tests.skill import discover_skills
 
 
 class TestCrossSkillReferences:
-    def setup_method(self):
+    def setup_method(self) -> None:
         self.skills = discover_skills()
-        self.skill_names = {skill.metadata.name for skill in self.skills}
+        self.skill_names = {skill.frontmatter.name for skill in self.skills}
 
-    def test_plugin_skill_references_target_real_skills(self):
+    def test_plugin_skill_references_target_real_skills(self) -> None:
         pattern = re.compile(rf"`{re.escape(PLUGIN_NAME)}:([a-z0-9-]+)`")
         for skill in self.skills:
             for target in pattern.findall(skill.body):
-                assert (
-                    target in self.skill_names
-                ), f"{skill.path} references unknown skill `{PLUGIN_NAME}:{target}`"
+                assert target in self.skill_names, f"{skill.path} references unknown skill `{PLUGIN_NAME}:{target}`"
 
-    def test_no_markdown_anchor_links(self):
+    def test_no_markdown_anchor_links(self) -> None:
         for skill in self.skills:
             # .find() returns -1 if the substring is not found
             anchor_index = skill.body.find("](#")
@@ -29,7 +27,7 @@ class TestCrossSkillReferences:
                 "cross-skill references must not use `[text](#anchor)` links"
             )
 
-    def test_no_bare_skill_file_paths(self):
+    def test_no_bare_skill_file_paths(self) -> None:
         for skill in self.skills:
             # .find() returns -1 if the substring is not found
             path_index = skill.body.find("SKILL.md")

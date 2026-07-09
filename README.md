@@ -40,12 +40,12 @@ The plugin connects your AI tool to Slack's hosted [MCP server][slack-mcp-docs]:
 
 Six skills load on demand to handle messaging tasks and developer workflows:
 
-- [`slack:slack-messaging`](skills/slack-messaging/SKILL.md) - composing well-formatted, effective Slack messages
-- [`slack:slack-search`](skills/slack-search/SKILL.md) - finding messages, files, channels, and people
-- [`slack:slack-api`](skills/slack-api/SKILL.md) - discovering and calling Slack Web API methods
-- [`slack:slack-cli`](skills/slack-cli/SKILL.md) - using the [Slack CLI][slack-cli] to create, run, and manage apps
-- [`slack:create-slack-app`](skills/create-slack-app/SKILL.md) - building a Slack app or agent with the CLI and [Bolt][bolt]
-- [`slack:block-kit`](skills/block-kit/SKILL.md) - building and validating [Block Kit][block-kit] layouts
+- [`slack:slack-messaging`](plugins/slack/skills/slack-messaging/SKILL.md) - composing well-formatted, effective Slack messages
+- [`slack:slack-search`](plugins/slack/skills/slack-search/SKILL.md) - finding messages, files, channels, and people
+- [`slack:slack-api`](plugins/slack/skills/slack-api/SKILL.md) - discovering and calling Slack Web API methods
+- [`slack:slack-cli`](plugins/slack/skills/slack-cli/SKILL.md) - using the [Slack CLI][slack-cli] to create, run, and manage apps
+- [`slack:create-slack-app`](plugins/slack/skills/create-slack-app/SKILL.md) - building a Slack app or agent with the CLI and [Bolt][bolt]
+- [`slack:block-kit`](plugins/slack/skills/block-kit/SKILL.md) - building and validating [Block Kit][block-kit] layouts
 
 ### Commands
 

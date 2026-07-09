@@ -5,8 +5,12 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+# Repo root holds the tooling; the plugin itself lives under plugins/slack/.
+REPO_ROOT = Path(__file__).parent.parent
+PLUGIN_ROOT = REPO_ROOT / "plugins" / "slack"
+
 # Load .env from the repo root (if present) before reading the environment
-load_dotenv(Path(__file__).parent.parent / ".env")
+load_dotenv(REPO_ROOT / ".env")
 
 
 def get_gemini_api_key_pool(environ: Mapping[str, str]) -> list[str]:
@@ -14,10 +18,10 @@ def get_gemini_api_key_pool(environ: Mapping[str, str]) -> list[str]:
 
 
 # Filesystem
-SKILLS_ROOT = Path(__file__).parent.parent / "skills"
+SKILLS_ROOT = PLUGIN_ROOT / "skills"
 
 # Plugin namespace (single source of truth: the plugin manifest)
-PLUGIN_MANIFEST = Path(__file__).parent.parent / ".claude-plugin" / "plugin.json"
+PLUGIN_MANIFEST = PLUGIN_ROOT / ".claude-plugin" / "plugin.json"
 PLUGIN_NAME = json.loads(PLUGIN_MANIFEST.read_text())["name"]
 
 # Skill inventory (single source of truth)

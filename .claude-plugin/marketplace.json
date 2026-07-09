@@ -1,0 +1,18 @@
+{
+  "name": "slack-skills",
+  "owner": {
+    "name": "Slack"
+  },
+  "metadata": {
+    "description": "Official Slack MCP Server and developer skills for AI coding agents"
+  },
+  "plugins": [
+    {
+      "name": "slack",
+      "description": "Slack integration for searching messages, sending communications, managing canvases, and more",
+      "source": "./plugins/slack",
+      "category": "development",
+      "tags": ["slack", "mcp", "bolt"]
+    }
+  ]
+}

@@ -14,6 +14,7 @@ test = [
     "google-genai>=1.0,<2.0",
     "python-dotenv>=1.0,<2.0",
     "pyyaml>=6.0,<7.0",
+    "markdown>=3.5,<4.0",
     "mcp>=1.13,<2.0",
 ]
 tools = [
@@ -21,6 +22,7 @@ tools = [
     "rumdl>=0.2,<1.0",
     "mypy>=1.11,<2.0",
     "types-PyYAML>=6.0,<7.0",
+    "types-Markdown>=3.5,<4.0"
 ]
 
 # This project is installed only to run the test suite; the importable package

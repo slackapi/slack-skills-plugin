@@ -41,13 +41,13 @@ Wait for confirmation that authentication succeeded before proceeding.
 
 ## Step 3: Set Up a Developer Sandbox
 
-Run `SLACK_CMD sandbox list --experiment=sandboxes` to check if the developer already has a sandbox.
+Run `SLACK_CMD sandbox list` to check if the developer already has a sandbox.
 
 - **If a sandbox exists**: Show it and confirm they want to use it.
 - **If no sandbox exists**: Tell the developer to create one:
 
   ```text
-  ! SLACK_CMD sandbox create --experiment=sandboxes
+  ! SLACK_CMD sandbox create
   ```
 
   Alternatively, they can create one at <https://api.slack.com/developer-program/sandboxes> or join the Developer Program at <https://api.slack.com/developer-program/join>.

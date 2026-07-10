@@ -5,8 +5,19 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for taking the time to report an MCP bug. Please fill out as
-        much detail as you can — repro steps and version info help us the most.
+        Thank you for taking the time to report an MCP bug.
+
+        **Heads up:** this repository does not host the Slack MCP Server itself,
+        so bugs in the MCP Server can't be fixed here — but we can share your
+        feedback internally with the Slack MCP Server team.
+
+        For outages, rate limits, or other errors specific to your Slack team,
+        please report the issue to
+        [Slack Developer Platform Support](https://slack.com/help/requests/new)
+        so they can work with you privately to diagnose and resolve it.
+
+        Please fill out as much detail as you can — repro steps and version
+        info help us the most.
 
   - type: input
     id: plugin-version

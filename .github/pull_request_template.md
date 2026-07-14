@@ -16,6 +16,6 @@
 
 ### Requirements
 
-- [ ] I've read and understood the [Contributing Guidelines](https://github.com/slackapi/slack-mcp-plugin/blob/main/.github/contributing.md) and have done my best effort to follow them.
+- [ ] I've read and understood the [Contributing Guidelines](https://github.com/slackapi/slack-skills-plugin/blob/main/.github/contributing.md) and have done my best effort to follow them.
 - [ ] I've read and agree to the [Code of Conduct](https://slackhq.github.io/code-of-conduct).
 - [ ] I've run `make test` and the tests pass.

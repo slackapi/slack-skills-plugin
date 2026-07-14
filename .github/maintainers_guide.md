@@ -1,7 +1,7 @@
 # Maintainers Guide
 
 This document describes tools, tasks, and workflows needed to maintain the
-`slackapi/slack-mcp-plugin` repository. This is a skills plugin
+`slackapi/slack-skills-plugin` repository. This is a skills plugin
 marketplace, so the primary maintenance work is keeping skill content accurate
 and plugin versions correct rather than managing build artifacts or package
 registries.

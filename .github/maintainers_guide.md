@@ -31,10 +31,10 @@ brew install pyenv
 Install necessary Python runtime for development/testing.
 
 ```sh
-$ pyenv install 3.14 # select the latest patch version
-$ pyenv local 3.14
+pyenv install 3.14 # select the latest patch version
+pyenv local 3.14
 
-$ pyenv rehash
+pyenv rehash
 ```
 
 Then, you can create a new Virtual Environment this way:
@@ -62,7 +62,7 @@ make install
 ```
 
 The tests read configuration from environment variables. Copy the example file
-and fill in what you need — each variable is documented inline, and the
+and fill in what you need. Each variable is documented inline, and the
 `Makefile` auto-loads `.env`:
 
 ```sh
@@ -73,23 +73,17 @@ vim .env
 
 ### Running the tests
 
-Always use the `make` targets — never invoke `pytest`, `ruff`, or `python`
+Always use the `make` targets, never invoke `pytest`, `ruff`, `python`, or other tools
 directly. The targets manage the virtualenv, load `.env`, and set up the test
 dependencies for you.
 
-```sh
-make test-unit   # fast structural + frontmatter checks (this is what CI runs)
-make test-eval   # LLM-judged skill evaluations (local only)
-make test        # both
-make lint        # Ruff (Python) + rumdl (Markdown) linter checks
-make format      # Auto-format: Ruff for Python, rumdl --fix for Markdown
-make typecheck   # Mypy static type checks
-```
+Run `make help` to see the available targets and what each one does. It reads the
+descriptions straight from the `Makefile`, so it's always current.
 
 Markdown linting is powered by [rumdl](https://github.com/rvben/rumdl), a
 markdownlint-compatible Rust linter. It validates `skills/`, `commands/`,
 `README.md`, and `AGENTS.md`. Rules and disabled checks are configured under
-`[tool.rumdl]` in `pyproject.toml` — tune that section when a new skill trips a
+`[tool.rumdl]` in `pyproject.toml`; tune that section when a new skill trips a
 rule that isn't worth enforcing.
 
 ### Testing in Claude Code
@@ -101,7 +95,7 @@ Load your local changes into Claude Code for a single session with the
 claude --plugin-dir ./
 ```
 
-This loads the `slack` plugin from your checkout — its skills and commands, and
+This loads the `slack` plugin from your checkout: its skills and commands, and
 the HTTP MCP server from `.mcp.json`. If you already have the published
 `slack` plugin installed, the local copy takes precedence **for that session
 only**: nothing is written to your settings, and the installed version is
@@ -134,7 +128,7 @@ uninstall, in addition to removing the virtualenv and other generated files.)
 
 Follow the [conventional commit specification][conv-commits]. PR titles and commit messages use prefixes like `feat:`, `fix:`, `chore:`, `docs:`, etc. First letter after the prefix is lowercase unless it's a proper noun.
 
-### 🎁 Updating Changesets
+### Updating Changesets
 
 This project uses [Changesets](https://github.com/changesets/changesets) to track changes and automate releases.
 
@@ -160,7 +154,7 @@ Updates to documentation, tests, or CI might not require new entries.
 
 When a PR containing changesets is merged to `main`, a different PR is opened or updated using [changesets/action](https://github.com/changesets/action) which consumes the pending changesets, bumps the package version, and updates the `CHANGELOG` in preparation to release.
 
-### 🚀 Releases
+### Releases
 
 Releasing can feel intimidating at first, but don't fret! Venture on!
 
@@ -180,8 +174,7 @@ New official package versions are published when the release PR created from cha
 
 ### CODEOWNERS
 
-All files are owned by `@slackapi/platform-devxp`. Any PR to this repo will
-automatically request review from this team.
+Owners are defined in [`.github/CODEOWNERS`](CODEOWNERS). Any PR to this repo automatically requests review from this team.
 
 ### Dependabot
 
@@ -196,14 +189,14 @@ Patch and minor updates are auto-approved and auto-merged via the
 - Feature requests for new skills should be discussed in the issue before
   implementation begins.
 - Labels:
-  - `bug` — confirmed defects
-  - `enhancement` — feature requests and new functionality
-  - `docs` — documentation-only changes
-  - `test` — test-only changes
-  - `build` — CI, GitHub Actions, and build/compilation processes
-  - `chore` — repo structure, required files, release scaffolding, general maintenance
-  - `dependencies` — dependency updates (Dependabot applies this automatically)
-  - `security` — vulnerability fixes, hardening, and security audit findings
+  - `bug`: confirmed defects
+  - `enhancement`: feature requests and new functionality
+  - `docs`: documentation-only changes
+  - `test`: test-only changes
+  - `build`: CI, GitHub Actions, and build/compilation processes
+  - `chore`: repo structure, required files, release scaffolding, general maintenance
+  - `dependencies`: dependency updates (Dependabot applies this automatically)
+  - `security`: vulnerability fixes, hardening, and security audit findings
     (apply alongside `bug`/`build`/`dependencies` as appropriate)
 
 ---

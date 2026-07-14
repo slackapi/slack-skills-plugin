@@ -1,18 +1,18 @@
 ### Summary
 
-(Please describe the goal of this pull request and mention any related issue numbers)
+<!-- Please describe the goal of this pull request and mention any related issue numbers -->
 
 ### Preview
 
-(Add screenshots, GIFs, or recordings that show the changes)
+<!-- Add screenshots, GIFs, or recordings that show the changes -->
 
 ### Testing
 
-(List the steps used to verify these changes)
+<!-- List the steps used to verify these changes -->
 
 ### Notes
 
-(Add any additional context, trade-offs, or follow-up items)
+<!-- Add any additional context, trade-offs, or follow-up items -->
 
 ### Requirements
 

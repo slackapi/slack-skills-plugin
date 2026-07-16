@@ -177,7 +177,7 @@ You have access to the following tools:
 User request: {prompt}
 
 Pick the single tool that performs the action the user is asking for. Any channel name,
-channel ID, or user ID already in the request is usable as-is — do not pick a search tool
+channel ID, or user ID already in the request is usable as-is. Do not pick a search tool
 just to resolve it into an ID first. Respond with the tool's exact name."""
 
 

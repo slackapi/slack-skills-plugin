@@ -107,17 +107,17 @@ SCENARIOS: list[Scenario] = [
     {
         "id": "ambiguous-add-reaction-releases",
         "prompt": "Add a :tada: reaction to the latest message in #releases",
-        "accepted_tools": ["slack_add_reaction", "slack_read_channel", "slack_search_public"],
+        "accepted_tools": ["slack_add_reaction", "slack_read_channel", "slack_search_public", "slack_search_channels"],
     },
     {
         "id": "ambiguous-reply-in-thread",
         "prompt": "Reply 'we're on it' in the thread on the outage message in #incidents",
-        "accepted_tools": ["slack_send_message", "slack_read_thread", "slack_search_public"],
+        "accepted_tools": ["slack_send_message", "slack_read_thread", "slack_search_public", "slack_search_channels"],
     },
     {
         "id": "ambiguous-read-thread-replies",
         "prompt": "Show me all the replies in the thread on the latest message in #support",
-        "accepted_tools": ["slack_read_thread", "slack_read_channel", "slack_search_public"],
+        "accepted_tools": ["slack_read_thread", "slack_read_channel", "slack_search_public", "slack_search_channels"],
     },
     {
         "id": "ambiguous-lookup-user-by-email",

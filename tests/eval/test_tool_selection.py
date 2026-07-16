@@ -112,7 +112,7 @@ SCENARIOS: list[Scenario] = [
     {
         "id": "ambiguous-reply-in-thread",
         "prompt": "Reply 'we're on it' in the thread on the outage message in #incidents",
-        "accepted_tools": ["slack_send_message", "slack_read_thread"],
+        "accepted_tools": ["slack_send_message", "slack_read_thread", "slack_search_public"],
     },
     {
         "id": "ambiguous-read-thread-replies",

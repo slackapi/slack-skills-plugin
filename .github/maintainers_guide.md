@@ -77,14 +77,26 @@ Always use the `make` targets, never invoke `pytest`, `ruff`, `python`, or other
 directly. The targets manage the virtualenv, load `.env`, and set up the test
 dependencies for you.
 
-Run `make help` to see the available targets and what each one does. It reads the
-descriptions straight from the `Makefile`, so it's always current.
+Run `make help` to list every target with its description (read straight from the
+`Makefile`, so it's always current). The ones you'll reach for most:
+
+```sh
+make help        # list all targets with their descriptions
+make test-unit   # fast structural + frontmatter checks (this is what CI runs)
+make test-eval   # LLM-judged skill evaluations (local only)
+make test        # both
+make lint        # Ruff (Python) + rumdl (Markdown) linter checks
+make format      # Auto-format: Ruff for Python, rumdl --fix for Markdown
+make typecheck   # Mypy static type checks
+```
 
 Markdown linting is powered by [rumdl](https://github.com/rvben/rumdl), a
-markdownlint-compatible Rust linter. It validates `skills/`, `commands/`,
-`README.md`, and `AGENTS.md`. Rules and disabled checks are configured under
-`[tool.rumdl]` in `pyproject.toml`; tune that section when a new skill trips a
-rule that isn't worth enforcing.
+markdownlint-compatible Rust linter. It validates the plugin's authored
+markdown — `skills/`, `commands/`, `README.md`, `AGENTS.md`, and the
+contributor-facing `.github/` docs. Rules, disabled checks, and the `include`
+list of linted files are configured under `[tool.rumdl]` in `pyproject.toml`;
+tune that section when a new file or skill trips a rule that isn't worth
+enforcing.
 
 ### Testing in Claude Code
 

@@ -16,7 +16,23 @@ Requires Python 3.14+. Run `make install` before first use to set up the virtual
 
 **Always use the make targets rather than invoking python, pytest, ruff, or other tools directly.** The targets manage the virtualenv for you; running the underlying tools by hand skips that setup and will behave differently. If a `make` command is broken or missing something you need, fix the `Makefile` rather than working around it with the raw command.
 
-Run `make help` for the full list of targets and what each does. See the [maintainers guide](.github/maintainers_guide.md#local-development--testing) for local development and testing setup.
+Run `make help` for the full list of targets and what each does. The common ones:
+
+| Command | Purpose |
+|---------|---------|
+| `make help` | Show this help message |
+| `make install` | Set up everything (venv + deps) |
+| `make lint` | Run linter checks (ruff for Python, rumdl for Markdown) |
+| `make format` | Auto-format code (ruff for Python, rumdl for Markdown) |
+| `make typecheck` | Run mypy static type checks |
+| `make test-unit` | Run structural/unit validation tests |
+| `make test-eval` | Run LLM-judged tests (DeepEval against Gemini) |
+| `make test` | Run all tests (unit + eval) |
+| `make clean` | Remove virtualenv and local Cursor install |
+| `make cursor-install` | Install this plugin into a local Cursor for development |
+| `make cursor-uninstall` | Uninstall this plugin from the local Cursor install |
+
+See the [maintainers guide](.github/maintainers_guide.md#local-development--testing) for local development and testing setup.
 
 Eval tests (`make test-eval`) need a Gemini API key and, for the MCP tool-selection test, `SLACK_MCP_TOKEN`. Copy `.env.example` to `.env` and fill in values; each variable is documented inline there, and the `Makefile` auto-loads `.env`.
 

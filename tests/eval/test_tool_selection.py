@@ -107,7 +107,7 @@ SCENARIOS: list[Scenario] = [
     {
         "id": "ambiguous-add-reaction-releases",
         "prompt": "Add a :tada: reaction to the latest message in #releases",
-        "accepted_tools": ["slack_add_reaction", "slack_read_channel"],
+        "accepted_tools": ["slack_add_reaction", "slack_read_channel", "slack_search_public"],
     },
     {
         "id": "ambiguous-reply-in-thread",
@@ -117,7 +117,7 @@ SCENARIOS: list[Scenario] = [
     {
         "id": "ambiguous-read-thread-replies",
         "prompt": "Show me all the replies in the thread on the latest message in #support",
-        "accepted_tools": ["slack_read_thread", "slack_read_channel"],
+        "accepted_tools": ["slack_read_thread", "slack_read_channel", "slack_search_public"],
     },
     {
         "id": "ambiguous-lookup-user-by-email",

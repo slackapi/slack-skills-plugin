@@ -1,19 +1,19 @@
 {
   "name": "slack",
   "version": "1.1.0",
-  "description": "Slack integration for searching messages, sending communications, managing canvases, and more",
+  "description": "Bring Slack into your AI tools with a Slack MCP server and Slack skills",
   "author": {
     "name": "Slack",
     "url": "https://slack.com"
   },
-  "homepage": "https://github.com/slackapi/slack-skills-plugin",
+  "homepage": "https://docs.slack.dev",
   "repository": "https://github.com/slackapi/slack-skills-plugin",
   "license": "MIT",
   "skills": "./skills/",
   "interface": {
     "displayName": "Slack",
-    "shortDescription": "Slack integration for searching messages, sending communications, managing canvases, and more",
-    "longDescription": "Slack integration for searching messages, sending communications, managing canvases, and more",
+    "shortDescription": "Slack MCP server and skills for your AI tools",
+    "longDescription": "Connect your AI tools to Slack through the Slack MCP server to search messages, files, and channels, send and schedule messages, read threads, and manage canvases. Includes skills for building Slack apps with the Slack CLI and Bolt, calling Web API methods, and composing Block Kit layouts.",
     "developerName": "Slack",
     "category": "Productivity",
     "capabilities": [
@@ -21,6 +21,6 @@
       "Read",
       "Write"
     ],
-    "websiteURL": "https://github.com/slackapi/slack-skills-plugin"
+    "websiteURL": "https://docs.slack.dev/ai/mcp-server/"
   }
 }

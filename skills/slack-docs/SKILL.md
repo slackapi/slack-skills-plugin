@@ -38,7 +38,7 @@ If the developer pasted a `https://docs.slack.dev/...` link, skip discovery and 
 
 Use the docs **search API** to find candidate pages. WebFetch (or `curl` via the Bash tool) this URL, with the query URL-encoded and a `category` to scope the results:
 
-```
+```text
 https://docs.slack.dev/api/v1/search?query=<url-encoded query>&category=<category>&limit=5
 ```
 

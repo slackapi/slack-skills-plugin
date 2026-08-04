@@ -1,6 +1,6 @@
 {
   "name": "slack",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Slack skills for building apps with the Slack CLI, Bolt, Web API, and Block Kit",
   "author": {
     "name": "Slack",

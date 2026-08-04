@@ -1,5 +1,11 @@
 # slack
 
+## 1.2.1
+
+### Patch Changes
+
+- c17458c: Sharpen the slack-messaging and slack-search skill guidance: clearer trigger descriptions, accurate standard-markdown formatting rules (tables, headers, code blocks), more search modifiers and parameters, and scope notes linking to related skills.
+
 ## 1.2.0
 
 ### Minor Changes

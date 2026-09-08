@@ -45,8 +45,8 @@ The app needs a Slack workspace to install into. Three targets work and they are
 
 | Target | Best for | Cost of entry |
 |--------|----------|---------------|
-| **Developer sandbox** (recommended) | Anything the developer plans to keep building on. A free Slack org isolated from real users. | Needs a Slack Developer Program account, which is free to join. |
-| **Free Team** (second choice) | Starting right now, when Developer Program signup is the thing in the way. A free workspace the developer creates and owns. | Capped at 10 apps per workspace. |
+| **Developer sandbox** (recommended) | Anything the developer plans to keep building on. A free Enterprise Grid org isolated from real users, so org-level features are testable. | Needs a Slack Developer Program account, which is free to join. |
+| **Free Team** (second choice) | Starting right now, when Developer Program signup is the thing in the way. A free workspace the developer creates and owns. | Capped at 10 apps per workspace, and no Enterprise Grid org features. |
 | **Existing production workspace** (last resort) | Only when the app must reach real data or real coworkers. | Usually gated by admin approval, and the developer may not be the admin. |
 
 Then follow the matching sub-step below. Whichever target they pick, authentication is the same Step 2 flow: the `/slackauthticket` command works in any workspace the developer belongs to, so there is no sandbox-specific login.
@@ -82,6 +82,7 @@ What to tell them:
 
 - Everything this skill builds works there. Bolt apps install and run fine on the free plan.
 - The workspace is capped at **10 apps**. Past that the CLI reports `service_limits_exceeded`.
+- **It is a standalone workspace, not an Enterprise Grid org**, unlike a developer sandbox. Anything org-level is therefore untestable: org-wide app installs and org-level app grants, the `admin.*` API methods (which need Business+ or Enterprise Grid), and multi-workspace behaviour generally. If the app targets those, use a sandbox instead.
 - Do not invite coworkers into it. A Free Team with real users in it is a production workspace for the purposes of 3c.
 
 ### 3c. Existing production workspace (last resort)

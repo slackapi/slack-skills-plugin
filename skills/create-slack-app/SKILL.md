@@ -51,6 +51,8 @@ The app needs a Slack workspace to install into. Three targets work and they are
 
 Then follow the matching sub-step below. Whichever target they pick, authentication is the same Step 2 flow: the `/slackauthticket` command works in any workspace the developer belongs to, so there is no sandbox-specific login.
 
+Whichever sub-step you follow, wait for confirmation that a target workspace exists and is authenticated before proceeding.
+
 ### 3a. Developer sandbox (recommended)
 
 List existing sandboxes. Pass `--team` so the CLI does not stop to ask which authentication to use (get the team ID from `SLACK_CMD auth list`):
@@ -58,6 +60,8 @@ List existing sandboxes. Pass `--team` so the CLI does not stop to ask which aut
 ```bash
 SLACK_CMD sandbox list --team <team_id>
 ```
+
+**If the developer has no Developer Program account**, `sandbox list` returns nothing useful, because sandboxes belong to the developer program account whose email matches the authenticated user rather than to the workspace. Point them at <https://api.slack.com/developer-program/join>, and offer the Free Team path in 3b as a way to start building now rather than waiting on signup.
 
 - **If a sandbox exists**: Show it and confirm they want to use it.
 - **If no sandbox exists**: Create one. Ask the developer for a name and a password with AskUserQuestion, then run:
@@ -69,8 +73,6 @@ SLACK_CMD sandbox list --team <team_id>
   **Important**: the password is a credential. Do NOT echo it, restate it, or write it into a summary. Pass it straight to the command, the same rule Step 4c applies to API keys.
 
   Sandboxes can also be created in the browser at <https://api.slack.com/developer-program/sandboxes>.
-
-**If the developer has no Developer Program account**, `sandbox list` returns nothing useful, because sandboxes belong to the developer program account whose email matches the authenticated user rather than to the workspace. Point them at <https://api.slack.com/developer-program/join>, and offer the Free Team path in 3b as a way to start building now rather than waiting on signup.
 
 Once the sandbox exists, have the developer log into it with the Step 2 flow before continuing.
 
@@ -92,8 +94,6 @@ Only when the app genuinely needs real data or real users. Warn the developer be
 - **Admin app approval (AAA) is likely to block the install.** It is always on for Enterprise Grid organizations and can be switched on in standalone workspaces. When it applies, the install in Step 5 stops and asks whether to request approval, and then the developer waits on an admin.
 - To send that request without the prompt, set `SLACK_AUTO_REQUEST_AAA=1` in the environment. It is an environment variable, not a CLI flag.
 - If approval is denied or slow, fall back to 3a or 3b instead of fighting it.
-
-Wait for confirmation that a target workspace exists and is authenticated before proceeding.
 
 ---
 

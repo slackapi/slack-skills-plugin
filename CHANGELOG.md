@@ -1,5 +1,42 @@
 # slack
 
+## 1.4.0
+
+### Minor Changes
+
+- f2a4f53: Add the `slack` Codex marketplace, giving developers a production install path for the Slack plugin in Codex:
+  
+  ```sh
+  codex plugin marketplace add slackapi/slack-skills-plugin
+  codex plugin add slack@slack
+  ```
+  
+  Until now the only marketplace this repo published was named `slack-dev`, so installing the plugin meant adding a marketplace labelled "dev" and running `codex plugin add slack@slack-dev`.
+  
+  If you installed under the old name, remove it before re-adding: Codex treats the two marketplaces as unrelated and will leave both installed and enabled.
+  
+  ```sh
+  codex plugin remove slack@slack-dev
+  codex plugin marketplace remove slack-dev
+  ```
+- 8044341: Support developer sandboxes, free, and paid teams as install targets, instead of treating a developer sandbox as the only option. `create-slack-app` Step 3 now presents a sandbox (recommended), a Free Team (second choice), or an existing production workspace (last resort, usually gated by admin app approval), and `test-slack-app` accepts a Free Team as a safe place to test. Also runs `sandbox list` and `sandbox create` non-interactively with `--team`, `--name`, and `--password`.
+
+### Patch Changes
+
+- 1579a07: Improve the docs.slack.dev page with clearer formatting. Document the `slack-docs` skill, which finds and reads official Slack dev docs as clean markdown to answer questions about the Slack platform.
+- f1deaff: Document installing the skills with `npx skills`, which reaches coding agents beyond the three with a plugin surface:
+  
+  ```bash
+  # Install the skills for a coding agent, named by its own identifier
+  npx skills add slackapi/slack-skills-plugin -y -a <agent>
+  
+  # For example, Gemini CLI or OpenCode
+  npx skills add slackapi/slack-skills-plugin -y -a gemini-cli
+  npx skills add slackapi/slack-skills-plugin -y -a opencode
+  ```
+  
+  This path already worked and needed no changes here, it was just undocumented. It carries the skills only: no commands, and no MCP server.
+
 ## 1.3.0
 
 ### Minor Changes

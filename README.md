@@ -72,13 +72,16 @@ The plugin connects your AI tool to Slack's hosted [MCP server][slack-mcp-docs]:
 
 ### Skills
 
-Six skills load on demand to handle messaging tasks and developer workflows:
+Nine skills load on demand to handle messaging tasks and developer workflows:
 
 - [`slack:slack-messaging`](skills/slack-messaging/SKILL.md) - composing well-formatted, effective Slack messages
 - [`slack:slack-search`](skills/slack-search/SKILL.md) - finding messages, files, channels, and people
 - [`slack:slack-api`](skills/slack-api/SKILL.md) - discovering and calling Slack Web API methods
+- [`slack:slack-docs`](skills/slack-docs/SKILL.md) - finding and reading the right Slack developer docs page
 - [`slack:slack-cli`](skills/slack-cli/SKILL.md) - using the [Slack CLI][slack-cli] to create, run, and manage apps
 - [`slack:create-slack-app`](skills/create-slack-app/SKILL.md) - building a Slack app or agent with the CLI and [Bolt][bolt]
+- [`slack:test-slack-app`](skills/test-slack-app/SKILL.md) - running an app somewhere safe and confirming it works in Slack
+- [`slack:deploy-slack-app`](skills/deploy-slack-app/SKILL.md) - hosting a Socket Mode app on Railway or Heroku so it keeps running
 - [`slack:block-kit`](skills/block-kit/SKILL.md) - building and validating [Block Kit][block-kit] layouts
 
 ### Commands

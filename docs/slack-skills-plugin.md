@@ -77,6 +77,7 @@ Most of the skills work on their own, without a connection to the [Slack MCP ser
 |-------|--------------------|----------------|
 | `block-kit` | Build and validate [Block Kit](/block-kit) layouts for messages, modals, and Home tabs, validating against the `blocks.validate` API method. | _"Build a Block Kit modal with a name field, a dropdown to pick a channel, and a submit button."_ |
 | `create-slack-app` | Scaffold a new Slack app or agent with the [Slack CLI](/tools/slack-cli) and [Bolt](/tools#bolt) (JavaScript or Python). | _"Scaffold a new Bolt for JavaScript app that listens for the `app_mention` event."_ |
+| `deploy-slack-app` | Deploy a Socket Mode Bolt app to Railway or Heroku with the Slack CLI `deploy` hook, so it keeps running after the local process stops. | _"Deploy my Slack app somewhere it keeps running after I close my laptop."_ |
 | `slack-api` | Discover, navigate, and call [Web API methods](/apis/web-api), surfacing info on required scopes, pagination, rate limits, and error handling. | _"Which Web API method posts a message to a channel, and what scopes does it need?"_ |
 | `slack-cli` | Create, run, and manage Slack apps from the terminal with the [Slack CLI](/tools/slack-cli), and search the Slack docs from the command line. | _"Run my Slack app locally and tail the logs."_ |
 | `slack-docs` | Find and read the right Slack developer docs page, so Slack platform answers come from the live docs rather than memory. | _"How does the Events API delivery model work?"_ |

@@ -8,8 +8,14 @@ type exactly.
 $5/month, pooled across an account, and it requires a credit card. Tell the
 developer this before running anything.
 
-**Two things to know before choosing Heroku.**
+**Three things to know before choosing Heroku.**
 
+- **Some accounts cannot own an app personally.** Salesforce-managed Heroku accounts
+  are one case: `heroku apps:create` refuses with "All apps must belong to a team."
+  Run `heroku teams` to see which teams the account belongs to, and set
+  `HEROKU_TEAM` to one of them. Creating the app on a shared team spends that
+  team's budget, so confirm with the developer which team to use rather than
+  picking one.
 - **Tokens go on the command line.** `heroku config:set` has no stdin or file
   input, so `SLACK_BOT_TOKEN` and `SLACK_APP_TOKEN` appear as process arguments and
   are visible to `ps` while the command runs. The deploy hook runs the command
@@ -59,6 +65,12 @@ For Bolt for Python, use the project's own entrypoint, for example
 TARGET_NAME="Heroku"
 HEROKU_APP_NAME="${HEROKU_APP_NAME:-$(basename "$PWD")}"
 
+# Set HEROKU_TEAM when the app has to belong to a Heroku team rather than to the
+# account personally. Some accounts, including Salesforce-managed ones, cannot own
+# personal apps at all: `apps:create` refuses with "All apps must belong to a team.
+# Create the app on a team instead." Leave it empty for a personal app.
+HEROKU_TEAM="${HEROKU_TEAM:-}"
+
 target_preflight() {
   command -v heroku >/dev/null 2>&1 || die \
     "the heroku CLI is not installed. Install it with 'brew tap heroku/brew && brew install heroku' (macOS) or see https://devcenter.heroku.com/articles/heroku-cli, then re-run 'slack deploy'."
@@ -75,11 +87,21 @@ target_preflight() {
 target_provision() {
   # apps:create fails outright when the app already exists, so check first. This
   # is what lets a re-deploy target the same app instead of erroring.
+  #
+  # Note that apps:info reports "Couldn't find that app" both for an app that does
+  # not exist and for one that exists under another account, because Heroku app
+  # names are globally unique across all of Heroku. A generic name taken by a
+  # stranger therefore reaches apps:create below and fails there on the name rather
+  # than here. Set HEROKU_APP_NAME to something distinctive to avoid it.
   if heroku apps:info --app "${HEROKU_APP_NAME}" >/dev/null 2>&1; then
     say "Reusing the Heroku app ${HEROKU_APP_NAME}"
   else
     say "Creating the Heroku app ${HEROKU_APP_NAME}"
-    heroku apps:create "${HEROKU_APP_NAME}" >/dev/null
+    if [ -n "${HEROKU_TEAM}" ]; then
+      heroku apps:create "${HEROKU_APP_NAME}" --team "${HEROKU_TEAM}" >/dev/null
+    else
+      heroku apps:create "${HEROKU_APP_NAME}" >/dev/null
+    fi
   fi
 
   # Sets or resets the `heroku` git remote to point at this app. Safe to repeat.

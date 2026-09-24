@@ -106,10 +106,14 @@ Add a `deploy` key to `.slack/hooks.json`, leaving the existing `get-hooks` entr
 
 Run `SLACK_CMD deploy` from the project root and watch the output. The CLI creates the deployed app, installs it, and then runs the hook script, so the first part of the output is app installation and the second is the provider's build.
 
-Two flags matter when running this outside an interactive terminal, which includes most agent sessions:
+Four flags matter when running this outside an interactive terminal, which includes most agent sessions. The CLI asks four questions, and each one is fatal unanswered: a non-interactive shell gets `The input device is not a TTY or does not support interactivity` and nothing is deployed.
 
 - `--skip-update` stops the CLI pausing to offer an upgrade.
+- `--team <team ID>` picks the workspace or organization. Read the available team IDs from `SLACK_CMD auth list`.
+- `--app deployed` selects the deployed app environment, and creates that app on a first deploy. Without it the CLI asks the developer to choose between an existing app and a new one. This is the flag most easily missed, because the prompt it answers only appears on a project that has never been deployed.
 - `--org-workspace-grant all` answers the workspace-grant prompt for an org-installed app.
+
+So the full command is `SLACK_CMD deploy --skip-update --team <team ID> --app deployed --org-workspace-grant all`.
 
 **The deployed app is a different app from the one `SLACK_CMD run` uses.** The CLI writes the deployed app to `.slack/apps.json` and the local development app to `.slack/apps.dev.json`, keyed by team. Both keep working independently, which is the intended design, not a mistake to correct.
 
@@ -137,7 +141,7 @@ Show the developer the app ID in `.slack/apps.json` and the one in `.slack/apps.
 
 ## Step 7: Re-deploy
 
-Shipping a change is `SLACK_CMD deploy` again. Everything in **Step 4: Wire Up the Deploy Hook** is already in place, so skip it and go straight to the deploy, and expect the same app rather than a second one.
+Shipping a change is the same `SLACK_CMD deploy` command, with the same flags as **Step 5: Deploy**. Everything in **Step 4: Wire Up the Deploy Hook** is already in place, so skip it and go straight to the deploy, and expect the same app rather than a second one.
 
 Two provider differences to know about, both handled by the target scripts:
 

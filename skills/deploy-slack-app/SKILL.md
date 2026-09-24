@@ -14,7 +14,7 @@ Two supported providers, both running the app as a long-lived worker process:
 | Provider | Process type | Cost to start | Secrets |
 | --- | --- | --- | --- |
 | Railway | Service, no port binding required | Free trial credit, no credit card | Passed on stdin |
-| Heroku | `worker` dyno | None free; Eco plan is $5/month and needs a card | Passed as arguments |
+| Heroku | `worker` dyno | None free, and a card is required. Eco is $5/month for a personal app, Basic per dyno for a team app | Passed as arguments |
 
 Railway is the better default, and the reasons are in **Step 2: Choose a Provider**.
 
@@ -48,7 +48,7 @@ This flow is verified on macOS and Linux. The deploy hook is a shell script, so 
 This is the one question worth asking the developer, because cost is the thing they cannot infer from the project. Use the table at the top of this skill and lead with the money:
 
 - **Railway** is the default recommendation. Its free trial credit needs no credit card, which means a developer can get an app deployed without a purchase decision. It also accepts secrets on stdin, so the tokens never appear in process arguments. A long-running service consumes trial credit continuously, so staying up past the trial needs a paid plan.
-- **Heroku** has no free tier at all. The cheapest option is the Eco plan at $5/month and it requires a credit card. Choose it when the developer already has a Heroku account or a team standard that points there.
+- **Heroku** has no free tier at all and requires a credit card. A personal app can use the Eco plan at $5/month. Some accounts, including Salesforce-managed ones, cannot own a personal app at all and must put it on a Heroku team, which bills per dyno instead. Choose Heroku when the developer already has an account or a team standard that points there, and ask which team to use rather than picking one, because a shared team has a shared budget.
 
 Say plainly that **both providers keep the app running continuously**, which is what a Socket Mode app requires, and that this is why no free-forever option exists for either.
 

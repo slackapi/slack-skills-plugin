@@ -4,9 +4,13 @@ Heroku runs the app as a `worker` dyno, a process type that binds no HTTP port.
 Only `web` dynos have to listen on `$PORT`, so a Socket Mode app fits the `worker`
 type exactly.
 
-**Cost.** Heroku has no free tier. The cheapest option is the Eco dyno plan at
-$5/month, pooled across an account, and it requires a credit card. Tell the
-developer this before running anything.
+**Cost.** Heroku has no free tier, and it requires a credit card. Tell the developer
+this before running anything. Which paid tier applies depends on who owns the app:
+
+- **A personal app** can use the Eco plan, $5/month pooled across the account.
+- **A team app** cannot use Eco. It gets Basic dynos, billed per dyno per month,
+  which is why scaling the unwanted `web` dyno to zero in `target_deploy` below
+  matters to the bill and not only to correctness.
 
 **Three things to know before choosing Heroku.**
 
@@ -139,10 +143,22 @@ ${push_out}"
     git push heroku HEAD:refs/heads/main
   fi
 
-  # A worker dyno starts at zero. Scaling to one is what actually runs the app,
-  # and it is a no-op when the dyno is already running.
-  say "Scaling the worker dyno to 1"
-  heroku ps:scale worker=1 --app "${HEROKU_APP_NAME}"
+  # Scale worker up and web down, in one call, and never scale worker alone.
+  #
+  # The Node buildpack contributes a default `web` process type even though the
+  # Procfile only declares `worker`, and Heroku starts that web dyno on the first
+  # release. It runs the same `npm start`, so it becomes a second copy of the app:
+  # it opens its own Socket Mode connection, Slack then reports
+  # "num_connections": 2, and events are delivered to whichever copy Slack picks.
+  # It also never boots successfully, because a Socket Mode app binds no port and
+  # Heroku kills a web dyno that does not bind $PORT within 60 seconds, so it sits
+  # in a restart loop opening a fresh connection on every cycle. And it bills as a
+  # second dyno.
+  #
+  # None of that is visible from the worker's own logs, which look perfectly
+  # healthy, so scaling web to zero is not optional tidying.
+  say "Scaling the worker dyno to 1 and the web dyno to 0"
+  heroku ps:scale worker=1 web=0 --app "${HEROKU_APP_NAME}"
 
   say "Follow the build and the websocket connection with:"
   say "  heroku logs --tail --app ${HEROKU_APP_NAME}"
@@ -172,9 +188,15 @@ heroku logs --tail --app <name>         # look for the Socket Mode connection
 heroku config --app <name>              # confirms both tokens are set
 ```
 
-**Check that the dyno stays up while idle.** Heroku's Eco plan sleeps a dyno after
-30 minutes of inactivity. That behaviour is documented in terms of inbound web
-traffic, and a Socket Mode worker takes no inbound HTTP at all, so whether it
-applies here is worth confirming on the specific app rather than assuming. Leave it
-idle for 45 minutes, then message the app. A sleeping dyno drops the websocket and
-the app stops answering in Slack.
+**Confirm only one dyno is running.** `heroku ps` should list `worker` at 1 and no
+`web` process at all. If a `web` dyno appears, the app has two copies of itself
+connected to Slack and the second one is in a restart loop. Re-run the scale command
+from `target_deploy`. Checking the worker's own logs will not reveal this: they look
+healthy either way.
+
+**Check that the dyno stays up while idle, on an Eco app.** Heroku's Eco plan sleeps
+a dyno after 30 minutes of inactivity. That behaviour is documented in terms of
+inbound web traffic, and a Socket Mode worker takes no inbound HTTP at all, so
+whether it applies here is unverified. Leave it idle for 45 minutes, then message the
+app: a sleeping dyno drops the websocket and the app goes quiet in Slack. This does
+not affect a team app, whose Basic dynos do not sleep.

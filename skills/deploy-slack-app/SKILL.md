@@ -70,29 +70,33 @@ Two things to wire up. **Check whether each already exists before writing it**, 
 
 ### 4a. Write the Deploy Script
 
-Copy the provider's deploy script into the project root as `deploy.sh`, then make it executable with `chmod +x deploy.sh`:
+Copy the provider's deploy script into the project's `.slack/` directory under the same name, then make it executable:
 
-- Railway: `references/railway/deploy.sh`
-- Heroku: `references/heroku/deploy.sh`
+- Railway: `references/deploy-railway.sh` to `.slack/deploy-railway.sh`
+- Heroku: `references/deploy-heroku.sh` to `.slack/deploy-heroku.sh`
 
-Each script is self-contained. It validates that both tokens arrived, reads the deployed app ID from `.slack/apps.json` for its log line, and then runs the provider's preflight, provision, configure, and deploy steps in order. There is nothing else to copy.
+For example, `chmod +x .slack/deploy-railway.sh`.
 
-**If `deploy.sh` already exists**, show the developer that it is there and ask before overwriting. A developer may have adjusted it.
+Each script is self-contained. It validates that both tokens arrived, reads the deployed app ID from `.slack/apps.json` for its log line, and then runs the provider's preflight, provision, configure, and deploy steps in order. There is nothing else to copy. The CLI runs the hook from the project root, so the script's relative paths resolve there even though the file lives in `.slack/`.
+
+**If the script already exists**, show the developer that it is there and ask before overwriting. A developer may have adjusted it.
 
 ### 4b. Register the Hook
 
-Add a `deploy` key to `.slack/hooks.json`, leaving the existing `get-hooks` entry alone:
+Add a `deploy` key to `.slack/hooks.json` pointing at the provider's script, leaving the existing `get-hooks` entry alone. For Railway:
 
 ```json
 {
   "hooks": {
     "get-hooks": "npx -q --no-install -p @slack/cli-hooks slack-cli-get-hooks",
-    "deploy": "./deploy.sh"
+    "deploy": "./.slack/deploy-railway.sh"
   }
 }
 ```
 
-**If a `deploy` key is already present, leave it.** Adding a second one produces invalid JSON, and the CLI will reject the project rather than deploy it.
+For Heroku, the value is `./.slack/deploy-heroku.sh`.
+
+**If a `deploy` key is already present, do not add a second one.** A duplicate key produces invalid JSON, and the CLI will reject the project rather than deploy it. If the existing key already points at the chosen provider's script, leave it. If it points somewhere else, such as the other provider's script, show the developer and ask before changing it.
 
 ---
 
@@ -154,7 +158,7 @@ If a re-deploy creates a second Slack app, the deployed app entry in `.slack/app
 
 **Continuous hosting is rarely free.** Railway's trial credit is the only no-card option among the providers surveyed. Heroku has no free tier. Render has a suitable background-worker service type but excludes workers from its free instances. Fly.io requires a card on essentially every organization. This is worth stating up front, because a developer expecting a free deployment will otherwise discover it partway through.
 
-**The token handoff is not a documented contract.** The Slack CLI does not pass the tokens to the deploy hook explicitly. It sets them on its own process during app installation, and the hook script inherits them because it runs later in that same process. It works, and it only works for apps with no Slack-hosted function runtime, which covers every Bolt app. That is why `deploy.sh` checks for both tokens and stops with a readable message instead of assuming they are present.
+**The token handoff is not a documented contract.** The Slack CLI does not pass the tokens to the deploy hook explicitly. It sets them on its own process during app installation, and the hook script inherits them because it runs later in that same process. It works, and it only works for apps with no Slack-hosted function runtime, which covers every Bolt app. That is why each deploy script checks for both tokens and stops with a readable message instead of assuming they are present.
 
 **Heroku exposes the tokens to `ps`.** `heroku config:set` accepts values as command-line arguments only, with no stdin or file input, so both tokens are visible in the process list while the command runs. Railway's `railway variable set --stdin` avoids this. Mention it when a developer chooses Heroku.
 

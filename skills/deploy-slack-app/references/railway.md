@@ -4,9 +4,10 @@ Railway runs the app as a long-lived service built from the uploaded working
 directory. It suits a Socket Mode app well: the service binds no HTTP port, and
 Railway does not require one.
 
-The deploy script for this provider is `railway/deploy.sh`, alongside this file.
+The deploy script for this provider is `deploy-railway.sh`, alongside this file.
 It is a self-contained bash script, run by the Slack CLI's `deploy` hook. Copy
-it into the project root as described in the parent skill's Step 4.
+it to `.slack/deploy-railway.sh` in the project as described in the parent
+skill's Step 4.
 
 **Cost.** Railway's Free Trial is a one-time credit with no credit card required,
 which makes it the cheapest way to get a Slack app running for the first time. A

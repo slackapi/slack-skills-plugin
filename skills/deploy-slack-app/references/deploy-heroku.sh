@@ -2,18 +2,20 @@
 #
 # Deploy a Socket Mode Bolt app to Heroku, as a Slack CLI `deploy` hook.
 #
-# Wire it up by adding a `deploy` key to the project's .slack/hooks.json:
+# Save it as .slack/deploy-heroku.sh and wire it up by adding a `deploy` key to
+# the project's .slack/hooks.json:
 #
 #   {
 #     "hooks": {
 #       "get-hooks": "npx -q --no-install -p @slack/cli-hooks slack-cli-get-hooks",
-#       "deploy": "./deploy.sh"
+#       "deploy": "./.slack/deploy-heroku.sh"
 #     }
 #   }
 #
 # Then run `slack deploy`. The CLI creates and installs the deployed app first,
 # which is what puts SLACK_BOT_TOKEN and SLACK_APP_TOKEN in this script's
-# environment, and then runs this file through `sh -c` from the project root.
+# environment, and then runs this file through `sh -c` from the project root,
+# so relative paths below resolve against the project root, not .slack/.
 #
 # The CLI passes nothing explicitly. The tokens arrive because the install step
 # runs earlier in the same process and sets them on it, so this script inherits

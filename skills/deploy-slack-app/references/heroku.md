@@ -4,9 +4,10 @@ Heroku runs the app as a `worker` dyno, a process type that binds no HTTP port.
 Only `web` dynos have to listen on `$PORT`, so a Socket Mode app fits the `worker`
 type exactly.
 
-The deploy script for this provider is `heroku/deploy.sh`, alongside this file.
+The deploy script for this provider is `deploy-heroku.sh`, alongside this file.
 It is a self-contained bash script, run by the Slack CLI's `deploy` hook. Copy
-it into the project root as described in the parent skill's Step 4.
+it to `.slack/deploy-heroku.sh` in the project as described in the parent
+skill's Step 4.
 
 **Cost.** Heroku has no free tier, and it requires a credit card. Tell the developer
 this before running anything. Which paid tier applies depends on who owns the app:

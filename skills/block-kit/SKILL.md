@@ -127,7 +127,8 @@ Based on the developer's description:
 
 1. **Fetch only what you need** from the live docs:
    - WebFetch the master index (`https://docs.slack.dev/reference/block-kit.md`) to confirm the block and element types you plan to use exist and to grab links to their pages.
-   - Check `references/common-patterns.md` (the one local reference file) if the request matches a common pattern; start from the template instead of building from scratch.
+   - Consult `references/design-principles.md` for design appropriateness — which block fits the shape of the content (table vs. stacked sections, card vs. loose blocks), emphasis, reading order, and accessibility. It is guidance on building layouts that read well, not on validity.
+   - Check `references/common-patterns.md` if the request matches a common pattern; start from the template instead of building from scratch.
    - Defer reading individual component pages until Step 4, when you build each block's fields.
 2. Propose a numbered block outline. For example:
 

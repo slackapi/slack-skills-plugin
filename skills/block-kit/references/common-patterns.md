@@ -2,6 +2,7 @@
 
 > Starting scaffolds for frequent use cases — copy one and customize rather than building from scratch.
 > They were valid when written, but the live docs (the skill's **Source of Truth**) remain authoritative for field schemas, and Block Kit evolves. Confirm any field you change against the component's doc page, and re-run the customized payload through `blocks.validate` (Step 5) before shipping.
+> `[M]` patterns show just the `blocks` array — wrap it in `{ "channel": ..., "text": ..., "blocks": [...] }` for `chat.postMessage` per Step 1, and don't skip the `text` fallback for accessibility.
 
 ---
 
@@ -10,41 +11,37 @@
 A notification with context and Approve/Reject buttons.
 
 ```json
-{
-  "channel": "C0123456789",
-  "text": "New request from Jane awaiting approval",
-  "blocks": [
-    {
-      "type": "header",
-      "text": { "type": "plain_text", "text": "New Approval Request" }
-    },
-    {
-      "type": "section",
-      "text": { "type": "mrkdwn", "text": "*Requester:* <@U0123456789>\n*Type:* Access request\n*Details:* Production database read access" }
-    },
-    { "type": "divider" },
-    {
-      "type": "actions",
-      "block_id": "approval_actions",
-      "elements": [
-        {
-          "type": "button",
-          "text": { "type": "plain_text", "text": "Approve" },
-          "style": "primary",
-          "action_id": "approve_btn",
-          "value": "request_123"
-        },
-        {
-          "type": "button",
-          "text": { "type": "plain_text", "text": "Reject" },
-          "style": "danger",
-          "action_id": "reject_btn",
-          "value": "request_123"
-        }
-      ]
-    }
-  ]
-}
+[
+  {
+    "type": "header",
+    "text": { "type": "plain_text", "text": "New Approval Request" }
+  },
+  {
+    "type": "section",
+    "text": { "type": "mrkdwn", "text": "*Requester:* <@U0123456789>\n*Type:* Access request\n*Details:* Production database read access" }
+  },
+  { "type": "divider" },
+  {
+    "type": "actions",
+    "block_id": "approval_actions",
+    "elements": [
+      {
+        "type": "button",
+        "text": { "type": "plain_text", "text": "Approve" },
+        "style": "primary",
+        "action_id": "approve_btn",
+        "value": "request_123"
+      },
+      {
+        "type": "button",
+        "text": { "type": "plain_text", "text": "Reject" },
+        "style": "danger",
+        "action_id": "reject_btn",
+        "value": "request_123"
+      }
+    ]
+  }
+]
 ```
 
 **Customization points:** Header text, section fields, button values, adding a confirmation dialog to the Reject button.
@@ -117,44 +114,40 @@ A modal with text input, select menu, and optional checkbox.
 An alert banner with description and timestamp context.
 
 ```json
-{
-  "channel": "C0123456789",
-  "text": "Alert: Deployment failed for api-gateway",
-  "blocks": [
-    {
-      "type": "alert",
-      "text": { "type": "plain_text", "text": "Deployment failed for api-gateway" },
-      "level": "error"
-    },
-    {
-      "type": "section",
-      "text": { "type": "mrkdwn", "text": "The deployment to *production* failed during the health check phase.\n\n*Error:* `Connection timeout after 30s`\n*Commit:* `a1b2c3d`" }
-    },
-    {
-      "type": "context",
-      "elements": [
-        { "type": "mrkdwn", "text": "Triggered by <@U0123456789> | <!date^1700000000^{date_short} at {time}|Nov 14, 2023>" }
-      ]
-    },
-    {
-      "type": "actions",
-      "elements": [
-        {
-          "type": "button",
-          "text": { "type": "plain_text", "text": "View Logs" },
-          "url": "https://logs.example.com/deploy/456",
-          "action_id": "view_logs_btn"
-        },
-        {
-          "type": "button",
-          "text": { "type": "plain_text", "text": "Retry" },
-          "style": "primary",
-          "action_id": "retry_deploy_btn"
-        }
-      ]
-    }
-  ]
-}
+[
+  {
+    "type": "alert",
+    "text": { "type": "plain_text", "text": "Deployment failed for api-gateway" },
+    "level": "error"
+  },
+  {
+    "type": "section",
+    "text": { "type": "mrkdwn", "text": "The deployment to *production* failed during the health check phase.\n\n*Error:* `Connection timeout after 30s`\n*Commit:* `a1b2c3d`" }
+  },
+  {
+    "type": "context",
+    "elements": [
+      { "type": "mrkdwn", "text": "Triggered by <@U0123456789> | <!date^1700000000^{date_short} at {time}|Nov 14, 2023>" }
+    ]
+  },
+  {
+    "type": "actions",
+    "elements": [
+      {
+        "type": "button",
+        "text": { "type": "plain_text", "text": "View Logs" },
+        "url": "https://logs.example.com/deploy/456",
+        "action_id": "view_logs_btn"
+      },
+      {
+        "type": "button",
+        "text": { "type": "plain_text", "text": "Retry" },
+        "style": "primary",
+        "action_id": "retry_deploy_btn"
+      }
+    ]
+  }
+]
 ```
 
 **Customization points:** Level (`info`, `warning`, `error`, `success`), description text, action buttons.
@@ -221,35 +214,31 @@ A welcome dashboard with metrics fields and quick-action buttons.
 An action button with a confirmation dialog attached (prevents accidental clicks).
 
 ```json
-{
-  "channel": "C0123456789",
-  "text": "Server shutdown requested",
-  "blocks": [
-    {
-      "type": "section",
-      "text": { "type": "mrkdwn", "text": "Are you sure you want to shut down *prod-server-01*?" }
-    },
-    {
-      "type": "actions",
-      "elements": [
-        {
-          "type": "button",
-          "text": { "type": "plain_text", "text": "Shut Down" },
-          "style": "danger",
-          "action_id": "shutdown_btn",
-          "value": "prod-server-01",
-          "confirm": {
-            "title": { "type": "plain_text", "text": "Confirm Shutdown" },
-            "text": { "type": "plain_text", "text": "This will immediately terminate the server. Active connections will be dropped." },
-            "confirm": { "type": "plain_text", "text": "Shut Down" },
-            "deny": { "type": "plain_text", "text": "Cancel" },
-            "style": "danger"
-          }
+[
+  {
+    "type": "section",
+    "text": { "type": "mrkdwn", "text": "Are you sure you want to shut down *prod-server-01*?" }
+  },
+  {
+    "type": "actions",
+    "elements": [
+      {
+        "type": "button",
+        "text": { "type": "plain_text", "text": "Shut Down" },
+        "style": "danger",
+        "action_id": "shutdown_btn",
+        "value": "prod-server-01",
+        "confirm": {
+          "title": { "type": "plain_text", "text": "Confirm Shutdown" },
+          "text": { "type": "plain_text", "text": "This will immediately terminate the server. Active connections will be dropped." },
+          "confirm": { "type": "plain_text", "text": "Shut Down" },
+          "deny": { "type": "plain_text", "text": "Cancel" },
+          "style": "danger"
         }
-      ]
-    }
-  ]
-}
+      }
+    ]
+  }
+]
 ```
 
 **Customization points:** Confirmation title/text (title max 100 chars, text max 300 chars, confirm/deny max 30 chars), button style.
@@ -261,46 +250,42 @@ An action button with a confirmation dialog attached (prevents accidental clicks
 A structured table for displaying tabular data. Only one table block per message.
 
 ```json
-{
-  "channel": "C0123456789",
-  "text": "Team sprint summary",
-  "blocks": [
-    {
-      "type": "header",
-      "text": { "type": "plain_text", "text": "Sprint Summary" }
-    },
-    {
-      "type": "table",
-      "column_settings": [
-        { "is_wrapped": true },
-        { "align": "center" },
-        { "align": "right" }
+[
+  {
+    "type": "header",
+    "text": { "type": "plain_text", "text": "Sprint Summary" }
+  },
+  {
+    "type": "table",
+    "column_settings": [
+      { "is_wrapped": true },
+      { "align": "center" },
+      { "align": "right" }
+    ],
+    "rows": [
+      [
+        { "type": "raw_text", "text": "Name" },
+        { "type": "raw_text", "text": "Status" },
+        { "type": "raw_text", "text": "Points" }
       ],
-      "rows": [
-        [
-          { "type": "raw_text", "text": "Name" },
-          { "type": "raw_text", "text": "Status" },
-          { "type": "raw_text", "text": "Points" }
-        ],
-        [
-          { "type": "raw_text", "text": "Auth refactor" },
-          { "type": "raw_text", "text": "In Progress" },
-          { "type": "raw_text", "text": "5" }
-        ],
-        [
-          { "type": "raw_text", "text": "API docs update" },
-          { "type": "raw_text", "text": "Done" },
-          { "type": "raw_text", "text": "2" }
-        ],
-        [
-          { "type": "raw_text", "text": "Bug #1234" },
-          { "type": "raw_text", "text": "Blocked" },
-          { "type": "raw_text", "text": "3" }
-        ]
+      [
+        { "type": "raw_text", "text": "Auth refactor" },
+        { "type": "raw_text", "text": "In Progress" },
+        { "type": "raw_text", "text": "5" }
+      ],
+      [
+        { "type": "raw_text", "text": "API docs update" },
+        { "type": "raw_text", "text": "Done" },
+        { "type": "raw_text", "text": "2" }
+      ],
+      [
+        { "type": "raw_text", "text": "Bug #1234" },
+        { "type": "raw_text", "text": "Blocked" },
+        { "type": "raw_text", "text": "3" }
       ]
-    }
-  ]
-}
+    ]
+  }
+]
 ```
 
 **Customization points:** Column settings (alignment: `left`/`center`/`right`, wrapping: `is_wrapped`), row data, cell type (`raw_text` for plain content, `rich_text` for formatted content with links/emoji/mentions). Max 100 rows, max 20 cells per row. First row is the header. Only one table block per message.
@@ -383,35 +368,31 @@ A modal combining different input types for a settings/preferences form.
 Formatted text with bold, links, and a bullet list — the WYSIWYG-composer format, for layouts needing richer inline styling or structure than a `mrkdwn` string offers.
 
 ```json
-{
-  "channel": "C0123456789",
-  "text": "Deploy summary: 3 services updated",
-  "blocks": [
-    {
-      "type": "rich_text",
-      "elements": [
-        {
-          "type": "rich_text_section",
-          "elements": [
-            { "type": "text", "text": "Deploy summary: " },
-            { "type": "text", "text": "3 services", "style": { "bold": true } },
-            { "type": "text", "text": " updated. See the " },
-            { "type": "link", "url": "https://example.com/changelog", "text": "changelog" },
-            { "type": "text", "text": " for details." }
-          ]
-        },
-        {
-          "type": "rich_text_list",
-          "style": "bullet",
-          "elements": [
-            { "type": "rich_text_section", "elements": [{ "type": "text", "text": "api-gateway: v2.4.1" }] },
-            { "type": "rich_text_section", "elements": [{ "type": "text", "text": "auth-service: v1.9.0" }] }
-          ]
-        }
-      ]
-    }
-  ]
-}
+[
+  {
+    "type": "rich_text",
+    "elements": [
+      {
+        "type": "rich_text_section",
+        "elements": [
+          { "type": "text", "text": "Deploy summary: " },
+          { "type": "text", "text": "3 services", "style": { "bold": true } },
+          { "type": "text", "text": " updated. See the " },
+          { "type": "link", "url": "https://example.com/changelog", "text": "changelog" },
+          { "type": "text", "text": " for details." }
+        ]
+      },
+      {
+        "type": "rich_text_list",
+        "style": "bullet",
+        "elements": [
+          { "type": "rich_text_section", "elements": [{ "type": "text", "text": "api-gateway: v2.4.1" }] },
+          { "type": "rich_text_section", "elements": [{ "type": "text", "text": "auth-service: v1.9.0" }] }
+        ]
+      }
+    ]
+  }
+]
 ```
 
 **Customization points:** Text styling (`bold`, `italic`, `strike`, `code`) on individual `text` elements, list `style` (`bullet` or `ordered`), adding `rich_text_quote` or `rich_text_preformatted` elements, mixing in `user`/`channel`/`emoji` elements for mentions and reactions inline.
@@ -423,34 +404,30 @@ Formatted text with bold, links, and a bullet list — the WYSIWYG-composer form
 A row-level "⋯" menu for actions that don't need dedicated buttons (edit, duplicate, delete).
 
 ```json
-{
-  "channel": "C0123456789",
-  "text": "Row actions for sprint task",
-  "blocks": [
-    {
-      "type": "actions",
-      "block_id": "row_actions_block",
-      "elements": [
-        {
-          "type": "overflow",
-          "action_id": "row_actions",
-          "options": [
-            { "text": { "type": "plain_text", "text": "Edit" }, "value": "edit" },
-            { "text": { "type": "plain_text", "text": "Duplicate" }, "value": "duplicate" },
-            { "text": { "type": "plain_text", "text": "Delete" }, "value": "delete" }
-          ],
-          "confirm": {
-            "title": { "type": "plain_text", "text": "Confirm delete" },
-            "text": { "type": "plain_text", "text": "This can't be undone." },
-            "confirm": { "type": "plain_text", "text": "Delete" },
-            "deny": { "type": "plain_text", "text": "Cancel" },
-            "style": "danger"
-          }
+[
+  {
+    "type": "actions",
+    "block_id": "row_actions_block",
+    "elements": [
+      {
+        "type": "overflow",
+        "action_id": "row_actions",
+        "options": [
+          { "text": { "type": "plain_text", "text": "Edit" }, "value": "edit" },
+          { "text": { "type": "plain_text", "text": "Duplicate" }, "value": "duplicate" },
+          { "text": { "type": "plain_text", "text": "Delete" }, "value": "delete" }
+        ],
+        "confirm": {
+          "title": { "type": "plain_text", "text": "Confirm delete" },
+          "text": { "type": "plain_text", "text": "This can't be undone." },
+          "confirm": { "type": "plain_text", "text": "Delete" },
+          "deny": { "type": "plain_text", "text": "Cancel" },
+          "style": "danger"
         }
-      ]
-    }
-  ]
-}
+      }
+    ]
+  }
+]
 ```
 
 **Customization points:** Option list (max 5), which option(s) trigger the `confirm` dialog, using `overflow` as a `section` block's `accessory` instead of inside `actions` for a single row's trailing menu.

@@ -13,8 +13,8 @@ Two supported providers, both running the app as a long-lived worker process:
 
 | Provider | Process type | Deploys from | Secrets | Current pricing |
 | --- | --- | --- | --- | --- |
-| Railway | Service, no port binding required | The working directory | Passed on stdin | https://railway.com/pricing |
-| Heroku | `worker` dyno | A git push of committed code | Passed as arguments | https://www.heroku.com/pricing |
+| Railway | Service, no port binding required | The working directory | Passed on stdin | <https://railway.com/pricing> |
+| Heroku | `worker` dyno | A git push of committed code | Passed as arguments | <https://www.heroku.com/pricing> |
 
 Railway is the better default, and the reasons are in **Step 2: Choose a Provider**.
 

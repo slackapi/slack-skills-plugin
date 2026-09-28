@@ -45,10 +45,7 @@ This flow is verified on macOS and Linux. The deploy hook is a shell script, so 
 
 ## Step 2: Choose a Provider
 
-This is the one question worth asking the developer, because cost is the thing they cannot infer from the project. Lead with the money, but **do not quote prices, plan names, or trial terms from memory or from this skill.** Providers change them often, and this skill can be installed long after it was written. Instead:
-
-- If you can fetch web pages, read both pricing pages in the table above and summarise what they say today: whether there is a trial or free credit, whether a card is needed to start, and how an always-on process is billed.
-- If you cannot, give the developer the two links and the questions above, and say that the numbers are theirs to check.
+This is the one question worth asking the developer, because cost is the thing they cannot infer from the project. Give the developer both pricing links from the table above so they can check current terms. **Do not fetch the pages or quote prices, plan names, or trial terms.** Providers change them often, and this skill can be installed long after it was written.
 
 What does not change with the price list, and is worth saying:
 

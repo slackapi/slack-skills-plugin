@@ -9,12 +9,9 @@ It is a self-contained bash script, run by the Slack CLI's `deploy` hook. Copy
 it to `.slack/deploy-railway.sh` in the project as described in the parent
 skill's Step 4.
 
-**Cost.** Check <https://railway.com/pricing> for the current trial and plans before
-running anything, and tell the developer what it says. Do not quote a price, credit
-amount, or trial terms from memory. Railway bills by resource usage, so a
-long-running service costs something for every hour it is up. Whatever trial or
-credit exists will run down continuously, and keeping the app up past it needs a
-paid plan.
+**Cost.** Current pricing is at <https://railway.com/pricing>. Point the developer
+there rather than quoting or fetching it. Railway bills by resource usage, so a
+long-running service costs something for every hour it is up.
 
 ---
 

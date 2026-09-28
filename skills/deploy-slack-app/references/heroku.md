@@ -9,9 +9,9 @@ It is a self-contained bash script, run by the Slack CLI's `deploy` hook. Copy
 it to `.slack/deploy-heroku.sh` in the project as described in the parent
 skill's Step 4.
 
-**Cost.** Check <https://www.heroku.com/pricing> for current plans before running
-anything, and tell the developer what it says. Do not quote a price or plan name
-from memory. Two things hold whatever the price list says:
+**Cost.** Current pricing is at <https://www.heroku.com/pricing>. Point the developer
+there rather than quoting or fetching it. Two things hold whatever the price list
+says:
 
 - **Who owns the app changes the bill.** Personal apps and team apps can have
   different plans available and be billed differently, so confirm which one the

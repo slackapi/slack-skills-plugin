@@ -66,26 +66,20 @@ Use the `slack:test-slack-app` skill to run the app with `SLACK_CMD run` and exe
 
 ## Step 4: Wire Up the Deploy Hook
 
-Three files are involved. **Check whether each already exists before writing it**, because re-deploying an app is the common case and clobbering a developer's edited script is not recoverable.
+Two things to wire up. **Check whether each already exists before writing it**, because re-deploying an app is the common case and clobbering a developer's edited script is not recoverable.
 
 ### 4a. Write the Deploy Script
 
-Copy `references/deploy.sh` to `deploy.sh` in the project root and make it executable with `chmod +x deploy.sh`.
+Copy the provider's deploy script into the project root as `deploy.sh`, then make it executable with `chmod +x deploy.sh`:
 
-This file is provider-agnostic. It validates that both tokens arrived, reports which app is being deployed, and then calls four functions that the provider-specific file supplies. Keeping it unchanged is what lets a later provider be added without touching it.
+- Railway: `references/railway/deploy.sh`
+- Heroku: `references/heroku/deploy.sh`
+
+Each script is self-contained. It validates that both tokens arrived, reads the deployed app ID from `.slack/apps.json` for its log line, and then runs the provider's preflight, provision, configure, and deploy steps in order. There is nothing else to copy.
 
 **If `deploy.sh` already exists**, show the developer that it is there and ask before overwriting. A developer may have adjusted it.
 
-### 4b. Write the Provider Target Script
-
-Copy the target script out of the provider's reference file to `.slack/deploy-target.sh`. It defines exactly four functions, and `deploy.sh` fails with a clear message if any is missing:
-
-- `target_preflight`: read-only checks. Provider CLI installed, authenticated, and any project-level requirement such as a git repository or a `Procfile`.
-- `target_provision`: create the app, project, or service, or reuse the existing one. Must be safe to run again.
-- `target_configure`: set `SLACK_BOT_TOKEN` and `SLACK_APP_TOKEN` on the service.
-- `target_deploy`: ship the code, then print the commands for following the logs.
-
-### 4c. Register the Hook
+### 4b. Register the Hook
 
 Add a `deploy` key to `.slack/hooks.json`, leaving the existing `get-hooks` entry alone:
 

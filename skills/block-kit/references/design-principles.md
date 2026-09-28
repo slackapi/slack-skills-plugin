@@ -2,14 +2,14 @@
 
 Guidance on building layouts that read well, not on whether they parse. Validity — required
 fields, allowed element nesting, surface compatibility — is what `blocks.validate` checks. These
-principles are about *appropriateness*: reaching for the block that fits the shape of the
+principles are about _appropriateness_: reaching for the block that fits the shape of the
 content, and arranging it so a reader takes it in at a glance. Apply them unless the developer
 explicitly asks otherwise.
 
 ## Reach for the block that fits the shape of the content
 
 Don't stack `section` + `divider` text when a purpose-built block fits better, and don't add
-structure to content that doesn't need it. Match the block to what the content *is*:
+structure to content that doesn't need it. Match the block to what the content _is_:
 
 - **Tabular or comparable rows** (metrics, line items, a leaderboard) belong in a `table`.
   Stacked sections force the reader to scan prose; a table aligns columns so values compare at a

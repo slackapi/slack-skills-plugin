@@ -375,3 +375,82 @@ A modal combining different input types for a settings/preferences form.
 ```
 
 **Customization points:** Input types, options, initial values, adding `hint` text to inputs, marking fields as `optional`.
+
+---
+
+## Rich Text Section [M]
+
+Formatted text with bold, links, and a bullet list — the WYSIWYG-composer format, for layouts needing richer inline styling or structure than a `mrkdwn` string offers.
+
+```json
+{
+  "channel": "C0123456789",
+  "text": "Deploy summary: 3 services updated",
+  "blocks": [
+    {
+      "type": "rich_text",
+      "elements": [
+        {
+          "type": "rich_text_section",
+          "elements": [
+            { "type": "text", "text": "Deploy summary: " },
+            { "type": "text", "text": "3 services", "style": { "bold": true } },
+            { "type": "text", "text": " updated. See the " },
+            { "type": "link", "url": "https://example.com/changelog", "text": "changelog" },
+            { "type": "text", "text": " for details." }
+          ]
+        },
+        {
+          "type": "rich_text_list",
+          "style": "bullet",
+          "elements": [
+            { "type": "rich_text_section", "elements": [{ "type": "text", "text": "api-gateway: v2.4.1" }] },
+            { "type": "rich_text_section", "elements": [{ "type": "text", "text": "auth-service: v1.9.0" }] }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+**Customization points:** Text styling (`bold`, `italic`, `strike`, `code`) on individual `text` elements, list `style` (`bullet` or `ordered`), adding `rich_text_quote` or `rich_text_preformatted` elements, mixing in `user`/`channel`/`emoji` elements for mentions and reactions inline.
+
+---
+
+## Row Actions with Overflow Menu [M]
+
+A row-level "⋯" menu for actions that don't need dedicated buttons (edit, duplicate, delete).
+
+```json
+{
+  "channel": "C0123456789",
+  "text": "Row actions for sprint task",
+  "blocks": [
+    {
+      "type": "actions",
+      "block_id": "row_actions_block",
+      "elements": [
+        {
+          "type": "overflow",
+          "action_id": "row_actions",
+          "options": [
+            { "text": { "type": "plain_text", "text": "Edit" }, "value": "edit" },
+            { "text": { "type": "plain_text", "text": "Duplicate" }, "value": "duplicate" },
+            { "text": { "type": "plain_text", "text": "Delete" }, "value": "delete" }
+          ],
+          "confirm": {
+            "title": { "type": "plain_text", "text": "Confirm delete" },
+            "text": { "type": "plain_text", "text": "This can't be undone." },
+            "confirm": { "type": "plain_text", "text": "Delete" },
+            "deny": { "type": "plain_text", "text": "Cancel" },
+            "style": "danger"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+**Customization points:** Option list (max 5), which option(s) trigger the `confirm` dialog, using `overflow` as a `section` block's `accessory` instead of inside `actions` for a single row's trailing menu.

@@ -113,6 +113,8 @@ If they need inspiration, suggest examples — several map directly onto a ready
 - "A dashboard home tab with a welcome header, key metrics in fields, and quick-action buttons" (Dashboard Home Tab)
 - "A settings modal with dropdowns, checkboxes, and a time picker" (Settings Modal with Multiple Input Types)
 - "A table of sprint tasks with status and points" (Data Table)
+- "A deploy summary with bold text, a link, and a bullet list" (Rich Text Section)
+- "A row-level '⋯' menu for edit/duplicate/delete actions" (Row Actions with Overflow Menu)
 
 Get enough detail to plan the layout before generating any JSON.
 

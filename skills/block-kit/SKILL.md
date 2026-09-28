@@ -115,6 +115,7 @@ If they need inspiration, suggest examples — several map directly onto a ready
 - "A table of sprint tasks with status and points" (Data Table)
 - "A deploy summary with bold text, a link, and a bullet list" (Rich Text Section)
 - "A row-level '⋯' menu for edit/duplicate/delete actions" (Row Actions with Overflow Menu)
+- "A product card with an image, price, and Add to Cart button" (Card Preview)
 
 Get enough detail to plan the layout before generating any JSON.
 

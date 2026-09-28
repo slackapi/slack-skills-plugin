@@ -443,3 +443,44 @@ A row-level "⋯" menu for actions that don't need dedicated buttons (edit, dupl
 ```
 
 **Customization points:** Option list (max 5), which option(s) trigger the `confirm` dialog, using `overflow` as a `section` block's `accessory` instead of inside `actions` for a single row's trailing menu.
+
+---
+
+## Card Preview [M]
+
+An image/thumbnail-driven card — link preview, product card, or similar — with a title, body, and action buttons.
+
+```json
+{
+  "blocks": [
+    {
+      "type": "card",
+      "hero_image": {
+        "type": "image",
+        "image_url": "https://example.com/product-photo.png",
+        "alt_text": "Wireless noise-cancelling headphones, matte black"
+      },
+      "title": { "type": "plain_text", "text": "Noise-Cancelling Headphones" },
+      "subtitle": { "type": "plain_text", "text": "$149.99 — In Stock" },
+      "body": { "type": "mrkdwn", "text": "30-hour battery life, USB-C fast charging, and adaptive noise cancellation." },
+      "actions": [
+        {
+          "type": "button",
+          "text": { "type": "plain_text", "text": "View Product" },
+          "url": "https://example.com/products/headphones",
+          "action_id": "view_product_btn"
+        },
+        {
+          "type": "button",
+          "text": { "type": "plain_text", "text": "Add to Cart" },
+          "style": "primary",
+          "action_id": "add_to_cart_btn",
+          "value": "headphones_sku_123"
+        }
+      ]
+    }
+  ]
+}
+```
+
+**Customization points:** `hero_image` (top image) vs. `icon` (small image beside title/subtitle — mutually exclusive with `slack_icon`), `subtext` for secondary detail below `body`, up to 3 `actions` buttons. At least one of `hero_image`, `title`, `actions`, or `body` is required; `title`/`subtitle` max 150 chars, `body`/`subtext` max 200 chars.

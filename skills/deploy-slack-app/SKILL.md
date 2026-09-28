@@ -5,7 +5,7 @@ description: Use when a developer wants to deploy, host, or run a Slack app some
 
 # Deploy Slack App
 
-Take a Slack app that already works locally and get it running on a hosting provider, so it keeps answering in Slack after the developer closes their laptop. This is the step after the `slack:test-slack-app` skill confirms the app responds.
+Take a Slack app that already works locally and deploy it to a hosting provider as a separate Slack app, with its own app ID, that keeps running without the developer's machine. The local development app is unchanged, and **Step 5: Deploy** explains how the two coexist. This is the step after the `slack:test-slack-app` skill confirms the app responds.
 
 The mechanism is the Slack CLI's `deploy` hook. Adding a `deploy` key to the project's `.slack/hooks.json` replaces Slack's own hosted deployment with a script of your choosing, and the CLI runs that script _after_ it has created and installed the deployed app. That ordering is the whole reason this approach is worth using: the app's bot and app-level tokens are already in the script's environment by the time it runs, so nothing here has to prompt for a secret or store one.
 

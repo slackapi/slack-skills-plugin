@@ -11,10 +11,10 @@ The mechanism is the Slack CLI's `deploy` hook. Adding a `deploy` key to the pro
 
 Two supported providers, both running the app as a long-lived worker process:
 
-| Provider | Process type | Cost to start | Secrets |
-| --- | --- | --- | --- |
-| Railway | Service, no port binding required | Free trial credit, no credit card | Passed on stdin |
-| Heroku | `worker` dyno | None free, and a card is required. Eco is $5/month for a personal app, Basic per dyno for a team app | Passed as arguments |
+| Provider | Process type | Deploys from | Secrets | Current pricing |
+| --- | --- | --- | --- | --- |
+| Railway | Service, no port binding required | The working directory | Passed on stdin | https://railway.com/pricing |
+| Heroku | `worker` dyno | A git push of committed code | Passed as arguments | https://www.heroku.com/pricing |
 
 Railway is the better default, and the reasons are in **Step 2: Choose a Provider**.
 
@@ -45,12 +45,17 @@ This flow is verified on macOS and Linux. The deploy hook is a shell script, so 
 
 ## Step 2: Choose a Provider
 
-This is the one question worth asking the developer, because cost is the thing they cannot infer from the project. Use the table at the top of this skill and lead with the money:
+This is the one question worth asking the developer, because cost is the thing they cannot infer from the project. Lead with the money, but **do not quote prices, plan names, or trial terms from memory or from this skill.** Providers change them often, and this skill can be installed long after it was written. Instead:
 
-- **Railway** is the default recommendation. Its free trial credit needs no credit card, which means a developer can get an app deployed without a purchase decision. It also accepts secrets on stdin, so the tokens never appear in process arguments. A long-running service consumes trial credit continuously, so staying up past the trial needs a paid plan.
-- **Heroku** has no free tier at all and requires a credit card. A personal app can use the Eco plan at $5/month. Some accounts, including Salesforce-managed ones, cannot own a personal app at all and must put it on a Heroku team, which bills per dyno instead. Choose Heroku when the developer already has an account or a team standard that points there, and ask which team to use rather than picking one, because a shared team has a shared budget.
+- If you can fetch web pages, read both pricing pages in the table above and summarise what they say today: whether there is a trial or free credit, whether a card is needed to start, and how an always-on process is billed.
+- If you cannot, give the developer the two links and the questions above, and say that the numbers are theirs to check.
 
-Say plainly that **both providers keep the app running continuously**, which is what a Socket Mode app requires, and that this is why no free-forever option exists for either.
+What does not change with the price list, and is worth saying:
+
+- **Railway** is the default recommendation. It accepts secrets on stdin, so the tokens never appear in process arguments. It deploys the working directory, so a re-deploy needs no commit, and it needs no `Procfile`.
+- **Heroku** fits when the developer already has an account, or a team standard that points there. It builds from git, so only committed code is deployed. Some accounts, including Salesforce-managed ones, cannot own a personal app and must create it on a Heroku team. Personal apps and team apps can have different plans and billing, so ask which team to use rather than picking one: a shared team has a shared budget.
+
+Say plainly that **both providers keep the app running continuously**, which is what a Socket Mode app requires. Always-on hosting is a paid service in the end, so expect it to cost something once any trial runs out.
 
 Once the developer picks one, read that provider's reference file and follow it: `references/railway.md` or `references/heroku.md`. Each holds the install and authentication commands, the provider's own requirements for the project, and the target script this skill writes in **Step 4: Wire Up the Deploy Hook**.
 
@@ -156,7 +161,7 @@ If a re-deploy creates a second Slack app, the deployed app entry in `.slack/app
 
 **Serverless providers cannot host a Socket Mode app.** A Socket Mode app is a process that stays resident and holds an outbound websocket open. Vercel, AWS Lambda, and similar platforms run per-request functions with a maximum duration and no always-on process type, so there is nothing for the websocket to live in. When a developer asks for one of these, explain the constraint rather than attempting it. Hosting a Slack app on a serverless platform means a Request URL app, which this skill does not cover yet.
 
-**Continuous hosting is rarely free.** Railway's trial credit is the only no-card option among the providers surveyed. Heroku has no free tier. Render has a suitable background-worker service type but excludes workers from its free instances. Fly.io requires a card on essentially every organization. This is worth stating up front, because a developer expecting a free deployment will otherwise discover it partway through.
+**Continuous hosting is rarely free.** Free tiers usually cover per-request or sleeping workloads, and a Socket Mode app needs a process that never stops. State this up front, because a developer expecting a free deployment will otherwise discover it partway through. When a developer asks about a provider this skill does not cover, the two things to check are whether it offers an always-on background worker process type and how that process is billed.
 
 **The token handoff is not a documented contract.** The Slack CLI does not pass the tokens to the deploy hook explicitly. It sets them on its own process during app installation, and the hook script inherits them because it runs later in that same process. It works, and it only works for apps with no Slack-hosted function runtime, which covers every Bolt app. That is why each deploy script checks for both tokens and stops with a readable message instead of assuming they are present.
 

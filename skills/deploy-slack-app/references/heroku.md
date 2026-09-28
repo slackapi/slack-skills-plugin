@@ -9,13 +9,15 @@ It is a self-contained bash script, run by the Slack CLI's `deploy` hook. Copy
 it to `.slack/deploy-heroku.sh` in the project as described in the parent
 skill's Step 4.
 
-**Cost.** Heroku has no free tier, and it requires a credit card. Tell the developer
-this before running anything. Which paid tier applies depends on who owns the app:
+**Cost.** Check https://www.heroku.com/pricing for current plans before running
+anything, and tell the developer what it says. Do not quote a price or plan name
+from memory. Two things hold whatever the price list says:
 
-- **A personal app** can use the Eco plan, $5/month pooled across the account.
-- **A team app** cannot use Eco. It gets Basic dynos, billed per dyno per month,
-  which is why scaling the unwanted `web` dyno to zero in the deploy script
-  matters to the bill and not only to correctness.
+- **Who owns the app changes the bill.** Personal apps and team apps can have
+  different plans available and be billed differently, so confirm which one the
+  developer is creating.
+- **Every running dyno counts.** That is why scaling the unwanted `web` dyno to
+  zero in the deploy script matters to the bill and not only to correctness.
 
 **Three things to know before choosing Heroku.**
 
@@ -102,9 +104,9 @@ connected to Slack and the second one is in a restart loop. Re-run the scale
 command from the deploy script. Checking the worker's own logs will not reveal
 this: they look healthy either way.
 
-**Check that the dyno stays up while idle, on an Eco app.** Heroku's Eco plan sleeps
-a dyno after 30 minutes of inactivity. That behaviour is documented in terms of
-inbound web traffic, and a Socket Mode worker takes no inbound HTTP at all, so
-whether it applies here is unverified. Leave it idle for 45 minutes, then message the
-app: a sleeping dyno drops the websocket and the app goes quiet in Slack. This does
-not affect a team app, whose Basic dynos do not sleep.
+**Check that the dyno stays up while idle, on a plan that sleeps.** Some lower-cost
+Heroku plans put a dyno to sleep after a period of inactivity. Heroku describes that
+in terms of inbound web traffic, and a Socket Mode worker takes no inbound HTTP at
+all, so whether it applies here is unverified. If the chosen plan's documentation
+mentions sleeping, leave the app idle for longer than the stated period, then
+message it: a sleeping dyno drops the websocket and the app goes quiet in Slack.

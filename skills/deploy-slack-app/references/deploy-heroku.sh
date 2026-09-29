@@ -2,34 +2,31 @@
 #
 # Deploy a Socket Mode Bolt app to Heroku, as a Slack CLI `deploy` hook.
 #
-# Save it as .slack/deploy-heroku.sh and wire it up by adding a `deploy` key to
-# the project's .slack/hooks.json:
+# Installed as .slack/deploy-heroku.sh and registered as the `deploy` hook in
+# .slack/hooks.json by the deploy-slack-app skill. The CLI runs it from the
+# project root after installing the deployed app, so relative paths resolve
+# there and SLACK_BOT_TOKEN and SLACK_APP_TOKEN are inherited from its
+# environment. That handoff is not a documented contract, which is why the
+# checks below exist.
 #
-#   {
-#     "hooks": {
-#       "get-hooks": "npx -q --no-install -p @slack/cli-hooks slack-cli-get-hooks",
-#       "deploy": "./.slack/deploy-heroku.sh"
-#     }
-#   }
-#
-# Then run `slack deploy`. The CLI creates and installs the deployed app first,
-# which is what puts SLACK_BOT_TOKEN and SLACK_APP_TOKEN in this script's
-# environment, and then runs this file through `sh -c` from the project root,
-# so relative paths below resolve against the project root, not .slack/.
-#
-# The CLI passes nothing explicitly. The tokens arrive because the install step
-# runs earlier in the same process and sets them on it, so this script inherits
-# them rather than being handed them. That is not a documented contract, which
-# is why the checks below exist.
-#
-# Supported on macOS and Linux. Windows needs a PowerShell port of this file.
+# Supported on macOS and Linux.
 
 set -euo pipefail
 
 say() { printf '%s\n' "$*"; }
 die() { printf 'error: %s\n' "$*" >&2; exit 1; }
 
-HEROKU_APP_NAME="${HEROKU_APP_NAME:-$(basename "$PWD")}"
+# The Heroku app name. When unset, reuse the app the `heroku` git remote already
+# points at, so a re-deploy targets the same app even though an environment
+# variable set on the first deploy is gone by the next one. The directory name
+# is only the default for a first deploy. Heroku app names are global, so a
+# generic one is often taken.
+remote_app=$(
+  git remote get-url heroku 2>/dev/null \
+    | sed -n 's#.*/\([^/]*\)\.git$#\1#p' \
+    || true
+)
+HEROKU_APP_NAME="${HEROKU_APP_NAME:-${remote_app:-$(basename "$PWD")}}"
 
 # Set HEROKU_TEAM when the app has to belong to a Heroku team rather than to the
 # account personally. Some accounts, including enterprise-managed ones, cannot
@@ -55,10 +52,12 @@ heroku auth:whoami >/dev/null 2>&1 || die \
   "the heroku CLI is not authenticated. Run 'heroku login' (or set HEROKU_API_KEY), then re-run 'slack deploy'."
 git rev-parse --git-dir >/dev/null 2>&1 || die \
   "this project is not a git repository. Heroku builds from a git push, so run 'git init' and commit the project first."
-git diff --quiet && git diff --cached --quiet || say \
-  "warning: there are uncommitted changes. Heroku deploys committed code only, so those changes will not go live."
-[ -f Procfile ] || die \
-  "Procfile is missing. Heroku needs it to run this app as a worker rather than a web process. Create it with one line: 'worker: npm start'."
+git rev-parse --verify HEAD >/dev/null 2>&1 || die \
+  "this repository has no commits yet. Heroku builds from a git push, so commit the project first."
+[ -z "$(git status --porcelain)" ] || say \
+  "warning: there are uncommitted or untracked changes. Heroku deploys committed code only, so those changes will not go live."
+git ls-files --error-unmatch Procfile >/dev/null 2>&1 || die \
+  "Procfile is missing or not committed. Heroku needs it to run this app as a worker rather than a web process. Create it with one line, such as 'worker: npm start' (Bolt for JavaScript) or 'worker: python app.py' (Bolt for Python), and commit it."
 
 # ---------------------------------------------------------------------------
 # 2. Report which app is being deployed
@@ -114,9 +113,8 @@ heroku git:remote --app "${HEROKU_APP_NAME}" >/dev/null
 # 4. Configure secrets
 # ---------------------------------------------------------------------------
 
-# heroku config:set takes values as arguments only: there is no stdin or file
-# input, so these two tokens are visible to `ps` for the life of the command.
-# Nothing here can avoid that; it is a property of the Heroku CLI.
+# heroku config:set takes values as arguments only, so these two tokens are
+# visible to `ps` while the command runs. The Heroku CLI offers no alternative.
 say "Setting SLACK_BOT_TOKEN and SLACK_APP_TOKEN on ${HEROKU_APP_NAME}"
 heroku config:set \
   "SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}" \
@@ -128,44 +126,52 @@ heroku config:set \
 # ---------------------------------------------------------------------------
 
 # Push the current HEAD to the app's main branch, whatever local branch the
-# developer is on. A push with no new commit reports "Everything up-to-date"
-# and builds nothing, so make an empty commit to force a rebuild in that case.
+# developer is on. The output is captured rather than piped so that a failed
+# push is distinguishable from an up-to-date one.
 #
-# The output is captured rather than piped so that a genuinely failed push is
-# distinguishable from an up-to-date one. Piping into grep would swallow the
-# difference and re-push over a real error.
+# A push with no new commit reports "Everything up-to-date" and builds nothing.
+# In that case the dynos are restarted below instead, which picks up any
+# changed tokens. The code itself has not changed, so there is nothing to
+# rebuild, and an empty commit would also sweep up anything the developer had
+# staged.
 say "Pushing to Heroku"
 push_out=$(git push heroku HEAD:refs/heads/main 2>&1) \
   || die "the git push to Heroku failed:
 ${push_out}"
 printf '%s\n' "${push_out}"
 
+up_to_date=false
 if printf '%s' "${push_out}" | grep -q 'Everything up-to-date'; then
-  say "No new commit to deploy. Forcing a rebuild of the current code."
-  git commit --allow-empty -m "chore: redeploy to Heroku" >/dev/null
-  git push heroku HEAD:refs/heads/main
+  up_to_date=true
 fi
 
-# Scale worker up and web down, in one call, and never scale worker alone.
+# Run exactly one worker and no web dyno, in one call so there is no window
+# with both running.
 #
-# The Node buildpack contributes a default `web` process type even though the
-# Procfile only declares `worker`, and Heroku starts that web dyno on the first
-# release. It runs the same `npm start`, so it becomes a second copy of the app:
-# it opens its own Socket Mode connection, Slack then reports
-# "num_connections": 2, and events are delivered to whichever copy Slack picks.
-# It also never boots successfully, because a Socket Mode app binds no port and
-# Heroku kills a web dyno that does not bind $PORT within 60 seconds, so it
-# sits in a restart loop opening a fresh connection on every cycle. And it
-# bills as a second dyno.
+# The Node buildpack adds a default `web` process type even though the Procfile
+# only declares `worker`, and Heroku starts it on the first release. It runs the
+# same start command, so it is a second copy of the app holding a second Socket
+# Mode connection, stuck in a restart loop because it never binds $PORT, and
+# billed as a second dyno. The worker's own logs look healthy throughout.
 #
-# None of that is visible from the worker's own logs, which look perfectly
-# healthy, so scaling web to zero is not optional tidying.
-say "Scaling the worker dyno to 1 and the web dyno to 0"
-heroku ps:scale worker=1 web=0 --app "${HEROKU_APP_NAME}"
+# The Python buildpack adds no `web` type, and scaling one that does not exist
+# is an error, so only scale web when the formation has it.
+formation=$(heroku ps:scale --app "${HEROKU_APP_NAME}" 2>/dev/null || true)
+if printf '%s' "${formation}" | grep -qE '(^|[[:space:]])web='; then
+  say "Scaling the worker dyno to 1 and the web dyno to 0"
+  heroku ps:scale worker=1 web=0 --app "${HEROKU_APP_NAME}"
+else
+  say "Scaling the worker dyno to 1"
+  heroku ps:scale worker=1 --app "${HEROKU_APP_NAME}"
+fi
+
+if [ "${up_to_date}" = true ]; then
+  say "No new commit to deploy. Restarting the dynos to pick up the current config."
+  heroku ps:restart --app "${HEROKU_APP_NAME}"
+fi
 
 say ""
-say "Deployed. The app runs in Socket Mode, so it has no public URL by design."
-say "Follow the build and the websocket connection with:"
-say "  heroku logs --tail --app ${HEROKU_APP_NAME}"
-say "Check dyno state with:"
+say "Deployed. A successful build does not prove the app started, so check for"
+say "the Socket Mode connection in the app's logs:"
+say "  heroku logs --num 100 --app ${HEROKU_APP_NAME}"
 say "  heroku ps --app ${HEROKU_APP_NAME}"

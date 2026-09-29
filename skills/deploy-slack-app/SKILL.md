@@ -30,12 +30,12 @@ This matters more than it looks. Some machines have an unrelated internal tool n
 
 ### 1b. Confirm the App Uses Socket Mode
 
-**Read the app's manifest rather than asking.** The project already declares which mode it uses, so a question here is redundant. Check `manifest.json` (or the manifest source the project uses) for `settings.socket_mode_enabled`.
+**Read the app's manifest rather than asking.** The project already declares which mode it uses, so a question here is redundant. Check `manifest.json` for `settings.socket_mode_enabled`. If `.slack/config.json` sets the manifest source to `remote`, there is no local file, so read it with `SLACK_CMD manifest info` instead.
 
 - **Socket Mode enabled:** continue. The app opens an outbound websocket to Slack, needs no public URL, and binds no HTTP port.
 - **Socket Mode disabled, or the app uses a Request URL:** **stop here.** This skill does not cover Request URL apps yet, because a hosted Request URL app also needs a public address captured after the deploy and written back into the app manifest. Tell the developer plainly that this is the gap, and that converting the app to Socket Mode is the supported path today.
 
-If the manifest is ambiguous, read the app's entrypoint. A Bolt app constructed with `socketMode: true` and an `appToken` is a Socket Mode app.
+If the manifest is ambiguous, read the app's entrypoint. A Bolt for JavaScript app constructed with `socketMode: true` and an `appToken`, or a Bolt for Python app started through `SocketModeHandler`, is a Socket Mode app.
 
 ### 1c. Confirm the Runtime Is Supported
 
@@ -54,7 +54,7 @@ What does not change with the price list, and is worth saying:
 
 Say plainly that **both providers keep the app running continuously**, which is what a Socket Mode app requires. Always-on hosting is a paid service in the end, so expect it to cost something once any trial runs out.
 
-Once the developer picks one, read that provider's reference file and follow it: `references/railway.md` or `references/heroku.md`. Each holds the install and authentication commands, the provider's own requirements for the project, and the target script this skill writes in **Step 4: Wire Up the Deploy Hook**.
+Once the developer picks one, read that provider's reference file and follow it: `references/railway.md` or `references/heroku.md`. Each holds the install and authentication commands, the provider's own requirements for the project, and the environment variables its deploy script reads. **Step 4: Wire Up the Deploy Hook** works through them.
 
 ---
 
@@ -68,9 +68,17 @@ Use the `slack:test-slack-app` skill to run the app with `SLACK_CMD run` and exe
 
 ## Step 4: Wire Up the Deploy Hook
 
-Two things to wire up. **Check whether each already exists before writing it**, because re-deploying an app is the common case and clobbering a developer's edited script is not recoverable.
+Three things to set up. **Check whether each already exists before writing it**, because re-deploying an app is the common case and clobbering a developer's edited script is not recoverable.
 
-### 4a. Write the Deploy Script
+### 4a. Prepare the Provider
+
+Work through the chosen provider's reference file before writing anything, because the deploy script only checks these and stops. It cannot fix them.
+
+- **Install and authenticate the provider's CLI.** Run its `whoami` check. Logging in opens a browser, so if the check fails, ask the developer to run the login command in their own terminal rather than running it yourself.
+- **Settle the names and ownership with the developer.** For Heroku: a distinctive app name, and whether the app belongs to a team (`heroku teams`). For Railway: the workspace, if the account has more than one. These become environment variables on the deploy command in **Step 5: Deploy**.
+- **Meet the provider's project requirements.** For Heroku, write the `Procfile` and commit it. For Railway, confirm the start command it will detect.
+
+### 4b. Write the Deploy Script
 
 Copy the provider's deploy script into the project's `.slack/` directory under the same name, then make it executable:
 
@@ -83,20 +91,15 @@ Each script is self-contained. It validates that both tokens arrived, reads the 
 
 **If the script already exists**, show the developer that it is there and ask before overwriting. A developer may have adjusted it.
 
-### 4b. Register the Hook
+### 4c. Register the Hook
 
-Add a `deploy` key to `.slack/hooks.json` pointing at the provider's script, leaving the existing `get-hooks` entry alone. For Railway:
+Add a `deploy` key inside the existing `hooks` object in `.slack/hooks.json`, pointing at the provider's script. For Railway:
 
 ```json
-{
-  "hooks": {
-    "get-hooks": "npx -q --no-install -p @slack/cli-hooks slack-cli-get-hooks",
-    "deploy": "./.slack/deploy-railway.sh"
-  }
-}
+"deploy": "./.slack/deploy-railway.sh"
 ```
 
-For Heroku, the value is `./.slack/deploy-heroku.sh`.
+For Heroku, the value is `./.slack/deploy-heroku.sh`. **Leave the `get-hooks` entry exactly as it is.** Its value differs between Bolt for JavaScript and Bolt for Python projects, so do not copy one from elsewhere.
 
 **If a `deploy` key is already present, do not add a second one.** A duplicate key produces invalid JSON, and the CLI will reject the project rather than deploy it. If the existing key already points at the chosen provider's script, leave it. If it points somewhere else, such as the other provider's script, show the developer and ask before changing it.
 
@@ -114,6 +117,12 @@ Four flags matter when running this outside an interactive terminal, which inclu
 - `--org-workspace-grant all` answers the workspace-grant prompt for an org-installed app.
 
 So the full command is `SLACK_CMD deploy --skip-update --team <team ID> --app deployed --org-workspace-grant all`.
+
+Put any provider variables settled in **Step 4a: Prepare the Provider** in front of it. The hook inherits the CLI's environment, so this is how they reach the script:
+
+```sh
+HEROKU_TEAM=<team> HEROKU_APP_NAME=<name> SLACK_CMD deploy --skip-update --team <team ID> --app deployed --org-workspace-grant all
+```
 
 **The deployed app is a different app from the one `SLACK_CMD run` uses.** The CLI writes the deployed app to `.slack/apps.json` and the local development app to `.slack/apps.dev.json`, keyed by team. Both keep working independently, which is the intended design, not a mistake to correct.
 
@@ -143,26 +152,22 @@ Show the developer the app ID in `.slack/apps.json` and the one in `.slack/apps.
 
 Shipping a change is the same `SLACK_CMD deploy` command, with the same flags as **Step 5: Deploy**. Everything in **Step 4: Wire Up the Deploy Hook** is already in place, so skip it and go straight to the deploy, and expect the same app rather than a second one.
 
-Two provider differences to know about, both handled by the target scripts:
+Two provider differences to know about, both handled by the deploy scripts:
 
 - **Railway** uploads the working directory and rebuilds every time, so no commit is needed.
-- **Heroku** builds from a git push, so uncommitted changes are not deployed, and a push with no new commit deploys nothing at all. Its target script forces a rebuild with an empty commit in that case.
+- **Heroku** builds from a git push, so uncommitted changes are not deployed. A push with no new commit builds nothing, so the script restarts the dynos instead, which picks up any changed tokens. Commit code changes before re-deploying.
 
-If a re-deploy creates a second Slack app, the deployed app entry in `.slack/apps.json` was lost. Re-check it before deploying again, rather than deleting apps afterwards.
+If a re-deploy creates a second Slack app, the deployed app entry in `.slack/apps.json` was lost. Before deploying again, confirm `.slack/apps.json` has an entry for the `--team` ID, rather than deleting apps afterwards.
 
 ---
 
 ## Notes
 
-**Scope of this skill.** Railway and Heroku only, Socket Mode only, macOS and Linux only. Each of those is a real limit, not an oversight, and the reasons are below.
-
 **Serverless providers cannot host a Socket Mode app.** A Socket Mode app is a process that stays resident and holds an outbound websocket open. Vercel, AWS Lambda, and similar platforms run per-request functions with a maximum duration and no always-on process type, so there is nothing for the websocket to live in. When a developer asks for one of these, explain the constraint rather than attempting it. Hosting a Slack app on a serverless platform means a Request URL app, which this skill does not cover yet.
 
-**Continuous hosting is rarely free.** Free tiers usually cover per-request or sleeping workloads, and a Socket Mode app needs a process that never stops. State this up front, because a developer expecting a free deployment will otherwise discover it partway through. When a developer asks about a provider this skill does not cover, the two things to check are whether it offers an always-on background worker process type and how that process is billed.
+**Other providers.** When a developer asks about a provider this skill does not cover, the two things to check are whether it offers an always-on background worker process type and how that process is billed.
 
 **The token handoff is not a documented contract.** The Slack CLI does not pass the tokens to the deploy hook explicitly. It sets them on its own process during app installation, and the hook script inherits them because it runs later in that same process. It works, and it only works for apps with no Slack-hosted function runtime, which covers every Bolt app. That is why each deploy script checks for both tokens and stops with a readable message instead of assuming they are present.
-
-**Heroku exposes the tokens to `ps`.** `heroku config:set` accepts values as command-line arguments only, with no stdin or file input, so both tokens are visible in the process list while the command runs. Mention it when a developer chooses Heroku.
 
 **Not `slack deploy` without a hook.** With no `deploy` key in `.slack/hooks.json`, `SLACK_CMD deploy` targets Slack's own hosted infrastructure, which is a different product for a different kind of app. The `slack:slack-cli` skill covers the CLI's commands generally.
 

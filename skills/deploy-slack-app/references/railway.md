@@ -5,9 +5,7 @@ directory. It suits a Socket Mode app well: the service binds no HTTP port, and
 Railway does not require one.
 
 The deploy script for this provider is `deploy-railway.sh`, alongside this file.
-It is a self-contained bash script, run by the Slack CLI's `deploy` hook. Copy
-it to `.slack/deploy-railway.sh` in the project as described in the parent
-skill's Step 4.
+Copy it to `.slack/deploy-railway.sh` as described in the parent skill's Step 4.
 
 **Cost.** Current pricing is at <https://railway.com/pricing>. Point the developer
 there rather than quoting or fetching it. Railway bills by resource usage, so a
@@ -19,18 +17,28 @@ long-running service costs something for every hour it is up.
 
 ```sh
 brew install railway          # macOS; see https://docs.railway.com/guides/cli
-railway login                 # or export RAILWAY_TOKEN for a headless project token
 railway whoami                # confirms the CLI is authenticated
 ```
+
+If `railway whoami` fails, ask the developer to run `railway login` in their own
+terminal. It opens a browser, so it cannot complete inside an agent session. For
+a headless setup, export `RAILWAY_API_TOKEN` with an account token. A
+project-scoped `RAILWAY_TOKEN` cannot create projects, so it is not enough for a
+first deploy.
 
 ---
 
 ## What Railway needs from the project
 
-Nothing. Railway's builder detects a Node.js or Python project and runs its start
-command, so no `Procfile`, `Dockerfile`, or config file is required. Make sure the
-project's own start command runs the app: `npm start` for Bolt for JavaScript,
-which means `package.json` needs a `scripts.start` entry.
+No `Procfile`, `Dockerfile`, or config file. Railway's builder detects the
+language and picks a start command, so check that it will pick the right one:
+
+- **Bolt for JavaScript:** it runs `npm start`, so `package.json` needs a
+  `scripts.start` entry that starts the app.
+- **Bolt for Python:** it runs the first of `main.py`, `app.py`, `start.py`, or
+  `bot.py` that exists. The Bolt templates use `app.py`, which works unless a
+  `main.py` is also present. For any other entrypoint, set a start command in a
+  `railway.json` file (see <https://docs.railway.com/reference/config-as-code>).
 
 ---
 
@@ -40,23 +48,25 @@ which means `package.json` needs a `scripts.start` entry.
   project directory name.
 - `RAILWAY_SERVICE_NAME` (optional): the Railway service name. Defaults to the
   project directory name.
+- `RAILWAY_WORKSPACE` (optional, sometimes required): the workspace to create the
+  project in. Required when the account belongs to more than one workspace,
+  because `railway init` otherwise prompts, and the prompt fails in a deploy
+  hook. Ask the developer which workspace to use.
 
----
-
-## Re-deploying
-
-The deploy script is safe to run again. `railway up` uploads the current working
-directory and rebuilds every time, so a re-deploy needs no commit and no cache
-flush. Setting a variable to the same value is a no-op.
+Pass them on the deploy command, as shown in the parent skill's Step 5.
 
 ---
 
 ## Verifying
 
 ```sh
-railway status                # service state
-railway logs                  # look for the Socket Mode connection
+railway service status --service <name>           # deployment state
+railway logs --service <name> --lines 100         # look for the Socket Mode connection
+railway logs --build --service <name> --lines 100 # build output, if the build failed
 ```
+
+Always pass `--lines`. Without it `railway logs` streams until it is stopped,
+which hangs an agent session.
 
 Expect the build to take a few minutes on the first deploy. Railway injects a
 `PORT` variable even when nothing listens on it, which is harmless for a Socket

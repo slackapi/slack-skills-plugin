@@ -31,7 +31,7 @@ says:
   input, so `SLACK_BOT_TOKEN` and `SLACK_APP_TOKEN` appear as process arguments and
   are visible to `ps` while the command runs. The deploy hook runs the command
   rather than a person typing it, so it stays out of shell history, but the `ps`
-  exposure is real. Railway avoids this with `railway variable set --stdin`.
+  exposure is real.
 - **Deploying means pushing a commit.** Heroku builds from git, not from the
   working directory, so the project must be a git repository and the code being
   deployed must be committed. Uncommitted changes are simply not deployed.

@@ -162,7 +162,7 @@ If a re-deploy creates a second Slack app, the deployed app entry in `.slack/app
 
 **The token handoff is not a documented contract.** The Slack CLI does not pass the tokens to the deploy hook explicitly. It sets them on its own process during app installation, and the hook script inherits them because it runs later in that same process. It works, and it only works for apps with no Slack-hosted function runtime, which covers every Bolt app. That is why each deploy script checks for both tokens and stops with a readable message instead of assuming they are present.
 
-**Heroku exposes the tokens to `ps`.** `heroku config:set` accepts values as command-line arguments only, with no stdin or file input, so both tokens are visible in the process list while the command runs. Railway's `railway variable set --stdin` avoids this. Mention it when a developer chooses Heroku.
+**Heroku exposes the tokens to `ps`.** `heroku config:set` accepts values as command-line arguments only, with no stdin or file input, so both tokens are visible in the process list while the command runs. Mention it when a developer chooses Heroku.
 
 **Not `slack deploy` without a hook.** With no `deploy` key in `.slack/hooks.json`, `SLACK_CMD deploy` targets Slack's own hosted infrastructure, which is a different product for a different kind of app. The `slack:slack-cli` skill covers the CLI's commands generally.
 

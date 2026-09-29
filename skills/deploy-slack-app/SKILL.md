@@ -50,7 +50,7 @@ This is the one question worth asking the developer, because cost is the thing t
 What does not change with the price list, and is worth saying:
 
 - **Railway** is the default recommendation. It accepts secrets on stdin, so the tokens never appear in process arguments. It deploys the working directory, so a re-deploy needs no commit, and it needs no `Procfile`.
-- **Heroku** fits when the developer already has an account, or a team standard that points there. It builds from git, so only committed code is deployed. Some accounts, including Salesforce-managed ones, cannot own a personal app and must create it on a Heroku team. Personal apps and team apps can have different plans and billing, so ask which team to use rather than picking one: a shared team has a shared budget.
+- **Heroku** fits when the developer already has an account, or a team standard that points there. It builds from git, so only committed code is deployed. Some accounts, including enterprise-managed ones, cannot own a personal app and must create it on a Heroku team. Personal apps and team apps can have different plans and billing, so ask which team to use rather than picking one: a shared team has a shared budget.
 
 Say plainly that **both providers keep the app running continuously**, which is what a Socket Mode app requires. Always-on hosting is a paid service in the end, so expect it to cost something once any trial runs out.
 

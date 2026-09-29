@@ -32,7 +32,7 @@ die() { printf 'error: %s\n' "$*" >&2; exit 1; }
 HEROKU_APP_NAME="${HEROKU_APP_NAME:-$(basename "$PWD")}"
 
 # Set HEROKU_TEAM when the app has to belong to a Heroku team rather than to the
-# account personally. Some accounts, including Salesforce-managed ones, cannot
+# account personally. Some accounts, including enterprise-managed ones, cannot
 # own personal apps at all: `apps:create` refuses with "All apps must belong to
 # a team. Create the app on a team instead." Leave empty for a personal app.
 HEROKU_TEAM="${HEROKU_TEAM:-}"

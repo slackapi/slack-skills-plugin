@@ -21,7 +21,7 @@ says:
 
 **Three things to know before choosing Heroku.**
 
-- **Some accounts cannot own an app personally.** Salesforce-managed Heroku accounts
+- **Some accounts cannot own an app personally.** Enterprise-managed Heroku accounts
   are one case: `heroku apps:create` refuses with "All apps must belong to a team."
   Run `heroku teams` to see which teams the account belongs to, and set
   `HEROKU_TEAM` to one of them. Creating the app on a shared team spends that
@@ -73,7 +73,7 @@ For Bolt for Python, use the project's own entrypoint, for example
   directory name. Heroku app names are globally unique across all of Heroku, so
   set this to something distinctive when a generic name is likely taken.
 - `HEROKU_TEAM` (optional, sometimes required): the Heroku team to create the
-  app under. Required when the account cannot own personal apps (Salesforce-
+  app under. Required when the account cannot own personal apps (enterprise-
   managed accounts). Leave empty for a personal app.
 
 ---

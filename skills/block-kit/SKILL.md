@@ -162,7 +162,7 @@ Once the layout is approved, build each block from its live doc page, fetching e
 - For modals, include `title`, `submit`, `close`, and `callback_id`; for home tabs, the `type: "home"` wrapper
 - Use `mrkdwn` text for rich formatting, `plain_text` where required (headers, labels, modal title)
 
-**mrkdwn vs. the `markdown` block:** `section` and `context` blocks format text with Slack's `mrkdwn` (`*bold*`, `_italic_`, `~strike~`, `` `code` ``) — use these for short, interactive layouts. The separate `markdown` block (Messages only) renders _standard_ markdown (`**bold**`, headings, tables, numbered lists) and is meant for AI/LLM-generated or long-form content that already exists in standard markdown. Reach for it when the developer has such content or needs those features in the message body; there is a cumulative 12,000-character limit across all `markdown` blocks in one message.
+**mrkdwn vs. the `markdown` block:** `section` and `context` blocks format text with Slack's `mrkdwn` (`*bold*`, `_italic_`, `~strike~`, `` `code` ``) — use these for short, interactive layouts. The separate `markdown` block (Messages only) renders _standard_ markdown (`**bold**`, headings, tables, numbered lists) and is meant for AI/LLM-generated or long-form content that already exists in standard markdown. Reach for it when the developer has such content or needs those features in the message body; each `markdown` block holds up to 12,000 characters.
 
 **Accessibility** is easy to skip and hard to retrofit, so build it in now:
 

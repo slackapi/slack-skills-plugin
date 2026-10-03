@@ -24,7 +24,7 @@ structure to content that doesn't need it. Match the block to what the content _
   for the title, a `section` with `fields` for the key/value details, and an `actions` block for
   the buttons.
 - **Multi-step work an agent is doing** (a plan, a checklist of tool calls) belongs in a `plan`
-  of `task_card`s, each with a `status` — not a growing wall of "Step 3 done ✅" text.
+  of tasks, each with a `status`, not a growing wall of "Step 3 done ✅" text.
 - **A one-line notice with no structure** should stay plain text. Don't add blocks for their own
   sake; wrapping a one-line status in a `card` or a table works against the content, not for it.
 
@@ -34,21 +34,20 @@ Avoid `divider` between every block. Use it only to separate genuinely distinct 
 ### Know where each block works and how much it holds
 
 A block that fits the content can still be the wrong choice for the surface, and each block has
-limits:
+limits. "Views" means both modals and App Home; they accept the same blocks.
 
 | Block | Surfaces | Holds at most |
 |---|---|---|
-| `table` | messages, App Home | 100 rows × 20 cells; 10,000 chars across cells per message |
-| `carousel` | messages, App Home | 1–10 cards |
-| `card` | messages, modals, App Home | 3 actions; title 150 chars, body 200 chars |
-| `markdown` | messages only | 12,000 chars across all markdown blocks in the payload |
-| `plan` / `context_actions` | messages only | 50 task cards / 5 elements |
+| `table` | messages, views | 100 rows × 20 cells; 10,000 chars per table, 20,000 across all tables in a message |
+| `carousel` | messages, views | 1–10 cards |
+| `card` | messages, views | 3 actions; title 150 chars, body 200 chars |
+| `markdown` | messages only | 12,000 chars per block |
+| `plan` / `context_actions` | messages only | 50 tasks / 5 elements |
 | `section` `fields` | all | 10 fields, 2,000 chars each |
-| _(whole surface)_ | — | 50 blocks per message; 100 per modal or App Home |
+| _(whole surface)_ | all | 50 blocks per message; 100 per view |
 
-In a modal, where `table` and `carousel` aren't available, use a `section` with `fields` for key/value
-data. For content that would go over these limits, summarize and link out; don't split
-it across messages.
+For content that would go over these limits, summarize and link out; don't split it across
+messages.
 
 ## Emphasis and actions
 
@@ -57,8 +56,10 @@ it across messages.
   destructive (Delete, Remove). In an Approve/Reject pair, `primary` goes on Approve and Reject
   stays unstyled. Leave secondary or neutral actions (Cancel, links) unstyled. If everything is
   emphasized, nothing is.
-- **Label buttons with specific verbs** ("Approve request", "Open incident"), never "Click here"
-  or "OK". The label, not the red or green style, must say what the button does.
+- **Label buttons with specific verbs** ("Approve request", "Open incident"), never
+  non-descriptive labels like "Click here" or a bare "Submit". "OK" and "Cancel" are fine for a
+  simple confirm/dismiss pair. The label, not the red or green style, must say what the button
+  does.
 - **Keep the visible action set small.** Put two or three actions inline and move advanced or
   rare ones into an `overflow` menu.
 - **Guard destructive actions with a confirmation dialog** (`confirm`) so an accidental click
@@ -98,8 +99,8 @@ it across messages.
 
 ## AI and agent output
 
-- **Show work in progress as structure:** use a `plan` / `task_card` for steps, and switch each
-  card's `status` to `complete` or `error` as the work happens.
+- **Show work in progress as structure:** use a `plan` for steps, and switch each task's
+  `status` to `complete` or `error` as the work happens.
 - **When streaming, send blocks in the final call** (`chat.stopStream`), not in the stream
   chunks.
 - **Collect feedback with `feedback_buttons`** inside a `context_actions` block at the end of the
@@ -122,8 +123,8 @@ Accessibility is easy to skip and hard to retrofit, so build it in from the star
   needs words that say the same thing.
 - **Use emoji alongside text, never instead of it.** Don't use them as bullets or as the only
   label on a control. Keep them few.
-- **Set `accessibility_label` on buttons** whose visible text is ambiguous out of context
-  ("View", "Open").
+- **Set `accessibility_label` only on buttons** whose visible text is ambiguous out of context
+  ("View", "Open"). Don't repeat text that's already clear; a redundant label is noise.
 - **Use `header` blocks for logical section headings.** They convey document structure to
   assistive tech. They take `plain_text` only, up to 150 chars.
 - **Avoid directional references** such as "see above" or "the button on the right". Layouts

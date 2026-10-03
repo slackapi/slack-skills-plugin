@@ -18,7 +18,7 @@ tools = [
     "ruff==0.16.5",
     "rumdl==0.2.62",
     "mypy==2.3.1",
-    "types-PyYAML==6.0.12.20260724",
+    "types-PyYAML==6.0.12.20260906",
     "types-Markdown==3.10.2.20260712",
 ]
 

@@ -11,7 +11,7 @@ test = [
     "google-genai==2.20.0",
     "python-dotenv==1.2.2",
     "pyyaml==6.0.3",
-    "markdown==3.10.3",
+    "markdown==3.11",
     "mcp==2.1.1",
 ]
 tools = [

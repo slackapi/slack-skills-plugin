@@ -10,6 +10,7 @@ unless the developer explicitly asks otherwise.
 | The data is… | Use | Surfaces |
 |---|---|---|
 | one number that matters | a sentence that states it ("Error rate is 2.1%, up from 0.4%") | all |
+| progress toward a goal, or fewer than 4 data points | a sentence ("412 of 500 seats filled (82%)") or `section` `fields` | all |
 | a few key/value facts about one thing | a `section` with `fields` (up to 10) | all |
 | a short set of rows with the same columns | a `table` (up to 100 rows) | messages, App Home |
 | many rows, or rows the reader sorts, pages through, or acts on | a `data_table` (up to 200 rows, paginated, sortable, `action_cell` buttons) | messages, App Home |
@@ -53,18 +54,41 @@ unless the developer explicitly asks otherwise.
 
 ## Charts
 
-- **Title says what the chart shows** (50 characters or fewer): "Deploys per day, last 2 weeks".
-- **State the takeaway in text next to the chart**: "Deploys doubled after the pipeline change."
-  Readers who can't see the chart, and notifications, get only the text.
-- **Label the axes** with `x_label` and `y_label`, including units ("Latency (ms)").
-- **Keep series few.** One to three lines or bar groups are readable; twelve is the limit, not a
-  goal. Series names show in the legend, so keep them short and distinct.
-- **Order categories meaningfully**: time left to right, and for bars, largest first unless the
-  categories have a natural order.
-- **Use `pie` only for parts of one whole**, with values that add up to something meaningful. A
-  bar chart is easier to compare once there are more than a few slices.
-- **Two charts per message at most.** For a dashboard, use the App Home or link out to your
-  product.
+- **Write a title that says what the chart shows.** Keep it to 50 characters or fewer: "Deploys
+  per day, last 2 weeks".
+- **State the takeaway in text.** Put the main point, with its number, in the chart's description
+  and in the message text: "Deploys doubled after the pipeline change." Notifications, previews,
+  and screen readers get only the text, and on mobile the reader can't open the expanded view.
+- **Name the items that matter.** A chart can't highlight a bar or point, and it drops value labels
+  when space is tight. Write "3 accounts need attention: Harmony Labs, Acme, Northwind" rather than
+  leaving the reader to find them.
+- **Label both axes, including units.** Use `x_label` and `y_label`: "Latency (ms)".
+- **Use one series for one comparison.** A bar chart of 8 services is one series in one color.
+  Giving each bar its own series adds colors that suggest a difference that isn't there.
+- **Keep series to a few.** One to three lines or bar groups are easy to read. Past 6, colors
+  repeat in a second shade that's hard to tell apart, especially with color vision deficiency.
+  Series names appear in the legend, so keep them short and distinct.
+- **Use color only to tell series apart.** Slack assigns colors automatically, in series order, and
+  they change in dark mode. Avoid ordering series so a color seems to mean good or bad, and avoid
+  referring to "the orange line". Say what's good or bad in text, and refer to each series by name.
+- **Choose the chart type that fits the data.**
+  - **Bar** compares values across categories. Keep to about 6 categories with one-word labels
+    ("Q1", "Legal", "API"), because the card is often narrow. For more categories or longer
+    labels, use a sorted table.
+  - **Line** shows a trend over time. Keep to 3 lines with at least 4 points each.
+  - **Area** shows a total over time and what it's made of. Areas always stack, so use one only
+    when the series add up to a meaningful total; otherwise, use a line chart. Keep to 3 series.
+  - **Pie** shows parts of one whole. Keep to 5 segments, largest first, and group the rest into
+    "Other". For more, use a sorted bar chart.
+- **Order categories meaningfully.** Put time left to right. For bars, put the largest first unless
+  the categories have a natural order. Slack keeps the order you provide.
+- **Fit the data to the block.** A series holds at most 20 points, so aggregate a long range
+  (weekly instead of daily) rather than trimming it. Every series needs a value for every
+  category, so don't fill a gap with zero. Drop that category from every series and say what's
+  missing in text.
+- **Skip the chart when there's no data.** Say so in a sentence instead: "No deploys this week."
+- **Include no more than two charts in a message.** For a dashboard, use the App Home or link to
+  your product.
 
 ## Numbers and dates in text
 
@@ -82,5 +106,6 @@ unless the developer explicitly asks otherwise.
 1. Does the format answer the reader's question, and is it supported on this surface?
 2. Is the key number or takeaway stated in text, not only in the table or chart?
 3. Does every table have the identifying column first, a clear sort, and units in the header?
-4. Does every chart have a title, axis labels, and few enough series to read?
+4. Does every chart have a title, axis labels, and few enough series and categories to read,
+   with color used only to tell series apart?
 5. Are timestamps localized, and are numbers rounded to what matters?

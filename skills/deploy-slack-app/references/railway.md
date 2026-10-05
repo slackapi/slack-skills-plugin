@@ -51,7 +51,8 @@ language and picks a start command, so check that it will pick the right one:
 - `RAILWAY_WORKSPACE` (optional, sometimes required): the workspace to create the
   project in. Required when the account belongs to more than one workspace,
   because `railway init` otherwise prompts, and the prompt fails in a deploy
-  hook. Ask the developer which workspace to use.
+  hook. `railway whoami --json` lists the account's workspaces. If there is more
+  than one, ask the developer which to use.
 
 Pass them on the deploy command, as shown in the parent skill's Step 5.
 
@@ -67,6 +68,12 @@ railway logs --build --service <name> --lines 100 # build output, if the build f
 
 Always pass `--lines`. Without it `railway logs` streams until it is stopped,
 which hangs an agent session.
+
+**Two connections right after a re-deploy are expected.** Railway starts the new
+deployment before removing the old one, so the new one's logs can show
+`"num_connections":2` for a moment. `railway deployment list --service <name>`
+should then show the new deployment as `SUCCESS` and the old one as `REMOVED`.
+If two deployments stay `SUCCESS`, two copies of the app are connected to Slack.
 
 Expect the build to take a few minutes on the first deploy. Railway injects a
 `PORT` variable even when nothing listens on it, which is harmless for a Socket

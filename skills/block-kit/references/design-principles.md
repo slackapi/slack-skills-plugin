@@ -3,11 +3,11 @@
 Guidance on building layouts that read well, not on whether they parse. Validity — required
 fields, allowed element nesting, per-surface block support — is what `blocks.validate` checks.
 These principles are about _appropriateness_: reaching for the block that fits the shape of the
-content, and arranging it so a reader takes it in at a glance. Apply them unless the developer
+content, and arranging it so people take it in at a glance. Apply them unless the developer
 explicitly asks otherwise.
 
-These principles apply to every surface. Companion references go deeper on specific kinds of
-layout: `modal-design.md` (modals and forms), `home-tab-design.md` (App Home),
+These principles apply to every surface, and the companion references build on them rather than
+repeating them: `modal-design.md` (modals and forms), `home-tab-design.md` (App Home),
 `data-display-design.md` (fields, tables, and charts), `agent-progress-design.md` (plans and
 task cards), and `human-in-the-loop.md` (approvals and choices).
 
@@ -16,38 +16,34 @@ task cards), and `human-in-the-loop.md` (approvals and choices).
 Don't stack `section` + `divider` text when a purpose-built block fits better, and don't add
 structure to content that doesn't need it. Match the block to what the content _is_:
 
-- **Tabular or comparable rows** (metrics, line items, a leaderboard) belong in a `table`.
-  Stacked sections force the reader to scan prose; a table aligns columns so values compare at a
-  glance. When the reader needs to page, sort, or act on rows (more than a screenful, or a button
-  per row), use a `data_table` instead.
-- **A trend, comparison, or share of a whole** (deploys per day, spend by team) belongs in a
-  `data_visualization` chart, always with the key number stated in text as well.
-  `data-display-design.md` covers choosing between fields, tables, and charts.
-- **One rich entity the message is about** (an alert, an incident, a record, a PR) belongs in a
-  `card`. A card groups the entity's title, body, and actions into one bounded unit instead of
-  loose blocks.
-- **A browsable set of peer items the reader chooses among** (a catalog, options, search results)
-  belongs in a `carousel` of cards — horizontal browsing instead of an ever-growing vertical
-  stack.
-- **A status update or an approval** (one subject plus a decision) is well served by a `header`
-  for the title, a `section` with `fields` for the key/value details, and an `actions` block for
-  the buttons.
-- **Multi-step work an agent is doing** (a plan, a checklist of tool calls) belongs in a `plan`
-  of `task_card`s, each with a `status` — not a growing wall of "Step 3 done ✅" text.
-- **A group of related blocks that belong together** (a record's details, an optional
-  breakdown) can go in a `container`, with a title and, for secondary detail, `is_collapsible`
-  so it starts collapsed. It holds up to 10 child blocks, but not `card`, `carousel`, or
-  `data_table`.
-- **A notice about the whole view in a modal** (a validation problem, a success state, a warning
-  before submitting) belongs in an `alert` block. `alert` is available only in modals, so in a
-  message state the level in words ("Deploy failed", "Warning:") in a `header` or `section`.
-- **A status, a date, or a source inside text** belongs in a `rich_text` inline element: a `tag`
-  for a status pill ("In progress"), a `date` for a timestamp that shows in each reader's own
+- **Put tabular or comparable rows in a `table`** (metrics, line items, a leaderboard). Stacked
+  sections make people scan prose; a table aligns columns so values compare at a glance. When
+  people need to page, sort, or act on rows (more than a screenful, or a button per row), use a
+  `data_table` instead.
+- **Put a trend, comparison, or share of a whole in a `data_visualization` chart** (deploys per
+  day, spend by team), and state the key number in text as well. `data-display-design.md` covers
+  choosing between fields, tables, and charts.
+- **Put one rich entity in a `card`** (an alert, an incident, a record, a PR). A card groups the
+  entity's title, body, and actions into one bounded unit instead of loose blocks.
+- **Put a browsable set of peer items in a `carousel` of cards** (a catalog, options, search
+  results), so people browse horizontally instead of scrolling an ever-growing vertical stack.
+- **Build a status update or an approval from a `header`, a `section` with `fields`, and an
+  `actions` block**: the title, the key/value details, then the buttons.
+- **Show multi-step agent work as a `plan` of `task_card`s** (a plan, a checklist of tool
+  calls), each with a `status`, rather than a growing wall of "Step 3 done ✅" text.
+- **Group related blocks in a `container`** (a record's details, an optional breakdown), with a
+  title and, for secondary detail, `is_collapsible` so it starts collapsed. It holds up to 10
+  child blocks, but not `card`, `carousel`, or `data_table`.
+- **Put a notice about a whole modal in an `alert` block** (a validation problem, a success
+  state, a warning before submitting). `alert` is available only in modals, so in a message,
+  state the level in words ("Deploy failed", "Warning:") in a `header` or `section`.
+- **Put a status, a date, or a source inside text as a `rich_text` inline element**: a `tag` for
+  a status pill ("In progress"), a `date` for a timestamp that shows in each person's own
   timezone and format, and a `citation` for an AI answer's source.
-- **A one-line notice with no structure** should stay plain text. Don't add blocks for their own
-  sake; wrapping a one-line status in a `card` or a table works against the content, not for it.
+- **Keep a one-line notice with no structure as plain text.** Wrapping a one-line status in a
+  `card` or a table works against the content, not for it.
 
-Avoid `divider` between every block. Use it only to separate genuinely distinct groups; a
+Avoid a `divider` between every block. Use one only to separate genuinely distinct groups; a
 `header` or the edge of a `card` usually does the job better.
 
 ### Know where each block works and how much it holds
@@ -69,10 +65,10 @@ limits:
 | `section` `fields` | all | 10 fields, 2,000 chars each |
 | _(whole surface)_ | — | 50 blocks per message; 100 per modal or App Home |
 
-In a modal, where `table` and `carousel` aren't available, use a `section` with `fields` for key/value
-data. For content that would go over these limits, summarize and link out first. For a large
-table, a paginated `data_table` comes next. Split content across messages only as a last resort:
-a reader can't sort, search, or act on it as one set, and every extra message is another
+In a modal, where `table` and `carousel` aren't available, use a `section` with `fields` for
+key/value data. For content that would go over these limits, summarize and link out first. For a
+large table, a paginated `data_table` comes next. Split content across messages only as a last
+resort: people can't sort, search, or act on it as one set, and every extra message is another
 notification.
 
 ## Emphasis and actions
@@ -82,9 +78,9 @@ notification.
   _main_ action is destructive (Delete, Remove). In an Approve/Reject pair, `primary` goes on
   Approve and Reject stays unstyled. When the buttons are equal choices (clarifying options, row
   actions, filters), leave them all unstyled. If everything is emphasized, nothing is.
-- **In a modal, Submit is already the main action.** Don't add a `primary` button inside the
-  view's blocks to compete with it.
-- **Label buttons with specific verbs** ("Approve Request", "Open Incident"), never "Click Here".
+- **Treat Submit as a modal's main action.** Slack already emphasizes it, so leave buttons inside
+  the view's blocks unstyled rather than adding a `primary` one to compete with it.
+- **Label buttons with specific verbs** ("Approve Request", "Open Incident"), not "Click Here".
   The label, not the red or green style, must say what the button does.
 - **Keep the visible action set small.** Put two or three actions inline and move advanced or
   rare ones into an `overflow` menu.
@@ -98,13 +94,14 @@ Match the conventions of Slack's own UI, so an app reads like part of Slack:
 - **Use Title Case for action button labels** ("Approve Request", "View Logs"). **Use sentence
   case for everything else**: `header` text, modal titles, input labels, menu and `overflow`
   options, links, and `context` text.
-- **No end punctuation in headings**: "Deploy failed on prod-3", not "Deploy failed on prod-3."
-- **Save commits changes; Done only closes.** Don't label a button that saves "Done", or one that
-  only closes "Save".
+- **Leave end punctuation off headings**: "Deploy failed on prod-3", not "Deploy failed on
+  prod-3."
+- **Use Save for a button that commits changes and Done for one that only closes.** Don't label a
+  button that saves "Done", or one that only closes "Save".
 
 ## Layout and reading order
 
-- **Order blocks top-to-bottom in reading order:** lead with a `header` for the title, then the
+- **Order blocks top to bottom in reading order.** Lead with a `header` for the title, then the
   content `section`s, then any `actions`, then a trailing `context` block for footnotes. Don't
   bury the title in the middle of the layout.
 - **Put the point first.** The first line should say what happened or what's needed ("Deploy
@@ -117,38 +114,32 @@ Match the conventions of Slack's own UI, so an app reads like part of Slack:
 
 - **Update the message in place** (`chat.update`, or `replace_original` via `response_url`) for
   progress and state changes. Don't post a new message for each step.
-- **When a flow is finished, remove its controls.** Replace the `actions` block with a
-  `context` line recording the outcome ("Approved by <@U123> · 10:42"), so stale buttons can't be
-  clicked again.
-- **Keep `action_id`s stable** across updates so handlers keep matching. Give an updated message
-  a **new `block_id`**, so interactions from an older copy can be told apart.
+- **Remove a flow's controls when it's finished.** Replace the `actions` block with a `context`
+  line recording the outcome ("Approved by <@U123> · 10:42"), so stale buttons can't be clicked
+  again.
 
 ## Text: rich_text, mrkdwn, and the markdown block
 
-- **Formatted text you build in code** (lists, quotes, code blocks, mentions, links) belongs in
-  a `rich_text` block. It is the composer's native format and Slack's preferred one.
-- **Short text inside a `section` or `context`** uses Slack `mrkdwn`: `*bold*`, `_italic_`,
-  `~strike~`, `` `code` ``. This is Slack's syntax, not `**bold**`.
-- **Long-form or AI/LLM-generated content that already exists in standard markdown** (headings,
-  tables, numbered lists, `**bold**`) belongs in a `markdown` block (messages only). Its
-  `block_id` is not preserved and images render as links. Use it for body content, not for
-  anything you'll need to find again or update. Don't translate LLM markdown into mrkdwn by hand.
+- **Build formatted text in code as a `rich_text` block** (lists, quotes, code blocks, mentions,
+  links). It's the composer's native format.
+- **Format short text inside a `section` or `context` with Slack `mrkdwn`**: `*bold*`,
+  `_italic_`, `~strike~`, `` `code` ``. This is Slack's syntax, not `**bold**`.
+- **Put long-form or AI-generated content that's already in standard markdown in a `markdown`
+  block** (messages only). Use it for body content, not for anything you'll need to find again
+  or update, and don't translate LLM markdown into mrkdwn by hand.
 
 ## AI and agent output
 
-- **Show work in progress as structure:** use a `plan` / `task_card` for steps, and switch each
-  card's `status` to `complete` or `error` as the work happens. When streaming, send steps as
-  `task_update` chunks instead. `agent-progress-design.md` covers when to use a plan, how to word
-  steps, and how to handle failures.
-- **When streaming, send the rest of the layout in the final call** (`chat.stopStream`), so
-  partly built blocks don't render mid-stream.
+- **Show work in progress as structure.** Use a `plan` of `task_card`s for steps, or
+  `task_update` chunks when streaming. `agent-progress-design.md` covers when to use a plan, how
+  to word steps, and how to handle failures.
 - **Collect feedback with `feedback_buttons`** inside a `context_actions` block at the end of the
   response, instead of hand-rolled thumbs-up and thumbs-down buttons.
 - **Cite sources where the claim is made.** In `rich_text`, use a `citation` element for each
   source. In mrkdwn, use inline links, with a `context` block listing references at the end.
-- **Ask before acting.** Put an explicit `confirm` or Approve/Cancel choice on
-  anything that creates, sends, or deletes on the user's behalf. `human-in-the-loop.md` covers
-  approval gates, approving several actions in one message, and closing the loop afterwards.
+- **Ask before acting.** Put an explicit `confirm` or Approve/Cancel choice on anything that
+  creates, sends, or deletes on someone's behalf. `human-in-the-loop.md` covers approval gates,
+  approving several actions in one message, and closing the loop afterwards.
 
 ## Accessibility and fallback
 
@@ -157,13 +148,13 @@ Accessibility is easy to skip and hard to retrofit, so build it in from the star
 - **Summarize the layout in a message's top-level `text` fallback.** Notifications and screen
   readers show it instead of the blocks. State the point and any action needed ("Deploy failed
   on prod-3 — approval needed to roll back"), not a generic "New message". An empty fallback
-  leaves those readers with nothing, and `blocks.validate` won't warn you.
+  leaves those people with nothing, and `blocks.validate` won't warn you.
 - **Give images descriptive `alt_text`** (what the image shows, not just "image"). Make sure
   image-heavy layouts also carry the key information as text. If an image is purely decorative,
   drop it.
-- **Never use color as the only signal.** A red `danger` button, an emoji, or an `alert` level
-  needs words that say the same thing.
-- **Use emoji alongside text, never instead of it, and only in running text.** Keep them out of
+- **Don't rely on color alone.** A red `danger` button, an emoji, or an `alert` level needs words
+  that say the same thing.
+- **Use emoji alongside text, not instead of it, and only in running text.** Keep them out of
   buttons, menu options, labels, and headers, and don't use them as bullets. Keep them few.
 - **Set `accessibility_label` on buttons** whose visible text is ambiguous out of context
   ("View", "Open").
@@ -174,6 +165,14 @@ Accessibility is easy to skip and hard to retrofit, so build it in from the star
   main takeaway in text next to it ("Deploys doubled week over week").
 - **Avoid directional references** such as "see above" or "the button on the right". Layouts
   reflow on mobile and are read linearly by screen readers.
+
+## Implementation notes
+
+- **Keep `action_id`s stable across updates** so handlers keep matching. Give an updated message
+  a new `block_id`, so interactions from an older copy can be told apart.
+- **When streaming, send the rest of the layout in the final call** (`chat.stopStream`), so
+  partly built blocks don't render mid-stream.
+- **Expect a `markdown` block to lose its `block_id`** and to render images as links.
 
 ## Quick self-review
 

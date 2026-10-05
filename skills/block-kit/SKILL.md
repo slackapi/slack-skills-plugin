@@ -109,7 +109,7 @@ Ask the developer to describe what they want their layout to look like or accomp
 If they need inspiration, suggest examples — several map directly onto a ready-made template in `references/common-patterns.md` (named in parentheses), which you can start from in Step 3:
 
 - "A feedback form with a text input and a category selector" (Simple Form Modal)
-- "A deploy-failure notification with a description and next-step buttons" (Notification Alert), or "an approval request with Approve/Reject buttons" (Approval Message)
+- "A deploy-failure notification with a description and next-step buttons" (Notification Alert), or "an approval request with Approve/Reject buttons" (Approval Message), or "a list of proposed issues to approve together" (Approval Set)
 - "A dashboard home tab with a welcome header, key metrics in fields, and quick-action buttons" (Dashboard Home Tab)
 - "A settings modal with dropdowns, checkboxes, and a time picker" (Settings Modal with Multiple Input Types)
 - "A table of sprint tasks with status and points" (Data Table)

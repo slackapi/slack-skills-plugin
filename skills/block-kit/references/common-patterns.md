@@ -36,7 +36,6 @@ A notification with context and Approve/Reject buttons.
         {
           "type": "button",
           "text": { "type": "plain_text", "text": "Reject" },
-          "style": "danger",
           "action_id": "reject_btn",
           "value": "request_123"
         }
@@ -46,7 +45,7 @@ A notification with context and Approve/Reject buttons.
 }
 ```
 
-**Customization points:** Header text, section fields, button values, adding a confirmation dialog to the Reject button.
+**Customization points:** Header text, section fields, button values. Reject stays unstyled: declining is the safe choice. For several proposed actions in one message, start from Approval Set instead.
 
 ---
 
@@ -483,3 +482,55 @@ An image/thumbnail-driven card — link preview, product card, or similar — wi
 ```
 
 **Customization points:** `hero_image` (top image) vs. `icon` (small image beside title/subtitle — mutually exclusive with `slack_icon`), `subtext` for secondary detail below `body`, up to 3 `actions` buttons. At least one of `hero_image`, `title`, `actions`, or `body` is required; `title`/`subtitle` max 150 chars, `body`/`subtext` max 200 chars.
+
+---
+
+## Approval Set [M]
+
+Several proposed actions in one message, all checked by default, approved with one button. Read the final selection from `state.values` in the button's payload.
+
+```json
+{
+  "text": "3 Linear issues ready to create, approval needed",
+  "blocks": [
+    {
+      "type": "section",
+      "text": { "type": "mrkdwn", "text": "*I found 3 action items in this thread.* Choose which to create as Linear issues in *Platform*:" }
+    },
+    {
+      "type": "actions",
+      "block_id": "issue_selection",
+      "elements": [
+        {
+          "type": "checkboxes",
+          "action_id": "selected_issues",
+          "options": [
+            { "text": { "type": "mrkdwn", "text": "*Fix flaky deploy health check*" }, "description": { "type": "plain_text", "text": "Assignee: Priya · Priority: High" }, "value": "item_1" },
+            { "text": { "type": "mrkdwn", "text": "*Add retry to webhook sender*" }, "description": { "type": "plain_text", "text": "Assignee: Sam · Priority: Medium" }, "value": "item_2" },
+            { "text": { "type": "mrkdwn", "text": "*Update the runbook link*" }, "description": { "type": "plain_text", "text": "Unassigned · Priority: Low" }, "value": "item_3" }
+          ],
+          "initial_options": [
+            { "text": { "type": "mrkdwn", "text": "*Fix flaky deploy health check*" }, "description": { "type": "plain_text", "text": "Assignee: Priya · Priority: High" }, "value": "item_1" },
+            { "text": { "type": "mrkdwn", "text": "*Add retry to webhook sender*" }, "description": { "type": "plain_text", "text": "Assignee: Sam · Priority: Medium" }, "value": "item_2" },
+            { "text": { "type": "mrkdwn", "text": "*Update the runbook link*" }, "description": { "type": "plain_text", "text": "Unassigned · Priority: Low" }, "value": "item_3" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "actions",
+      "block_id": "issue_decision",
+      "elements": [
+        { "type": "button", "action_id": "create_selected_issues", "text": { "type": "plain_text", "text": "Create Selected Issues" }, "style": "primary", "value": "batch_42" },
+        { "type": "button", "action_id": "cancel_issue_batch", "text": { "type": "plain_text", "text": "Cancel" }, "value": "batch_42" }
+      ]
+    },
+    {
+      "type": "context",
+      "elements": [ { "type": "mrkdwn", "text": "Issues will be created as you, <@U0123456789>" } ]
+    }
+  ]
+}
+```
+
+**Customization points:** One option per item (`checkboxes` holds up to 10; use a `data_table` with an `action_cell` per row for more), `initial_options` matching every option so all start checked, the button label naming the action, and the `context` line saying whose identity the action uses. After the decision, replace both `actions` blocks with a `context` line recording what was created and what was skipped.

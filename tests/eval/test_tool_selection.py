@@ -110,6 +110,18 @@ SCENARIOS: list[Scenario] = [
         "accepted_tools": ["deploy-slack-app"],
     },
     {
+        # Unsupported today: the skill should still load so it can explain the gap.
+        "id": "skill-deploy-app-request-url",
+        "prompt": "Deploy my HTTP Bolt app to Heroku so it keeps running",
+        "accepted_tools": ["deploy-slack-app"],
+    },
+    {
+        # Also unsupported today, and should load for the same reason.
+        "id": "skill-deploy-app-windows",
+        "prompt": "Deploy my Slack app to Railway from my Windows laptop",
+        "accepted_tools": ["deploy-slack-app"],
+    },
+    {
         # Pins the boundary the deploy-slack-app description is most likely to blur:
         # running locally stays with slack-cli.
         "id": "skill-deploy-app-vs-cli-run-local",

@@ -1,6 +1,6 @@
 ---
 name: deploy-slack-app
-description: Use when a developer wants to deploy, host, or run a Slack app somewhere it keeps working after the local process stops, or mentions Railway, Heroku, `railway up`, `git push heroku`, `slack deploy`, a `deploy` hook in `.slack/hooks.json`, hosting a Socket Mode Bolt app, or graduating an app out of a developer sandbox. Covers Railway and Heroku, Socket Mode only, on macOS and Linux.
+description: Use when a developer wants to deploy, host, or run a Slack app somewhere it keeps working after the local process stops, or mentions Railway, Heroku, `railway up`, `git push heroku`, `slack deploy`, a `deploy` hook in `.slack/hooks.json`, hosting a Socket Mode or Request URL (HTTP) Bolt app, deploying from Windows, or graduating an app out of a developer sandbox.
 ---
 
 # Deploy Slack App
@@ -33,13 +33,13 @@ This matters more than it looks. Some machines have an unrelated internal tool n
 **Read the app's manifest rather than asking.** The project already declares which mode it uses, so a question here is redundant. Check `manifest.json` for `settings.socket_mode_enabled`. If `.slack/config.json` sets the manifest source to `remote`, there is no local file, so read it with `SLACK_CMD manifest info` instead.
 
 - **Socket Mode enabled:** continue. The app opens an outbound websocket to Slack, needs no public URL, and binds no HTTP port.
-- **Socket Mode disabled, or the app uses a Request URL:** **stop here.** This skill does not cover Request URL apps yet, because a hosted Request URL app also needs a public address captured after the deploy and written back into the app manifest. Tell the developer plainly that this is the gap, and that converting the app to Socket Mode is the supported path today.
+- **Socket Mode disabled, or the app uses a Request URL:** **stop here.** This skill does not cover Request URL apps yet, because a hosted Request URL app also needs a public address captured after the deploy and written back into the app manifest. Tell the developer plainly that this is the gap, and that converting the app to Socket Mode is the supported path today. Support may have shipped in a newer version of the Slack Skills Plugin, so ask the developer to update the plugin and try again. If they are already on the latest version, point them to <https://github.com/slackapi/slack-skills-plugin/issues/172> to add a reaction or comment.
 
 If the manifest is ambiguous, read the app's entrypoint. A Bolt for JavaScript app constructed with `socketMode: true` and an `appToken`, or a Bolt for Python app started through `SocketModeHandler`, is a Socket Mode app.
 
 ### 1c. Confirm the Runtime Is Supported
 
-This flow is verified on macOS and Linux. The deploy hook is a shell script, so a Windows developer needs a PowerShell equivalent that does not exist yet. On Windows, say so rather than letting the deploy fail partway through; WSL is a workable path in the meantime.
+This flow is verified on macOS and Linux. The deploy hook is a shell script, so a Windows developer needs a PowerShell equivalent that does not exist yet. On Windows, say so rather than letting the deploy fail partway through. WSL is a workable path in the meantime. Support may have shipped in a newer version of the Slack Skills Plugin, so ask the developer to update the plugin and try again. If they are already on the latest version, point them to <https://github.com/slackapi/slack-skills-plugin/issues/171> to add a reaction or comment.
 
 ---
 

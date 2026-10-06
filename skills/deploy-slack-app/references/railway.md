@@ -78,3 +78,19 @@ If two deployments stay `SUCCESS`, two copies of the app are connected to Slack.
 Expect the build to take a few minutes on the first deploy. Railway injects a
 `PORT` variable even when nothing listens on it, which is harmless for a Socket
 Mode app.
+
+## Tearing down
+
+Read the project name from `railway status`, then delete the project and unlink
+the directory:
+
+```sh
+railway status                                  # shows the linked project
+railway delete --project <name> --yes
+railway unlink --yes
+```
+
+Railway stops the service right away but schedules the project's removal for
+later, so the project stays in `railway list` for a while. `railway list --json`
+shows the scheduled date as `deletedAt`. The project being listed does not mean
+the delete failed.

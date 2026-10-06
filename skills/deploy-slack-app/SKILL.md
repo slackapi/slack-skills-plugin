@@ -1,6 +1,6 @@
 ---
 name: deploy-slack-app
-description: Use when a developer wants to deploy, host, or run a Slack app somewhere it keeps working after the local process stops, or mentions Railway, Heroku, `railway up`, `git push heroku`, `slack deploy`, a `deploy` hook in `.slack/hooks.json`, hosting a Socket Mode or Request URL (HTTP) Bolt app, deploying from Windows, or graduating an app out of a developer sandbox.
+description: Use when a developer wants to deploy, host, or run a Slack app somewhere it keeps working after the local process stops, or mentions Railway, Heroku, `railway up`, `git push heroku`, `slack deploy`, a `deploy` hook in `.slack/hooks.json`, hosting a Socket Mode or Request URL (HTTP) Bolt app, deploying from Windows, graduating an app out of a developer sandbox, or tearing down a deployed app.
 ---
 
 # Deploy Slack App
@@ -160,6 +160,20 @@ Two provider differences to know about, both handled by the deploy scripts:
 - **Heroku** builds from a git push, so uncommitted changes are not deployed. A push with no new commit builds nothing, so the script restarts the dynos instead, which picks up any changed tokens. Commit code changes before re-deploying.
 
 If a re-deploy creates a second Slack app, the deployed app entry in `.slack/apps.json` was lost. Before deploying again, confirm `.slack/apps.json` has an entry for the `--team` ID, rather than deleting apps afterwards.
+
+---
+
+## Step 8: Tear Down a Deployment
+
+Use this when the developer is done with the deployed app, for example after trying the skill out. It deletes the host's copy and the deployed Slack app, and leaves the development app alone.
+
+**Name every resource and ask once before deleting anything.** These deletes are permanent. Say which provider project or app goes, and which Slack app ID from `.slack/apps.json`, then wait for a yes.
+
+1. **Delete the provider's copy first**, so nothing is left holding a connection to Slack with tokens that are about to stop working. The commands are in the provider's reference file, under "Tearing down".
+2. **Delete the deployed Slack app** with `SLACK_CMD app delete --team <team ID> --app deployed --force`. Read the team ID from `.slack/apps.json`. `--force` skips the confirmation prompt, which would otherwise fail in a non-interactive shell. When it was the only deployed app, the CLI removes `.slack/apps.json` as well, so commit that deletion.
+3. **Leave the development app** unless the developer asks for it too. It is the app `SLACK_CMD run` uses, and they will usually keep working on it. If they ask, the same command with `--app local` deletes it.
+
+Leave `.slack/hooks.json` and the deploy script in place, so a later `SLACK_CMD deploy` sets everything up again from the start.
 
 ---
 

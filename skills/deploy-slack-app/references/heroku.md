@@ -116,3 +116,14 @@ one copy running.
 **If the chosen plan's documentation mentions dynos sleeping**, leave the app idle
 for longer than the stated period, then message it. A sleeping dyno drops the
 websocket and the app goes quiet in Slack.
+
+## Tearing down
+
+Read the app name from the `heroku` git remote, then destroy the app.
+`--confirm` takes the same name and skips the confirmation prompt, and the command
+also removes the `heroku` git remote:
+
+```sh
+git remote get-url heroku                       # https://git.heroku.com/<name>.git
+heroku apps:destroy --app <name> --confirm <name>
+```

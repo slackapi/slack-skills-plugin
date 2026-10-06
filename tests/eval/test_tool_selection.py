@@ -122,6 +122,11 @@ SCENARIOS: list[Scenario] = [
         "accepted_tools": ["deploy-slack-app"],
     },
     {
+        "id": "skill-deploy-app-tear-down",
+        "prompt": "Tear down my deployed Slack app on Railway, I'm done testing it",
+        "accepted_tools": ["deploy-slack-app"],
+    },
+    {
         # Pins the boundary the deploy-slack-app description is most likely to blur:
         # running locally stays with slack-cli.
         "id": "skill-deploy-app-vs-cli-run-local",

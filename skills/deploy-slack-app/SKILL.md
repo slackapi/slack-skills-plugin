@@ -126,6 +126,8 @@ HEROKU_TEAM=<team> HEROKU_APP_NAME=<name> SLACK_CMD deploy --skip-update --team 
 
 **The deployed app is a different app from the one `SLACK_CMD run` uses.** The CLI writes the deployed app to `.slack/apps.json` and the local development app to `.slack/apps.dev.json`, keyed by team. Both keep working independently, which is the intended design, not a mistake to correct.
 
+**Commit `.slack/apps.json` after the first deploy.** It holds app and team IDs, not secrets, and the project's `.slack/.gitignore` leaves it tracked on purpose. Committing it keeps every later deploy pointed at the same app. On Heroku it also stops the deploy script warning about uncommitted changes on each re-deploy.
+
 One consequence to warn the developer about: the two apps declare the same slash commands in the same workspace. Running `SLACK_CMD run` while the deployed app is live makes it ambiguous which one answers a slash command. Stop the local process when checking the deployed app, which **Step 6: Verify the Deployment** does anyway.
 
 ---

@@ -52,6 +52,12 @@ heroku auth:whoami >/dev/null 2>&1 || die \
   "the heroku CLI is not authenticated. Run 'heroku login' (or set HEROKU_API_KEY), then re-run 'slack deploy'."
 git rev-parse --git-dir >/dev/null 2>&1 || die \
   "this project is not a git repository. Heroku builds from a git push, so run 'git init' and commit the project first."
+# A project created inside another repository passes the check above on the
+# parent's .git, and the push below would then deploy the parent's code. Compare
+# physical paths, because macOS reports some directories through symlinks.
+repo_root=$(cd "$(git rev-parse --show-toplevel)" && pwd -P)
+[ "${repo_root}" = "$(pwd -P)" ] || die \
+  "this project is inside another git repository (${repo_root}) rather than being its own. Heroku would deploy that repository's code instead of this app. Run 'git init' in the project directory and commit the project there."
 git rev-parse --verify HEAD >/dev/null 2>&1 || die \
   "this repository has no commits yet. Heroku builds from a git push, so commit the project first."
 [ -z "$(git status --porcelain)" ] || say \
@@ -145,14 +151,17 @@ if printf '%s' "${push_out}" | grep -q 'Everything up-to-date'; then
   up_to_date=true
 fi
 
-# Run exactly one worker and no web dyno, in one call so there is no window
-# with both running.
+# Run exactly one worker and no web dyno, in one call.
 #
 # The Node buildpack adds a default `web` process type even though the Procfile
 # only declares `worker`, and Heroku starts it on the first release. It runs the
 # same start command, so it is a second copy of the app holding a second Socket
 # Mode connection, stuck in a restart loop because it never binds $PORT, and
 # billed as a second dyno. The worker's own logs look healthy throughout.
+#
+# The release starts it before this step can run, so for a few seconds after a
+# first deploy both copies are connected. After this scale, web stays at 0 on
+# every later release.
 #
 # The Python buildpack adds no `web` type, and scaling one that does not exist
 # is an error, so only scale web when the formation has it.

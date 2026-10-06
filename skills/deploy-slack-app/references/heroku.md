@@ -64,6 +64,15 @@ For Bolt for Python, use the project's entrypoint, for example
 `worker: python app.py`. Commit the file before deploying: the deploy script stops
 if the `Procfile` is not in git, because an uncommitted one never reaches Heroku.
 
+The project must be its own git repository, not a directory inside another one.
+`slack create` does not run `git init`, so check with `git rev-parse --show-toplevel`
+and run `git init` in the project if it names a parent directory. The deploy script
+stops in that case, because the push would deploy the parent repository's code.
+
+For Bolt for Python, also commit a `.python-version` file holding the major and minor
+version the app runs on locally, such as `3.13`. Without one, Heroku picks its own
+default version and warns that a missing file will become an error.
+
 ---
 
 ## Environment variables
@@ -97,6 +106,12 @@ agent session. Do not run a bare `heroku config`: it prints the token values.
 connected to Slack and the second one is in a restart loop. Run
 `heroku ps:scale web=0 --app <name>`. The worker's own logs will not reveal this:
 they look healthy either way.
+
+**Two connections right after a first deploy are expected.** For Bolt for
+JavaScript, Heroku starts a `web` dyno with the first release, before the deploy
+script scales it to 0. The worker's first log line can show `num_connections: 2`
+while that `web` dyno shuts down. If `heroku ps` lists only the worker, there is
+one copy running.
 
 **If the chosen plan's documentation mentions dynos sleeping**, leave the app idle
 for longer than the stated period, then message it. A sleeping dyno drops the

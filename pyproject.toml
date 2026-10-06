@@ -48,6 +48,7 @@ indent-style = "space"
 [tool.rumdl]
 include = [
     "skills/**/*.md",
+    ".claude/skills/**/*.md",
     "commands/*.md",
     "docs/**/*.md",
     "README.md",

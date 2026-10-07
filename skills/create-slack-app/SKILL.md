@@ -76,7 +76,7 @@ SLACK_CMD sandbox list --team <team_id>
 
 Once the sandbox exists, have the developer log into it with the Step 2 flow before continuing.
 
-**Basic sandboxes.** A developer who is not on a paid plan and has not added a payment method gets a basic sandbox. It works for everything this skill builds, with stricter limits: it is archived after 1 month of inactivity, and it has no Slack Connect. If the developer needs more, they can add a payment method (they are not charged) or join a paid plan, then upgrade the sandbox from <https://api.slack.com/developer-program/sandboxes> without losing their apps or data. Limits are listed at <https://docs.slack.dev/tools/developer-sandboxes#basic>.
+**Basic sandboxes.** A developer who is not on a paid plan and has not added a payment method gets a basic sandbox. It works for everything this skill builds, with stricter limits: it is archived after 1 month of inactivity, has no Slack Connect, and does not support deploying apps to Slack infrastructure (ROSI). If the developer needs more, they can add a payment method (they are not charged) or join a paid plan, then upgrade the sandbox from <https://api.slack.com/developer-program/sandboxes> without losing their apps or data. Limits are listed at <https://docs.slack.dev/tools/developer-sandboxes#basic>.
 
 ### 3b. Free Team (second choice)
 

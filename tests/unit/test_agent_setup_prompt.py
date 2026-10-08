@@ -3,10 +3,13 @@ import re
 from tests.config import AGENT_SETUP_PROMPT, README
 
 # The prompt runs commands from the agent's shell, while the README shows some as
-# commands a person types. Each pair maps the prompt's form to the README's.
+# commands a person types. Each pair maps the prompt's form to the README's. The
+# prompt also installs `npx skills` globally (`-g`), which the README documents as
+# an option rather than in the command itself.
 SHELL_TO_README = (
     ("claude plugin install ", "/plugin install "),
     ("npx -y skills ", "npx skills "),
+    (" -g ", " "),
 )
 
 

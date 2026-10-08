@@ -41,10 +41,10 @@ The plugin loads in the user's next Codex session. Do not ask the user to restar
 Install the Slack skills with [`npx skills`](https://github.com/vercel-labs/skills#supported-agents), passing your own agent identifier to `-a`:
 
 ```sh
-npx -y skills add slackapi/slack-skills-plugin -y -a <agent>
+npx -y skills add slackapi/slack-skills-plugin -g -y -a <agent>
 ```
 
-For example, `-a cursor` for Cursor, `-a gemini-cli` for Gemini CLI, or `-a opencode` for OpenCode. See the [supported agents list](https://github.com/vercel-labs/skills#supported-agents) for every identifier.
+The `-g` flag installs the skills for the user rather than the current folder, so they are available in the new app's folder and every later session. For example, `-a cursor` for Cursor, `-a gemini-cli` for Gemini CLI, or `-a opencode` for OpenCode. See the [supported agents list](https://github.com/vercel-labs/skills#supported-agents) for every identifier.
 
 The skills load in the user's next session. Do not ask the user to restart. Continue with Step 2 in this session using the hosted skills.
 

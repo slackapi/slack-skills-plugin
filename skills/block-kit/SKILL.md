@@ -109,10 +109,13 @@ Ask the developer to describe what they want their layout to look like or accomp
 If they need inspiration, suggest examples — several map directly onto a ready-made template in `references/common-patterns.md` (named in parentheses), which you can start from in Step 3:
 
 - "A feedback form with a text input and a category selector" (Simple Form Modal)
-- "A notification message with an alert banner, description, and Approve/Reject buttons" (Notification Alert / Approval Message)
+- "A deploy-failure notification with a description and next-step buttons" (Notification Alert), or "an approval request with Approve/Reject buttons" (Approval Message)
 - "A dashboard home tab with a welcome header, key metrics in fields, and quick-action buttons" (Dashboard Home Tab)
 - "A settings modal with dropdowns, checkboxes, and a time picker" (Settings Modal with Multiple Input Types)
 - "A table of sprint tasks with status and points" (Data Table)
+- "A deploy summary with bold text, a link, and a bullet list" (Rich Text Section)
+- "A row-level '⋯' menu for edit/duplicate/delete actions" (Row Actions with Overflow Menu)
+- "A product card with an image, price, and Add to Cart button" (Card Preview)
 
 Get enough detail to plan the layout before generating any JSON.
 
@@ -124,7 +127,13 @@ Based on the developer's description:
 
 1. **Fetch only what you need** from the live docs:
    - WebFetch the master index (`https://docs.slack.dev/reference/block-kit.md`) to confirm the block and element types you plan to use exist and to grab links to their pages.
-   - Check `references/common-patterns.md` (the one local reference file) if the request matches a common pattern; start from the template instead of building from scratch.
+   - Consult `references/design-principles.md` for design appropriateness — which block fits the shape of the content (table vs. stacked sections, card vs. loose blocks), emphasis, reading order, and accessibility. It is guidance on building layouts that read well, not on validity. Depending on the layout, also consult:
+     - `references/modal-design.md` for modals and forms: titles and submit labels, input labels and hints, multi-step flows, validation errors, and loading or success states.
+     - `references/home-tab-design.md` for Home tabs: what goes at the top, empty and first-run states, keeping the view current, different views per role, and review surfaces for agents.
+     - `references/data-display-design.md` for numbers and records: choosing between `section` fields, `table`, `data_table`, and `data_visualization` charts, and presenting each clearly.
+     - `references/agent-progress-design.md` for showing an agent's work with `plan` and `task_card` blocks or streamed task updates.
+     - `references/human-in-the-loop.md` for approval gates, approving several proposed actions in one message, clarifying choices, and edit-before-send.
+   - Check `references/common-patterns.md` if the request matches a common pattern; start from the template instead of building from scratch.
    - Defer reading individual component pages until Step 4, when you build each block's fields.
 2. Propose a numbered block outline. For example:
 
@@ -133,7 +142,7 @@ Based on the developer's description:
    2. section: Summary text with a datepicker accessory
    3. divider
    4. section: Status fields (Name, Role, Team)
-   5. actions: "Approve" button (primary) and "Reject" button (danger)
+   5. actions: "Approve Report" button (primary) and "Reject" button (unstyled)
    ```
 
 3. Present the outline to the developer and ask for approval or changes before generating JSON.
@@ -143,6 +152,8 @@ Based on the developer's description:
 - Block count limit: 50 for messages, 100 for modals/home tabs
 - Modal-specific: if using `input` blocks, the modal payload must include a `submit` field
 - Table: only one `table` block per message
+- Charts: at most two `data_visualization` blocks per message
+- Alert: the `alert` block is available only in modals. In messages, state severity in words in a `header` or `section`.
 - Surface compatibility (whether a block is valid on the chosen surface) and element compatibility (whether an element is allowed inside a given block) are not always spelled out on a component's doc page. Build the layout from the docs, and let `blocks.validate` in Step 5 confirm it. It is the authoritative check.
 
 ---
@@ -158,13 +169,9 @@ Once the layout is approved, build each block from its live doc page, fetching e
 - For modals, include `title`, `submit`, `close`, and `callback_id`; for home tabs, the `type: "home"` wrapper
 - Use `mrkdwn` text for rich formatting, `plain_text` where required (headers, labels, modal title)
 
-**mrkdwn vs. the `markdown` block:** `section` and `context` blocks format text with Slack's `mrkdwn` (`*bold*`, `_italic_`, `~strike~`, `` `code` ``) — use these for short, interactive layouts. The separate `markdown` block (Messages only) renders _standard_ markdown (`**bold**`, headings, tables, numbered lists) and is meant for AI/LLM-generated or long-form content that already exists in standard markdown. Reach for it when the developer has such content or needs those features in the message body; there is a cumulative 12,000-character limit across all `markdown` blocks in one message.
+**mrkdwn vs. the `markdown` block:** `section` and `context` blocks format text with Slack's `mrkdwn` (`*bold*`, not `**bold**`). The separate `markdown` block (messages only) renders standard markdown and is for AI/LLM-generated or long-form content that is already in standard markdown. `references/design-principles.md`, **Text: rich_text, mrkdwn, and the markdown block**, explains when to use each, including `rich_text` for formatted text you build in code.
 
-**Accessibility** is easy to skip and hard to retrofit, so build it in now:
-
-- Give images descriptive `alt_text` (what the image shows, not just "image"), and make sure image-heavy layouts also carry the key information as text
-- Summarize the layout in the message's `text` fallback (notifications and screen readers show it instead of the blocks)
-- Use `header` blocks for logical section headings — they convey document structure to assistive tech
+**Accessibility** is easy to skip and hard to retrofit, so build it in now. Apply `references/design-principles.md`, **Accessibility and fallback**, as you write each block: it covers the `text` fallback, `alt_text`, color and emoji, button labels, and text equivalents for tables and charts.
 
 Present the complete payload to the developer in the Step 1 surface structure.
 

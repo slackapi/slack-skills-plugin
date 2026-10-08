@@ -1,5 +1,13 @@
 # slack
 
+## 1.4.1
+
+### Patch Changes
+
+- f6f4b34: Add a Card Preview pattern to the block-kit skill's common patterns reference.
+- f6f4b34: Add a design-principles.md reference to the block-kit skill, covering layout appropriateness (which block fits the content, emphasis, reading order, accessibility) as distinct from `blocks.validate` validity.
+- f6f4b34: Add Rich Text Section and Row Actions with Overflow Menu patterns to the block-kit skill's common patterns reference.
+
 ## 1.4.0
 
 ### Minor Changes

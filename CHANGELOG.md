@@ -1,5 +1,13 @@
 # slack
 
+## 1.4.2
+
+### Patch Changes
+
+- 2118120: Support basic developer sandboxes, now that every Developer Program account can create one with no paid plan or payment method. `create-slack-app` says so when recommending a sandbox, explains a basic sandbox's limits and how to upgrade it, and checks that the logged-in email matches the developer's account before sending them to sign up.
+- 96f6ea2: Add design references to the block-kit skill for modals and forms, App Home, data display (fields, tables, and charts), agent progress (plans and task cards), and human-in-the-loop approvals. Extend the design principles to cover `data_table`, `data_visualization`, `container`, `alert`, and inline `tag`, `date`, and `citation` elements. Fix the Notification Alert pattern, which used the modal-only `alert` block in a message.
+  Align labels in the guidance and patterns with Slack's UI conventions (Title Case action buttons, sentence case elsewhere, no emoji in buttons, labels, or headers), and limit `primary` styling to one button per message or view.
+
 ## 1.4.1
 
 ### Patch Changes

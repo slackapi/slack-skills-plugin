@@ -45,7 +45,7 @@ The app needs a Slack workspace to install into. Three targets work and they are
 
 | Target | Best for | Cost of entry |
 |--------|----------|---------------|
-| **Developer sandbox** (recommended) | Anything the developer plans to keep building on. A free Enterprise Grid org isolated from real users, so org-level features are testable. | Needs a Slack Developer Program account, which is free to join. |
+| **Developer sandbox** (recommended) | Anything the developer plans to keep building on. A free Enterprise Grid org isolated from real users, so org-level features are testable. | Needs a Slack Developer Program account, which is free to join. Every account can create a basic sandbox, with no paid plan or payment method. |
 | **Free Team** (second choice) | Starting right now, when Developer Program signup is the thing in the way. A free workspace the developer creates and owns. | Capped at 10 apps per workspace, and no Enterprise Grid org features. |
 | **Existing production workspace** (last resort) | Only when the app must reach real data or real coworkers. | Usually gated by admin approval, and the developer may not be the admin. |
 
@@ -61,7 +61,7 @@ List existing sandboxes. Pass `--team` so the CLI does not stop to ask which aut
 SLACK_CMD sandbox list --team <team_id>
 ```
 
-**If the developer has no Developer Program account**, `sandbox list` returns nothing useful, because sandboxes belong to the developer program account whose email matches the authenticated user rather than to the workspace. Point them at <https://api.slack.com/developer-program/join>, and offer the Free Team path in 3b as a way to start building now rather than waiting on signup.
+**If the developer has no Developer Program account**, `sandbox list` returns nothing useful, because sandboxes belong to the developer program account whose email matches the authenticated user rather than to the workspace. If they say they do have an account, check that the email they are logged in with matches it before sending them to sign up, and log into a workspace under that email if not. Point them at <https://api.slack.com/developer-program/join>, and offer the Free Team path in 3b as a way to start building now rather than waiting on signup.
 
 - **If a sandbox exists**: Show it and confirm they want to use it.
 - **If no sandbox exists**: Create one. Ask the developer for a name and a password with AskUserQuestion, then run:
@@ -75,6 +75,8 @@ SLACK_CMD sandbox list --team <team_id>
   Sandboxes can also be created in the browser at <https://api.slack.com/developer-program/sandboxes>.
 
 Once the sandbox exists, have the developer log into it with the Step 2 flow before continuing.
+
+**Basic sandboxes.** A developer who is not on a paid plan and has not added a payment method gets a basic sandbox. It works for everything this skill builds, with stricter limits: it is archived after 1 month of inactivity, has no Slack Connect, and does not support deploying apps to Slack infrastructure (ROSI). If the developer needs more, they can add a payment method (they are not charged) or join a paid plan, then upgrade the sandbox from <https://api.slack.com/developer-program/sandboxes> without losing their apps or data. Limits are listed at <https://docs.slack.dev/tools/developer-sandboxes#basic>.
 
 ### 3b. Free Team (second choice)
 

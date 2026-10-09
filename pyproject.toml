@@ -50,6 +50,7 @@ include = [
     "skills/**/*.md",
     "commands/*.md",
     "docs/**/*.md",
+    "docs-static/**/*.md",
     "README.md",
     "AGENTS.md",
     ".github/maintainers_guide.md",

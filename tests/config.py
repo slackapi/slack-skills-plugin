@@ -31,3 +31,7 @@ GEMINI_MODEL = os.environ.get("GEMINI_MODEL_NAME", "gemini-3.1-flash-lite")
 # Slack MCP server
 SLACK_MCP_URL = "https://mcp.slack.com/mcp"
 SLACK_MCP_TOKEN = os.environ.get("SLACK_MCP_TOKEN", "")
+
+# Agent setup prompt, served on docs.slack.dev from docs-static/
+AGENT_SETUP_PROMPT = Path(__file__).parent.parent / "docs-static" / "agent-setup" / "prompt.md"
+README = Path(__file__).parent.parent / "README.md"

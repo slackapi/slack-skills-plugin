@@ -60,6 +60,8 @@ Two test layers validate skills:
 
 To add an eval scenario, append a `Scenario` (prompt + expected tool) to `SCENARIOS` in `tests/eval/test_tool_selection.py`.
 
+Neither layer runs a skill against a real Slack workspace. Before merging a change to a skill that acts on real systems, such as creating, testing, or deploying an app, live-test it with the `live-test-skill` skill in `.claude/skills/`: a clean agent works through a fresh project in `tmp/` (gitignored) while you play the developer. It is internal, so it is not installed for developers.
+
 ## CI
 
 GitHub Actions (`.github/workflows/ci-build.yml`) gates every PR with:

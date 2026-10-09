@@ -35,3 +35,12 @@ class TestAgentSetupPrompt:
                 f"{AGENT_SETUP_PROMPT.name} runs `{command}`, but README.md has no `{expected}`; "
                 "update both install sections together"
             )
+
+    def test_prompt_compiles_as_mdx(self) -> None:
+        # docs.slack.dev builds with Docusaurus, which compiles this file as MDX.
+        # MDX reads `<https://...>` autolinks as JSX tags and fails the build.
+        autolinks = re.findall(r"<https?://[^>]*>", self.prompt)
+        assert not autolinks, (
+            f"{AGENT_SETUP_PROMPT.name} uses `<url>` autolinks {autolinks}, which break the "
+            "docs.slack.dev MDX build; write them as `[text](url)` instead"
+        )

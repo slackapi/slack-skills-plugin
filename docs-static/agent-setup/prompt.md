@@ -1,6 +1,6 @@
 # Slack Agent Setup
 
-These are official instructions from Slack for setting up a coding agent to build Slack apps, published at <https://docs.slack.dev/agent-setup/prompt.md>. Every command below comes from the [Slack MCP and Skills Plugin](https://github.com/slackapi/slack-skills-plugin) and is maintained by Slack.
+These are official instructions from Slack for setting up a coding agent to build Slack apps, published at [https://docs.slack.dev/agent-setup/prompt.md](https://docs.slack.dev/agent-setup/prompt.md). Every command below comes from the [Slack MCP and Skills Plugin](https://github.com/slackapi/slack-skills-plugin) and is maintained by Slack.
 
 Complete both steps in this session:
 
@@ -55,12 +55,12 @@ The skills load in the user's next session. Do not ask the user to restart. Cont
 Follow the `create-slack-app` skill from start to finish.
 
 - **If the skill is loaded** (Claude Code after `/reload-plugins`), use `slack:create-slack-app`.
-- **If it is not loaded**, read the hosted copy at <https://docs.slack.dev/.well-known/skills/create-slack-app/SKILL.md> and follow it in this session.
+- **If it is not loaded**, read the hosted copy at [https://docs.slack.dev/.well-known/skills/create-slack-app/SKILL.md](https://docs.slack.dev/.well-known/skills/create-slack-app/SKILL.md) and follow it in this session.
 
 While following the skill:
 
 - **Use the Starter Agent template.** When the skill asks which template to use, pick Starter Agent (`slack-samples/bolt-js-starter-agent` or `slack-samples/bolt-python-starter-agent`) without asking the user. Still ask which language (JavaScript or Python) and which AI provider they want.
-- **Resolve skill references from the hosted copies** when the plugin is not loaded. A reference like `slack:<name>` means the skill at `https://docs.slack.dev/.well-known/skills/<name>/SKILL.md`. A path like `references/<file>.md` is relative to that skill's folder at the same address. The full list of skills and their files is at <https://docs.slack.dev/.well-known/skills/index.json>.
+- **Resolve skill references from the hosted copies** when the plugin is not loaded. A reference like `slack:<name>` means the skill at `https://docs.slack.dev/.well-known/skills/<name>/SKILL.md`. A path like `references/<file>.md` is relative to that skill's folder at the same address. The full list of skills and their files is at [https://docs.slack.dev/.well-known/skills/index.json](https://docs.slack.dev/.well-known/skills/index.json).
 - **Let the skill ask its own questions**, such as which workspace to install into or which API key to use. Those choices are the user's.
 
 ---
@@ -80,4 +80,4 @@ Tell the user what was set up:
 
 Then offer the skill's next steps, such as exploring the code or making a first change.
 
-These instructions are published at <https://docs.slack.dev/agent-setup/prompt.md>. Fetch that address again to verify them, or for the latest version.
+These instructions are published at [https://docs.slack.dev/agent-setup/prompt.md](https://docs.slack.dev/agent-setup/prompt.md). Fetch that address again to verify them, or for the latest version.

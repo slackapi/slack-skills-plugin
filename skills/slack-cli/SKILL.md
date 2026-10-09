@@ -248,4 +248,4 @@ For any other command group (e.g., `trigger`, `datastore`, `env`, `collaborator`
 - `SLACK_CMD` is a placeholder — always substitute the actual command name resolved in Step 1.
 - **Always run `--help`** before constructing a command you have not used in the current session.
 - Interactive commands (e.g., `slack trigger create` without `--trigger-def`) cannot be run in the background. Tell the developer to run these in a **new terminal window**. `slack login` is **not** in this category — drive it inline using the `--no-prompt` / `--ticket` / `--challenge` flow in Step 5.
-- `slack run` runs locally for development. `slack deploy` deploys to Slack's hosted infrastructure. These are different operations — do not confuse them.
+- `slack run` runs locally for development. `slack deploy` deploys to Slack's hosted infrastructure, unless `.slack/hooks.json` defines a `deploy` hook, in which case it runs that hook instead (see the `slack:deploy-slack-app` skill). These are different operations, so do not confuse them.

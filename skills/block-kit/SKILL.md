@@ -154,7 +154,7 @@ Based on the developer's description:
 - Table: only one `table` block per message
 - Charts: at most two `data_visualization` blocks per message
 - Alert: the `alert` block is available only in modals. In messages, state severity in words in a `header` or `section`.
-- Surface compatibility (whether a block is valid on the chosen surface) and element compatibility (whether an element is allowed inside a given block) are not always spelled out on a component's doc page. Build the layout from the docs, and let `blocks.validate` in Step 5 confirm it. It is the authoritative check.
+- Surface compatibility (whether a block is valid on the chosen surface) and element compatibility (whether an element is allowed inside a given block) are not always spelled out on a component's doc page. Check `references/design-principles.md`'s surface and limits table for these. **`blocks.validate` in Step 5 does not enforce them** — it checks block and element shape only, and will return `ok: true` for a block on the wrong surface or over a count limit. Don't treat a pass there as confirmation of surface or count compliance.
 
 ---
 

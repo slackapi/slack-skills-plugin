@@ -127,7 +127,9 @@ Use AskUserQuestion to let the developer pick a template. Recommend the **Starte
 
 ### 4a. Choose an AI provider (agent templates only)
 
-If the developer picks **Starter Agent** or **Support Agent**, these templates contain subdirectories for different AI providers. Ask the developer which provider they want to use via AskUserQuestion:
+If the developer picks **Starter Agent** or **Support Agent**, these templates contain subdirectories for different AI providers. Ask the developer which provider they want to use via AskUserQuestion, offering only the subdirectories for their framework (`$0`) from the tables below.
+
+The provider list depends on the framework, so the framework must be settled before you ask. If it isn't yet, ask for the framework first and wait for the answer. Do not batch the framework and provider questions into one AskUserQuestion call.
 
 **bolt-js subdirectories:**
 

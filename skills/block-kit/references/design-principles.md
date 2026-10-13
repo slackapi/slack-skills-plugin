@@ -1,10 +1,15 @@
 # Block Kit Design Principles
 
 Guidance on building layouts that read well, not on whether they parse. Validity — required
-fields, allowed element nesting, per-surface block support — is what `blocks.validate` checks.
-These principles are about _appropriateness_: reaching for the block that fits the shape of the
-content, and arranging it so a reader takes it in at a glance. Apply them unless the developer
-explicitly asks otherwise.
+fields and allowed element nesting — is what `blocks.validate` checks. These principles are about
+_appropriateness_: reaching for the block that fits the shape of the content, and arranging it so
+a reader takes it in at a glance. Apply them unless the developer explicitly asks otherwise.
+
+**`blocks.validate` does not enforce which surface a block or how many of it are allowed.** It
+checks block and element shape only. It will return `ok: true` for a `table` or `carousel` inside
+a modal, an `alert` inside a message, two `table` blocks in one message, or an `input` block in a
+modal with no `submit` — all invalid per the surface and limits table below. Treat that table,
+not a passing validation, as the source of truth for surface and count limits.
 
 These principles apply to every surface. Companion references go deeper on specific kinds of
 layout: `modal-design.md` (modals and forms), `home-tab-design.md` (App Home),

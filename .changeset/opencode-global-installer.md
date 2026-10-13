@@ -2,7 +2,7 @@
 "slack": minor
 ---
 
-Replace the OpenCode installer, copied files, and symlink adapters with a native
-git-backed plugin and config hook. OpenCode registers the seven canonical skills,
-five `slack-*` commands, and OAuth-enabled Slack MCP configuration while
-preserving an existing `mcp.slack` entry.
+Add OpenCode support through a native git-backed plugin. One package serves
+OpenCode 2 (skill, command, and MCP transforms) and OpenCode 1 (`config` hook),
+registering the eight canonical skills, five `slack-*` commands, and an
+OAuth-enabled Slack MCP server while preserving an existing `slack` server.

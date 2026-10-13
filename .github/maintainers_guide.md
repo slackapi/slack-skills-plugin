@@ -18,7 +18,7 @@ Maintaining this repo requires:
 - **[Codex][codex-cli]**: another agentic coding environment. Useful for
   verifying that the skills work outside Claude Code before release.
 - **[OpenCode][opencode]**: supports repository-local validation of the Slack
-  MCP server, seven skills, and five namespaced commands.
+  MCP server, eight skills, and five namespaced commands.
 - **Git**: standard version control.
 - **[GitHub CLI (`gh`)][gh-cli]**: for creating PRs as drafts and managing
   issues.
@@ -156,61 +156,85 @@ uninstall, in addition to removing the virtualenv and other generated files.)
 
 ### Testing in Codex
 
-Codex loads plugins only from a marketplace. The repo ships a development marketplace at
-`.agents/plugins/marketplace.json` that points at this checkout, so you can add
-it as a local marketplace and install the plugin from it.
+Codex loads plugins only from a marketplace, and a marketplace source can be a local
+directory, so your checkout serves as one. The repo ships the `slack` marketplace at
+`.agents/plugins/marketplace.json`, which is both the public listing and the local
+marketplace root you point Codex at while developing.
 
-Register the local marketplace and install the `slack` plugin:
+From the repo root, register the checkout as a marketplace and install the plugin from it:
 
 ```sh
 codex plugin marketplace add ./
-codex plugin add slack@slack-dev
+codex plugin add slack@slack
 ```
 
 `codex plugin list` shows the plugin; `codex /plugins` opens the same flow interactively. Start a new Codex session to pick up the plugin, then invoke a skill by name with a `$` mention, for example `$block-kit`.
 
+**Re-run `codex plugin add slack@slack` after every change.** Installing copies your
+checkout into `~/.codex/plugins/cache/slack/slack/<version>/`, and Codex loads that copy
+rather than reading your working tree, so edits do not show up on their own. Re-running
+the install overwrites the copy in place, with no version bump required; start a new Codex
+session and the change is live. The copy is taken from the working tree, so uncommitted
+changes are picked up as-is and there is no need to commit first.
+
+`codex plugin marketplace upgrade` will not do this for you. It only refreshes Git
+marketplace snapshots, and errors on a marketplace added from a local path.
+
 To remove it
 
 ```sh
-codex plugin remove slack@slack-dev
-codex plugin marketplace remove slack-dev
+codex plugin remove slack@slack
+codex plugin marketplace remove slack
 ```
+
+Codex resolves marketplace manifests from four hard-coded relative paths, so a
+separate `marketplace.dev.json` is not an option. Working on the plugin locally is
+handled by pointing Codex at your checkout, as above, rather than by shipping a
+second manifest.
 
 Codex support currently ships only the skills; the hosted MCP server is not yet wired into the Codex surface.
 
 ### Testing in OpenCode
 
-OpenCode 1.18.18 or newer loads the native git-backed plugin from the OpenCode
-config's `plugin` array:
+The plugin supports OpenCode 2 and OpenCode 1 (1.18.29 or newer) from one
+package. Load it from the git-backed spec in the OpenCode config's `plugins`
+array (`plugin` on OpenCode 1):
 
 ```json
 {
-  "plugin": [
+  "plugins": [
     "slack@git+https://github.com/slackapi/slack-skills-plugin.git"
   ]
 }
 ```
 
-The plugin is a thin `config` hook. It leaves `skills/` and `commands/` as the
-authoritative sources, registers seven skills, five `slack-*` commands, and the
-remote Slack MCP server in memory and creates no filesystem state. Registration
-is idempotent. An existing `mcp.slack` entry is explicitly
-preserved rather than overwritten.
+`package.json` points `main` and `exports` at `.opencode/plugins/slack.js`, whose
+default export carries both entrypoints:
 
-OpenCode 1.18.18 supports the `command` and remote `mcp` keys. Skill discovery
-uses `config.skills.paths`, which is not present in the public 1.18.18 type; keep
-this runtime-verified compatibility assumption isolated to the plugin and its
-focused tests.
+- OpenCode 2 reads `id` and `setup` (from `.opencode/plugins/opencode-v2.js`).
+  OpenCode 2 has no global `config` hook, so `setup` registers the eight skills
+  through `ctx.skill.transform`, the five `slack-*` commands through
+  `ctx.command.transform`, and the Slack MCP server through `ctx.mcp.transform`.
+- OpenCode 1 calls `server()`, which returns the native `config` hook. Skill
+  discovery there uses `config.skills.paths`, which is not present in the public
+  1.18 type; keep this runtime-verified compatibility assumption isolated to the
+  plugin and its focused tests.
 
-The MCP OAuth configuration uses these non-secret fields:
+Both paths leave `skills/` and `commands/` as the authoritative sources and
+create no filesystem state. Registration is idempotent, and an existing `slack`
+MCP server is preserved rather than overwritten.
+
+The MCP OAuth configuration uses these non-secret fields (OpenCode 2 shape;
+OpenCode 1 receives `clientId` and `redirectUri`):
 
 ```json
 {
   "type": "remote",
   "url": "https://mcp.slack.com/mcp",
   "oauth": {
-    "clientId": "{env:SLACK_OPENCODE_CLIENT_ID}",
-    "redirectUri": "http://127.0.0.1:19876/mcp/oauth/callback"
+    "client_id": "{env:SLACK_OPENCODE_CLIENT_ID}",
+    "redirect_uri": "http://127.0.0.1:19876/mcp/oauth/callback",
+    "callback_port": 19876
   }
 }
 ```
@@ -218,7 +242,7 @@ The MCP OAuth configuration uses these non-secret fields:
 Never commit or print Slack client IDs, client secrets, or tokens. For app
 eligibility, scopes, PKCE, and OAuth setup, follow the README.
 
-#### Native config-hook validation
+#### Plugin registration validation
 
 Run the focused OpenCode registration tests with the normal unit target:
 
@@ -226,8 +250,8 @@ Run the focused OpenCode registration tests with the normal unit target:
 make test-unit
 ```
 
-The tests cover registration, discoverability, command names, remote MCP fields,
-idempotency, collision preservation, and credential safety.
+The tests cover both entrypoints: registration, discoverability, command names,
+remote MCP fields, idempotency, collision preservation, and credential safety.
 
 For a read-only smoke test, use an eligible internal Slack app configured as
 described in the README. Enable MCP server access from the app's **App
@@ -236,21 +260,19 @@ record it in the repository or command output captured in an issue or PR.
 
 ```sh
 export SLACK_OPENCODE_CLIENT_ID="your-app-client-id"
-opencode mcp auth slack
+opencode service restart
+opencode api get /api/plugin -H "X-OpenCode-Directory: $PWD"
 opencode mcp list
-opencode --pure debug skill
-opencode --pure debug config
 opencode
 ```
 
-Confirm the MCP list reports Slack connected through OAuth, skill discovery
-contains the seven canonical names, and command configuration contains the five
-`slack-*` names. In the interactive session, invoke a read-only command such as
+Confirm the plugin response contains `slack.skills` with status `active`, then sign in to `slack` from
+`/mcps` and confirm the MCP list reports it connected. Check that the eight
+canonical skills and the five `slack-*` commands are available. In the interactive session, invoke a read-only command such as
 `/slack-summarize-channel` against a non-sensitive test channel and ask OpenCode
 to use `slack-search` without sending messages, adding reactions, creating
 channels, or modifying canvases. If MCP access was enabled after an earlier
-authorization, reauthorize with `opencode mcp auth slack`; log out first with
-`opencode mcp logout slack` if OpenCode retains the old grant.
+authorization, run `opencode mcp logout slack` and sign in again.
 
 ---
 

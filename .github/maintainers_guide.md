@@ -17,6 +17,8 @@ Maintaining this repo requires:
   verifying that skills and commands work outside Claude Code before release.
 - **[Codex][codex-cli]**: another agentic coding environment. Useful for
   verifying that the skills work outside Claude Code before release.
+- **[OpenCode][opencode]**: supports repository-local validation of the Slack
+  MCP server, eight skills, and five namespaced commands.
 - **Git**: standard version control.
 - **[GitHub CLI (`gh`)][gh-cli]**: for creating PRs as drafts and managing
   issues.
@@ -192,6 +194,86 @@ second manifest.
 
 Codex support currently ships only the skills; the hosted MCP server is not yet wired into the Codex surface.
 
+### Testing in OpenCode
+
+The plugin supports OpenCode 2 and OpenCode 1 (1.18.29 or newer) from one
+package. Load it from the git-backed spec in the OpenCode config's `plugins`
+array (`plugin` on OpenCode 1):
+
+```json
+{
+  "plugins": [
+    "slack@git+https://github.com/slackapi/slack-skills-plugin.git"
+  ]
+}
+```
+
+`package.json` points `main` and `exports` at `.opencode/plugins/slack.js`, whose
+default export carries both entrypoints:
+
+- OpenCode 2 reads `id` and `setup` (from `.opencode/plugins/opencode-v2.js`).
+  OpenCode 2 has no global `config` hook, so `setup` registers the eight skills
+  through `ctx.skill.transform`, the five `slack-*` commands through
+  `ctx.command.transform`, and the Slack MCP server through `ctx.mcp.transform`.
+- OpenCode 1 calls `server()`, which returns the native `config` hook. Skill
+  discovery there uses `config.skills.paths`, which is not present in the public
+  1.18 type; keep this runtime-verified compatibility assumption isolated to the
+  plugin and its focused tests.
+
+Both paths leave `skills/` and `commands/` as the authoritative sources and
+create no filesystem state. Registration is idempotent, and an existing `slack`
+MCP server is preserved rather than overwritten.
+
+The MCP OAuth configuration uses these non-secret fields (OpenCode 2 shape;
+OpenCode 1 receives `clientId` and `redirectUri`):
+
+```json
+{
+  "type": "remote",
+  "url": "https://mcp.slack.com/mcp",
+  "oauth": {
+    "client_id": "{env:SLACK_OPENCODE_CLIENT_ID}",
+    "redirect_uri": "http://127.0.0.1:19876/mcp/oauth/callback",
+    "callback_port": 19876
+  }
+}
+```
+
+Never commit or print Slack client IDs, client secrets, or tokens. For app
+eligibility, scopes, PKCE, and OAuth setup, follow the README.
+
+#### Plugin registration validation
+
+Run the focused OpenCode registration tests with the normal unit target:
+
+```sh
+make test-unit
+```
+
+The tests cover both entrypoints: registration, discoverability, command names,
+remote MCP fields, idempotency, collision preservation, and credential safety.
+
+For a read-only smoke test, use an eligible internal Slack app configured as
+described in the README. Enable MCP server access from the app's **App
+Assistant** page before authenticating. Export only your local client ID; never
+record it in the repository or command output captured in an issue or PR.
+
+```sh
+export SLACK_OPENCODE_CLIENT_ID="your-app-client-id"
+opencode service restart
+opencode api get /api/plugin -H "X-OpenCode-Directory: $PWD"
+opencode mcp list
+opencode
+```
+
+Confirm the plugin response contains `slack.skills` with status `active`, then sign in to `slack` from
+`/mcps` and confirm the MCP list reports it connected. Check that the eight
+canonical skills and the five `slack-*` commands are available. In the interactive session, invoke a read-only command such as
+`/slack-summarize-channel` against a non-sensitive test channel and ask OpenCode
+to use `slack-search` without sending messages, adding reactions, creating
+channels, or modifying canvases. If MCP access was enabled after an earlier
+authorization, run `opencode mcp logout slack` and sign in again.
+
 ---
 
 ## Versioning
@@ -275,6 +357,7 @@ Patch and minor updates are auto-approved and auto-merged via the
 [claude-code]: https://claude.ai/code
 [cursor]: https://cursor.com
 [codex-cli]: https://developers.openai.com/codex/cli
+[opencode]: https://opencode.ai
 [gh-cli]: https://cli.github.com
 [conv-commits]: https://www.conventionalcommits.org
 [semver]: https://semver.org

@@ -1,6 +1,6 @@
 # Slack MCP and Skills Plugin
 
-The Slack MCP and Skills Plugin for AI tools bundles together a set of skills that help you develop on the Slack platform with the [Slack MCP Server](/ai/slack-mcp-server). You can use the plugin with Claude Code, Codex, Cursor, and other coding agents.
+The Slack MCP and Skills Plugin for AI tools bundles together a set of skills that help you develop on the Slack platform with the [Slack MCP Server](/ai/slack-mcp-server). You can use the plugin with Claude Code, Codex, Cursor, OpenCode, and other coding agents.
 
 Installing the plugin sets up two things:
 
@@ -15,7 +15,7 @@ The Slack MCP Server connection is only available when using with Claude Code an
 
 ## Installing the plugin
 
-Read on for instructions on installing the Plugin for your AI tool of your choice, whether it be [Claude Code](#claude-code-install), [Codex](#codex-install), [Cursor](#cursor-install) or [other coding agents](#other-agents-install).
+Read on for instructions on installing the Plugin for your AI tool of your choice, whether it be [Claude Code](#claude-code-install), [Codex](#codex-install), [Cursor](#cursor-install), [OpenCode](#opencode-install), or [other coding agents](#other-agents-install).
 
 ### Installing the plugin for Claude Code {#claude-code-install}
 
@@ -45,6 +45,36 @@ The plugin is published on the [official Cursor Marketplace](https://cursor.com/
 ```
 
 Alternatively, search for "slack" in the Cursor plugin marketplace. This installs the skills, and MCP server together, and prompts OAuth to your Slack workspace on first use.
+
+### Installing the plugin for OpenCode {#opencode-install}
+
+The plugin supports OpenCode 2 and OpenCode 1 (1.18.29 or newer). Add the
+git-backed plugin to your OpenCode config:
+
+```json
+{
+  "plugins": [
+    "slack@git+https://github.com/slackapi/slack-skills-plugin.git"
+  ]
+}
+```
+
+OpenCode 1 configs use the singular `plugin` key with the same value.
+
+The plugin keeps the root `skills/` and `commands/` directories authoritative and
+registers eight skills, five `slack-*` commands, and the Slack MCP server in
+memory, without managing installation files. Registration is idempotent. If a
+`slack` MCP server is already configured, the plugin preserves it instead of
+replacing it.
+
+The five commands are `slack-channel-digest`, `slack-draft-announcement`,
+`slack-find-discussions`, `slack-standup`, and `slack-summarize-channel`.
+
+The Slack MCP server uses OAuth with a client ID read from
+`{env:SLACK_OPENCODE_CLIENT_ID}`. Keep client IDs, client secrets, and tokens out
+of documentation and source. See the repository README for Slack app
+eligibility, PKCE, scopes, admin approval, App Assistant MCP enablement,
+authentication, and command examples.
 
 ### Installing the skills for other agents {#other-agents-install}
 

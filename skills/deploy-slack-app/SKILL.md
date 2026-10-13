@@ -16,7 +16,7 @@ Two supported providers, both running the app as a long-lived worker process:
 | Railway | Service, no port binding required | The working directory | Passed on stdin | <https://railway.com/pricing> |
 | Heroku | `worker` dyno | A git push of committed code | Passed as arguments | <https://www.heroku.com/pricing> |
 
-Railway is the better default, and the reasons are in **Step 2: Choose a Provider**.
+Railway is the better default, and the reasons are in **Step 2a: Choose a Provider**.
 
 ---
 
@@ -43,9 +43,13 @@ This flow is verified on macOS and Linux. The deploy hook is a shell script, so 
 
 ---
 
-## Step 2: Choose a Provider
+## Step 2: Choose a Provider and a Team
 
-This is the one question worth asking the developer, because cost is the thing they cannot infer from the project. Give the developer both pricing links from the table above so they can check current terms. **Do not fetch the pages or quote prices, plan names, or trial terms.** Providers change them often, and this skill can be installed long after it was written.
+Ask the developer two things the project cannot tell you: which provider to deploy to, and which Slack team to deploy into.
+
+### 2a. Choose a Provider
+
+Ask which provider, because cost is the thing the developer cannot infer from the project. Give the developer both pricing links from the table above so they can check current terms. **Do not fetch the pages or quote prices, plan names, or trial terms.** Providers change them often, and this skill can be installed long after it was written.
 
 What does not change with the price list, and is worth saying:
 
@@ -55,6 +59,12 @@ What does not change with the price list, and is worth saying:
 Say plainly that **both providers keep the app running continuously**, which is what a Socket Mode app requires. Always-on hosting is a paid service in the end, so expect it to cost something once any trial runs out.
 
 Once the developer picks one, read that provider's reference file and follow it: `references/railway.md` or `references/heroku.md`. Each holds the install and authentication commands, the provider's own requirements for the project, and the environment variables its deploy script reads. **Step 4: Wire Up the Deploy Hook** works through them.
+
+### 2b. Choose a Team
+
+Run `SLACK_CMD auth list`. If it lists one team, use it. If it lists more than one, show the developer each team's name and ID and ask which one to deploy into.
+
+**Never pick the team yourself.** Do not assume the standalone workspace or the Enterprise org, and do not reuse the team from `.slack/apps.dev.json`, which is often a developer sandbox. A wrong guess installs the app into a team the developer did not intend, and a later deploy to the right team creates a second Slack app.
 
 ---
 
@@ -112,7 +122,7 @@ Run `SLACK_CMD deploy` from the project root and watch the output. The CLI creat
 Four flags matter when running this outside an interactive terminal, which includes most agent sessions. The CLI asks four questions, and each one is fatal unanswered: a non-interactive shell gets `The input device is not a TTY or does not support interactivity` and nothing is deployed.
 
 - `--skip-update` stops the CLI pausing to offer an upgrade.
-- `--team <team ID>` picks the workspace or organization. Read the available team IDs from `SLACK_CMD auth list`.
+- `--team <team ID>` picks the workspace or organization. Use the team the developer chose in **Step 2b: Choose a Team**.
 - `--app deployed` selects the deployed app environment, and creates that app on a first deploy. Without it the CLI asks the developer to choose between an existing app and a new one. This is the flag most easily missed, because the prompt it answers only appears on a project that has never been deployed.
 - `--org-workspace-grant all` answers the workspace-grant prompt for an org-installed app.
 

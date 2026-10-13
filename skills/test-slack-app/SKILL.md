@@ -1,6 +1,6 @@
 ---
 name: test-slack-app
-description: Use when a developer wants to test, try out, smoke-test, verify, or confirm that a Slack app built with the Slack CLI (or a plain Bolt app) actually works, by running it in a developer sandbox or a Free Team, never a workspace with real users, with `slack run` and exercising its real slash commands, shortcuts, events, actions, modals, App Home, and assistant surfaces. Also covers `slack doctor` and `slack manifest validate` health checks before hands-on testing.
+description: Use when a developer wants to test, try out, smoke-test, verify, or confirm that a Slack app built with the Slack CLI (or a plain Bolt app) actually works, by running it in a developer sandbox or a Free Team, never a workspace with real users, with `slack run` and exercising its real slash commands, shortcuts, events, actions, modals, App Home, and assistant surfaces, either by hand or by driving the Slack web client in a browser with Playwright. Also covers `slack doctor` and `slack manifest validate` health checks before hands-on testing.
 ---
 
 # Test Slack App
@@ -13,7 +13,7 @@ The approach is simple and safe:
 2. **Read the app's source** to learn what it actually listens for.
 3. **Hand the developer concrete steps** to perform in Slack, then help them confirm the app responds.
 
-This is guided manual checking, not an automated test suite: you drive the setup and tell the developer what to type or click, and they confirm what they see. It works best for apps managed by the Slack CLI; there is a best-effort path for plain Bolt apps in Step 2.
+This is guided checking, not an automated test suite: you drive the setup and tell the developer what to type or click, and they confirm what they see. If the developer prefers, you can perform the steps yourself in a browser window they watch (Step 3c). It works best for apps managed by the Slack CLI; there is a best-effort path for plain Bolt apps in Step 2.
 
 ---
 
@@ -93,14 +93,21 @@ For every registered interaction, give the developer a concrete step and what a 
 - **Modal submit** (`view_submission`) → submit the modal → expect the confirmation or side effect.
 - **App Home** → click the app in the left sidebar to open its **Home** tab → expect the published view.
 
-### 3c. Confirm and report
+### 3c. Choose who performs the steps
+
+Show the developer the list, then ask who should work through it:
+
+- **The developer**, in their own Slack client. This is the default, and needs nothing installed.
+- **You, in a browser** they can watch. You sign in once with their help, then send the messages, run the shortcuts, click the buttons, and submit the modals yourself, checking each result. This uses Playwright CLI through `npx` and downloads a browser of about 100 MB the first time. To take this path, read `references/browser-testing.md` alongside this skill and follow it. It holds the setup, the sign-in, a sandbox check, and a pattern for each interaction above.
+
+### 3d. Confirm and report
 
 While the developer interacts, help them confirm it is working:
 
 - If the app runs under `slack run`, watch its logs (ask "show me the output from slack run") to confirm events arrive and to read any errors.
 - If a response looks wrong (a malformed message or Block Kit view, or an API error), use the `slack:block-kit` and `slack:slack-api` skills to dig into the payload or method.
 
-Close with a short summary: what you and the developer confirmed working, and what they should eyeball themselves. Remember this is manual checking: you are helping the developer watch the app respond, not producing an automated pass or fail.
+Close with a short summary: what you and the developer confirmed working, and what they should eyeball themselves. If you ran the steps in a browser, report them as a table: each step, what it should do, what you saw, and the screenshot path. Either way, this is guided checking, not an automated pass or fail.
 
 ---
 
@@ -108,4 +115,4 @@ Close with a short summary: what you and the developer confirmed working, and wh
 
 - `SLACK_CMD` is a placeholder: always substitute the actual command name resolved in Step 1a.
 - Scope: this skill tests an app that already exists. To create or scaffold one, use the `slack:create-slack-app` skill; for raw CLI mechanics, use the `slack:slack-cli` skill; for message or Block Kit formatting, use the `slack:slack-messaging` and `slack:block-kit` skills.
-- Out of scope for now: automated test frameworks for Bolt, programmatically simulating user interactions, and driving the Slack UI with a browser. Today the developer performs the interactions; this skill makes sure they know exactly what to do and what to expect.
+- Out of scope for now: automated test frameworks for Bolt, and simulating user interactions through an API. The browser path in Step 3c drives the real Slack client in a sandbox, and is not meant for CI.

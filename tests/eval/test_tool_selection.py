@@ -100,6 +100,46 @@ SCENARIOS: list[Scenario] = [
         "accepted_tools": ["create-slack-app"],
     },
     {
+        "id": "skill-deploy-app-keep-running",
+        "prompt": "Deploy my Slack app somewhere it keeps running after I close my laptop",
+        "accepted_tools": ["deploy-slack-app"],
+    },
+    {
+        "id": "skill-deploy-app-railway",
+        "prompt": "Host my Bolt app on Railway so it stays up",
+        "accepted_tools": ["deploy-slack-app"],
+    },
+    {
+        # Unsupported today: the skill should still load so it can explain the gap.
+        "id": "skill-deploy-app-request-url",
+        "prompt": "Deploy my HTTP Bolt app to Heroku so it keeps running",
+        "accepted_tools": ["deploy-slack-app"],
+    },
+    {
+        # Also unsupported today, and should load for the same reason.
+        "id": "skill-deploy-app-windows",
+        "prompt": "Deploy my Slack app to Railway from my Windows laptop",
+        "accepted_tools": ["deploy-slack-app"],
+    },
+    {
+        "id": "skill-deploy-app-tear-down",
+        "prompt": "Tear down my deployed Slack app on Railway, I'm done testing it",
+        "accepted_tools": ["deploy-slack-app"],
+    },
+    {
+        # Pins the boundary the deploy-slack-app description is most likely to blur:
+        # running locally stays with slack-cli.
+        "id": "skill-deploy-app-vs-cli-run-local",
+        "prompt": "Start my Slack app on my own machine so I can try a code change",
+        "accepted_tools": ["slack-cli"],
+    },
+    {
+        # A conceptual question is not a deploy request.
+        "id": "skill-deploy-app-vs-docs-hosting-concept",
+        "prompt": "How does hosting for Slack apps work conceptually?",
+        "accepted_tools": ["slack-docs"],
+    },
+    {
         "id": "ambiguous-post-message-deploy",
         "prompt": "Post a message in #general announcing that the deploy just finished",
         "accepted_tools": ["slack_send_message"],

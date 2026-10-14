@@ -4,7 +4,7 @@ description: Generate a standup update based on your recent Slack activity
 
 1. Use `slack_read_user_profile` (with no user_id) to get the current user's profile information, including their user ID and display name.
 
-2. Search for the user's recent messages using `slack_search_public` with the filter `from:<@USER_ID>` and `after:` set to yesterday's date. This captures messages from the last working day.
+2. Search for the user's recent messages using `slack_search_public_and_private` with the filter `from:<@USER_ID>` and `after:` set to yesterday's date. This searches public channels, private channels, DMs, and group DMs, and the tool asks the user for consent before it runs. This captures messages from the last working day.
 
 3. Review the messages found and categorize them into standup themes:
    - **What I worked on** — Topics, projects, or tasks the user discussed or contributed to

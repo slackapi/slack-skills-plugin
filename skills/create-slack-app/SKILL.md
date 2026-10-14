@@ -220,7 +220,7 @@ After the app is running, suggest next steps:
 
 1. **Explore the code**: Read through the project files together — offer to explain the app structure, manifest, listeners, etc.
 2. **Make a change**: Suggest a small modification (like changing a message response) to see hot-reload in action.
-3. **Add features**: Based on the template, suggest relevant Slack features to add (slash commands, events, modals, AI capabilities, etc.).
+3. **Add features**: Based on the template, suggest relevant Slack features to add (slash commands, events, modals, AI capabilities, etc.). For any Block Kit UI — a message layout, a modal, or a Home tab — use the `slack:block-kit` skill rather than building the JSON here.
 4. **Check the docs**: Point to <https://docs.slack.dev> for the full Slack Platform documentation.
 
 ---
@@ -229,6 +229,7 @@ After the app is running, suggest next steps:
 
 - `SLACK_CMD` is a placeholder — always substitute the actual command name resolved in Step 1a (typically `slack`, but may be an alias).
 - This skill focuses on **Bolt for JavaScript** and **Bolt for Python** only. Do not suggest Deno, workflow apps, or `slack deploy` (hosted deployment).
+- This skill scaffolds and runs the app. It does not own Block Kit JSON. If the developer asks to build or edit a message, modal, or Home tab layout — now or in Step 6 — use the `slack:block-kit` skill instead of writing the blocks here from memory.
 - `SLACK_CMD sandbox create` prompts for a name and password only when those flags are missing. Supply `--team`, `--name`, and `--password` and it runs non-interactively, so you can run it yourself rather than handing it to the developer. `SLACK_CMD sandbox list` needs `--team` for the same reason: without it the CLI prompts for which authentication to use.
 - Free Teams and developer sandboxes both support everything this skill builds. The CLI's `free_team_not_allowed` error is scoped to low-code workflow and function apps, which this skill does not create.
 - If the developer hits issues, suggest `SLACK_CMD doctor` to diagnose their setup.

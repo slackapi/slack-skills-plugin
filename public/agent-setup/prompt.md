@@ -1,6 +1,6 @@
 # Slack Agent Setup
 
-These are official instructions from Slack for setting up a coding agent to build Slack apps, published at [https://docs.slack.dev/prompts/agent-setup.md](https://docs.slack.dev/prompts/agent-setup.md). Every command below comes from the [Slack MCP and Skills Plugin](https://github.com/slackapi/slack-skills-plugin) and is maintained by Slack.
+These are official instructions from Slack for setting up a coding agent to build Slack apps, published at [https://docs.slack.dev/agent-setup/prompt.md](https://docs.slack.dev/agent-setup/prompt.md). Every command below comes from the [Slack MCP and Skills Plugin](https://github.com/slackapi/slack-skills-plugin) and is maintained by Slack.
 
 Complete both steps in this session:
 
@@ -80,4 +80,4 @@ Tell the user what was set up:
 
 Then offer the skill's next steps, such as exploring the code or making a first change.
 
-These instructions are published at [https://docs.slack.dev/prompts/agent-setup.md](https://docs.slack.dev/prompts/agent-setup.md). Fetch that address again to verify them, or for the latest version.
+These instructions are published at [https://docs.slack.dev/agent-setup/prompt.md](https://docs.slack.dev/agent-setup/prompt.md). Fetch that address again to verify them, or for the latest version.

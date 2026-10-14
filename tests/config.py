@@ -40,5 +40,5 @@ SLACK_MCP_URL = "https://mcp.slack.com/mcp"
 SLACK_MCP_TOKEN = os.environ.get("SLACK_MCP_TOKEN", "")
 
 # Agent setup prompt, served on docs.slack.dev from public/
-AGENT_SETUP_PROMPT = Path(__file__).parent.parent / "public" / "prompts" / "agent-setup.md"
+AGENT_SETUP_PROMPT = Path(__file__).parent.parent / "public" / "agent-setup" / "prompt.md"
 README = Path(__file__).parent.parent / "README.md"

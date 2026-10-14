@@ -6,7 +6,7 @@ argument-hint: "[bolt-js | bolt-python]"
 
 # Create Slack App
 
-Help the developer create a Slack app or agent using Bolt for **$0**.
+Help the developer create a Slack app or agent using Bolt. If `$0` is exactly `bolt-js` or `bolt-python`, treat it as the chosen framework and skip asking. Otherwise — including if it's empty or any other value — ignore it and ask the developer which framework they want before continuing.
 
 This skill walks through the full setup: prerequisites, authentication, choosing a workspace to install into, project scaffolding from a template, and running the app locally.
 

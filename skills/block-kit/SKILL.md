@@ -6,7 +6,7 @@ argument-hint: "[message | modal | home-tab]"
 
 # Block Kit
 
-Help the developer build a rich Block Kit layout. If `$0` is provided, it specifies the target surface (`message`, `modal`, or `home-tab`).
+Help the developer build a rich Block Kit layout. If `$0` is exactly `message`, `modal`, or `home-tab`, treat it as the target surface. Otherwise — including if it's empty or any other value — ignore it and determine the surface in Step 1.
 
 This skill walks through surface selection, layout planning, JSON generation, and validation. Block types, elements, and fields come from the live docs (see **Source of Truth** below) — discover them and read each component's schema there, never from memory.
 

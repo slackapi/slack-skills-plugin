@@ -75,9 +75,9 @@ The eval job reads the `GEMINI_API_KEY_*` (e.g. `GEMINI_API_KEY_BOB`, `GEMINI_AP
 
 `docs/` is published to [docs.slack.dev](https://docs.slack.dev/ai/slack-skills-plugin). The `slackapi/docs` repo syncs this directory from `main` (see its `sources.json`), so editing `docs/slack-skills-plugin.md` here is the whole job: there is no second PR to open, and the change goes live when it merges.
 
-`docs-static/` is published to docs.slack.dev as-is, not rendered into a page. A file's path under `docs-static/` is its URL, so `docs-static/agent-setup/prompt.md` is served at <https://docs.slack.dev/agent-setup/prompt.md>. Every file in a mapped folder is published, so keep notes about these files here rather than in a README beside them. Each top-level folder needs its own entry in the docs repo's `sources.json`, so adding a new folder means a docs PR as well.
+`public/` is published to docs.slack.dev as-is, not rendered into a page. A file's path under `public/` is its URL, so `public/prompts/agent-setup.md` is served at <https://docs.slack.dev/prompts/agent-setup.md>. Every file in a mapped folder is published, so keep notes about these files here rather than in a README beside them. The docs repo's `sources.json` maps `public/prompts` to its `static/prompts`, so a new prompt in `public/prompts/` needs no docs PR, but a new folder under `public/` does.
 
-`docs-static/agent-setup/prompt.md` is the setup prompt developers paste into a coding agent: it installs this plugin, then runs `create-slack-app`. Its install commands must match the Installation section of `README.md`, which `tests/unit/test_agent_setup_prompt.py` checks. Change both together.
+`public/prompts/agent-setup.md` is the setup prompt developers paste into a coding agent: it installs this plugin, then runs `create-slack-app`. Its install commands must match the Installation section of `README.md`, which `tests/unit/test_agent_setup_prompt.py` checks. Change both together. The docs site compiles it as MDX, so write links as `[text](url)`, not `<url>`.
 
 **Any change to what a public developer can see or do must update `docs/` in the same PR.** Treat it like the changeset, not a follow-up. That includes:
 

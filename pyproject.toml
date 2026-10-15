@@ -9,16 +9,16 @@ test = [
     "pytest==9.1.1",
     "deepeval==4.2.0",
     "google-genai==2.20.0",
-    "python-dotenv==1.2.2",
+    "python-dotenv==1.2.4",
     "pyyaml==6.0.3",
-    "markdown==3.10.3",
-    "mcp==2.1.1",
+    "markdown==3.11",
+    "mcp==2.3.0",
 ]
 tools = [
     "ruff==0.16.9",
     "rumdl==0.2.62",
     "mypy==2.3.1",
-    "types-PyYAML==6.0.12.20260724",
+    "types-PyYAML==6.0.12.20260906",
     "types-Markdown==3.10.2.20260712",
 ]
 
@@ -50,6 +50,7 @@ include = [
     "skills/**/*.md",
     "commands/*.md",
     "docs/**/*.md",
+    "public/**/*.md",
     "README.md",
     "AGENTS.md",
     ".github/maintainers_guide.md",

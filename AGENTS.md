@@ -12,7 +12,7 @@ This plugin integrates Slack with Ai tools, providing tools to search, read, and
 
 ## Development Commands
 
-Requires Python 3.14+. Run `make install` before first use to set up the virtual environment and test dependencies.
+Requires Python 3.15+. Run `make install` before first use to set up the virtual environment and test dependencies.
 
 **Always use the make targets rather than invoking python, pytest, ruff, or other tools directly.** The targets manage the virtualenv for you; running the underlying tools by hand skips that setup and will behave differently. If a `make` command is broken or missing something you need, fix the `Makefile` rather than working around it with the raw command.
 

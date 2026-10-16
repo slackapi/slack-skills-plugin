@@ -1,5 +1,25 @@
 # slack
 
+## 1.5.0
+
+### Minor Changes
+
+- bae34e1: Add a one-line setup prompt for coding agents. Paste it into Claude Code, Cursor, Codex, or another coding agent, and the agent installs the Slack plugin and creates a starter Slack agent app in the same session:
+  
+  ```text
+  Fetch and follow the instructions at https://docs.slack.dev/agent-setup/prompt.md
+  ```
+  
+  The prompt is served from docs.slack.dev, so it can be shared anywhere a developer starts building, and its install commands stay in step with this plugin's README.
+- 42ad160: Add the deploy-slack-app skill: deploy a Socket Mode Bolt app to Railway or Heroku as a separate, always-on Slack app with its own app ID, using the Slack CLI `deploy` hook. The local development app is unchanged. Supports macOS and Linux, with Windows support planned.
+
+### Patch Changes
+
+- 2118120: Support basic developer sandboxes, now that every Developer Program account can create one with no paid plan or payment method. `create-slack-app` says so when recommending a sandbox, explains a basic sandbox's limits and how to upgrade it, and checks that the logged-in email matches the developer's account before sending them to sign up.
+- 96f6ea2: Add design references to the block-kit skill for modals and forms, App Home, data display (fields, tables, and charts), agent progress (plans and task cards), and human-in-the-loop approvals. Extend the design principles to cover `data_table`, `data_visualization`, `container`, `alert`, and inline `tag`, `date`, and `citation` elements. Fix the Notification Alert pattern, which used the modal-only `alert` block in a message.
+  Align labels in the guidance and patterns with Slack's UI conventions (Title Case action buttons, sentence case elsewhere, no emoji in buttons, labels, or headers), and limit `primary` styling to one button per message or view.
+- f063977: Fix `create-slack-app` offering Pydantic AI when you create a JavaScript agent app. Pydantic AI only works with Python, so the skill now asks for your language first and only lists the AI providers that work with it.
+
 ## 1.4.1
 
 ### Patch Changes

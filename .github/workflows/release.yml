@@ -47,6 +47,12 @@ jobs:
           pr-title: "chore: release"
           publish-script: npx changeset publish
           version-script: bash scripts/changeset_version.sh
+      - name: Label the release pull request
+        if: steps.changesets.outputs.pr-number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.changesets.outputs.pr-number }}
+        run: gh pr edit "$PR_NUMBER" --add-label release
       - name: Get publication details
         id: release
         if: steps.changesets.outputs.published == 'true'

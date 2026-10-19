@@ -52,7 +52,27 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ steps.changesets.outputs.pr-number }}
-        run: gh pr edit "$PR_NUMBER" --add-label release
+        run: |
+          current=$(git show "${GITHUB_SHA}:package.json" | jq -r .version)
+          head=$(gh pr view "$PR_NUMBER" --json headRefName -q .headRefName)
+          next=$(gh api "repos/${GITHUB_REPOSITORY}/contents/package.json?ref=${head}" -q .content | base64 -d | jq -r .version)
+          IFS=. read -r cur_major cur_minor _ <<< "$current"
+          IFS=. read -r next_major next_minor _ <<< "$next"
+          if [ "$next_major" != "$cur_major" ]; then
+            bump=major
+          elif [ "$next_minor" != "$cur_minor" ]; then
+            bump=minor
+          else
+            bump=patch
+          fi
+          echo "Version ${current} -> ${next} (${bump})"
+          args=(--add-label release --add-label "semver:${bump}")
+          for label in $(gh pr view "$PR_NUMBER" --json labels -q '.labels[].name | select(startswith("semver:"))'); do
+            if [ "$label" != "semver:${bump}" ]; then
+              args+=(--remove-label "$label")
+            fi
+          done
+          gh pr edit "$PR_NUMBER" "${args[@]}"
       - name: Get publication details
         id: release
         if: steps.changesets.outputs.published == 'true'

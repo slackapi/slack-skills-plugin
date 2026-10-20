@@ -224,6 +224,11 @@ SCENARIOS: list[Scenario] = [
         "prompt": "Help me test that my Slack app actually works",
         "accepted_tools": ["test-slack-app"],
     },
+    {
+        "id": "skill-test-slack-app-browser",
+        "prompt": "Click through my Slack app in the browser and check that it responds",
+        "accepted_tools": ["test-slack-app"],
+    },
 ]
 
 

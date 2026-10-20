@@ -53,6 +53,9 @@ __pycache__/
 # DeepEval
 .deepeval/
 
+# Live-test projects (see .claude/skills/live-test-skill)
+tmp/
+
 # Misc
 .private-journal/
 triage/

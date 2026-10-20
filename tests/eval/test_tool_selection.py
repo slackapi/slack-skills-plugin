@@ -100,6 +100,23 @@ SCENARIOS: list[Scenario] = [
         "accepted_tools": ["create-slack-app"],
     },
     {
+        "id": "skill-plan-app-idea",
+        "prompt": "I want a Slack agent that answers my team's questions about our on-call runbooks",
+        "accepted_tools": ["plan-slack-app"],
+    },
+    {
+        "id": "skill-plan-app-help-plan",
+        "prompt": "Help me plan a Slack app for collecting weekly status updates from my team",
+        "accepted_tools": ["plan-slack-app"],
+    },
+    {
+        # Pins the boundary with create-slack-app: a developer who already knows the
+        # template has nothing to plan.
+        "id": "skill-plan-app-vs-create-known-template",
+        "prompt": "Scaffold a new Bolt for Python app from the starter agent template",
+        "accepted_tools": ["create-slack-app"],
+    },
+    {
         "id": "skill-deploy-app-keep-running",
         "prompt": "Deploy my Slack app somewhere it keeps running after I close my laptop",
         "accepted_tools": ["deploy-slack-app"],

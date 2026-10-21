@@ -13,6 +13,16 @@ Nothing gets scaffolded until the developer approves the spec. That includes run
 
 ---
 
+## Asking Questions
+
+Ask every question with AskUserQuestion, one question per call, including approvals. A developer who skims can miss a question at the end of a long message, and the prompt makes the next step obvious.
+
+- Offer 2-3 short options drawn from what the developer has already said, with the one you'd pick first and marked "(Recommended)". The tool's own free-text choice lets them answer in their own words, so don't add an "Other" option.
+- Keep the message before a question short. Put detail in the playback, not in the question.
+- If the coding agent has no question tool, end the message with the question on its own line, in bold.
+
+---
+
 ## Working with Superpowers Brainstorming
 
 The `superpowers:brainstorming` skill is a popular, general-purpose skill for planning anything before it gets built. This skill works with it and never competes with it, replaces it, or requires it.
@@ -32,14 +42,11 @@ The `superpowers:brainstorming` skill is a popular, general-purpose skill for pl
 
 ## Step 2: Hear the Problem
 
-Your first message is two things:
-
-1. One line saying that if they'd rather skip the questions, you can pick sensible defaults and start building.
-2. One open question about the problem, not the app. For example: "What's the problem you want this app to solve, and who runs into it?"
+Ask one open question about the problem, not the app. For example: "What problem should this app solve, and who runs into it?" Offer one or two guesses from the developer's request as options, plus one option to skip the questions and use sensible defaults.
 
 If they opt out of the questions, choose the shell defaults from Step 3, say the main choices in one line (agent or not, language, how people reach it), write the spec from those defaults, and go to Step 6.
 
-Ask one question per message. Match the developer's words, and don't use Slack feature names they haven't used themselves. If they say "just guess" or "what do you think?", propose something concrete.
+Match the developer's words, and don't use Slack feature names they haven't used themselves. If they say "just guess" or "what do you think?", propose something concrete.
 
 ---
 
@@ -50,7 +57,25 @@ Read `references/slack-app-features.md`. It lists the current Slack features an 
 1. **Decide whether this is an agent.** If people will talk to it, ask it things, or hand it work, it's an agent: use the agent defaults. If it reacts to events, collects input through forms, or posts updates, it's an app: use the app defaults.
 2. **Start from every default for that shape.** A developer gets the most out of Slack when the app uses the platform's current features, and they can't ask for features they don't know about.
 3. **Add any optional feature the idea clearly calls for**, like a slash command for a quick action, a modal for a form, or Workflow Builder steps for a process people already automate.
-4. **Play it back in about 150-250 words**, written around the problem rather than the feature list. Say how people reach the app, what it does when they do, and what it looks like. For example: "Your team opens the app's Home tab and sees buttons for the common requests" rather than "App Home with `views.publish`". Mark each default as your call, so the developer can reject it. End by asking what's wrong or missing.
+4. **Play it back as a short outline** the developer can review at a glance, written around the problem rather than the feature list. Use headings and bullets, one short line per bullet, with blank lines between sections:
+
+   ```markdown
+   ## SDK Triage: suggested answers for new GitHub issues
+
+   **Who:** the SDK team, in #triage-sdk
+
+   **How people reach it**
+   - Every new issue or PR posted to the channel
+   - Replies in the thread to dig deeper
+
+   **What it does**
+   - Adds :eyes: so the team knows it's looking
+   - Investigates, then replies in the thread with an answer ready to paste into GitHub
+
+   _My calls: thumbs up and down on each answer, an AI disclaimer footer._
+   ```
+
+   Describe what people see, like "buttons for the common requests on the app's Home tab", not "App Home with `views.publish`". Put every default you chose in the italic "My calls" line, so the developer can reject it. Then ask whether it matches what they want, with options to keep going or change something.
 
 ---
 
@@ -65,7 +90,7 @@ Ask 2-4 questions, one per message, picking whichever ones are still open:
 
 Ask which language they want (JavaScript or Python) only if they haven't said, and only if they care. Otherwise leave the question to `slack:create-slack-app`. Don't ask about scopes, events, Socket Mode, or manifest settings: derive those from the features in the spec.
 
-Play back each part as you understand it, then move to the next question.
+When an answer changes the outline, play back only the part that changed.
 
 ---
 
@@ -76,7 +101,7 @@ Write the spec to `<app-name>-spec.md` in the current directory, following `refe
 - **Don't name AI models.** The template sets the default model, and model names go stale.
 - **Don't invent Slack API methods or scopes.** For anything the features reference doesn't already name, check with the `slack:slack-api` or `slack:slack-docs` skill.
 
-Show the developer a short summary of the spec and its path, then ask them to approve it or say what to change. Revise until they approve.
+Show the developer a short summary: the spec's path, then the name and one-line purpose, and a few bullets on how people reach it and what it does. Keep it under 10 lines. They can open the spec or ask for detail. Then ask for approval, with options to approve and create the app, change something, or approve without creating the app yet. Revise until they approve.
 
 ---
 
@@ -93,6 +118,7 @@ Once the developer approves the spec:
 
 ## Notes
 
+- Don't put emoji in headings, in the playback, the summary, or the spec. Terminals draw emoji at different widths, which can misalign the text that follows, and plain headings scan faster.
 - This skill plans. It does not write app code, and it does not own Block Kit JSON, scaffolding, or running the app.
 - Don't ask for API keys or other credentials while planning. The `slack:create-slack-app` skill collects them when the project needs them.
 - A spec is a plan, not a contract. If the developer changes their mind while building, update the spec to match.

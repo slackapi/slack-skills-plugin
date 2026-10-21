@@ -18,7 +18,7 @@ Nothing gets scaffolded until the developer approves the spec. That includes run
 Ask every question with AskUserQuestion, one question per call, including approvals. A developer who skims can miss a question at the end of a long message, and the prompt makes the next step obvious.
 
 - Offer 2-3 short options drawn from what the developer has already said, with the one you'd pick first and marked "(Recommended)". The tool's own free-text choice lets them answer in their own words, so don't add an "Other" option.
-- **Show before you ask.** Write the outline (Step 3) and the spec summary (Step 5) as text in your reply, then ask in the same turn. The developer sees only what's in the reply, so a question with nothing above it asks them to approve something they haven't seen. Outside those two steps, keep the text before a question to a line or two.
+- **Put what they're approving inside the question.** The approval in **Step 5: Write the Spec** carries the spec summary in the option's `preview`, so the developer sees it next to the choice. Text written before a question can end up somewhere the developer doesn't see it, like the agent's own reasoning. Otherwise, keep the text before a question to a line or two.
 - If the coding agent has no question tool, end the message with the question on its own line, in bold.
 
 ---
@@ -57,25 +57,7 @@ Read `references/slack-app-features.md`. It lists the current Slack features an 
 1. **Decide whether this is an agent.** If people will talk to it, ask it things, or hand it work, it's an agent: use the agent defaults. If it reacts to events, collects input through forms, or posts updates, it's an app: use the app defaults.
 2. **Start from every default for that shape.** A developer gets the most out of Slack when the app uses the platform's current features, and they can't ask for features they don't know about.
 3. **Add any optional feature the idea clearly calls for**, like a slash command for a quick action, a modal for a form, or Workflow Builder steps for a process people already automate.
-4. **Play it back as a short outline** the developer can review at a glance, written around the problem rather than the feature list. Use headings and bullets, one short line per bullet, with blank lines between sections:
-
-   ```markdown
-   ## SDK Triage: suggested answers for new GitHub issues
-
-   **Who:** the SDK team, in #triage-sdk
-
-   **How people reach it**
-   - Every new issue or PR posted to the channel
-   - Replies in the thread to dig deeper
-
-   **What it does**
-   - Adds :eyes: so the team knows it's looking
-   - Investigates, then replies in the thread with an answer ready to paste into GitHub
-
-   _My calls: thumbs up and down on each answer, an AI disclaimer footer._
-   ```
-
-   Describe what people see, like "buttons for the common requests on the app's Home tab", not "App Home with `views.publish`". Put every default you chose in the italic "My calls" line, so the developer can reject it. Write it in your reply, then ask whether it matches what they want, with options to keep going or change something.
+Don't show the shell as a separate outline for approval. It shapes the options you offer in Step 4, and the developer reviews all of it once, in the spec summary.
 
 ---
 
@@ -91,8 +73,6 @@ Ask which language they want (JavaScript or Python) only if they haven't said, a
 
 Ask one question per topic. When the developer names a source or a tool, like a runbook or a set of repos, don't follow up on its format, hosting, or access. Those are build details, so list them under Open Questions in the spec and move on.
 
-When an answer changes the outline, play back only the part that changed.
-
 ---
 
 ## Step 5: Write the Spec
@@ -102,11 +82,31 @@ Write the spec to `<app-name>-spec.md` in the current directory, following `refe
 - **Don't name AI models.** The template sets the default model, and model names go stale.
 - **Don't invent Slack API methods or scopes.** For anything the features reference doesn't already name, check with the `slack:slack-api` or `slack:slack-docs` skill.
 
-Write a short summary in your reply: the spec's path, then the name and one-line purpose, and a few bullets on how people reach it and what it does. Keep it under 10 lines. They can open the spec or ask for detail. Then ask for approval with three options:
+Then ask for approval with AskUserQuestion. Put the spec's path in the question, like "Approve the spec in `status-check-spec.md`?", and give three options:
 
-- **Approve and set up the app** (recommended), described as: "Next, a few setup questions, like language and workspace, before anything is created."
+- **Approve and set up the app** (recommended), described as: "Next, a few setup questions, like language and workspace, before anything is created." Put the spec summary in this option's `preview`.
 - **Change something.**
 - **Approve, set up later.**
+
+The summary is a short outline the developer can review at a glance, written around the problem rather than the feature list, under 15 lines:
+
+```markdown
+## SDK Triage: suggested answers for new GitHub issues
+
+**Who:** the SDK team, in #triage-sdk
+
+**How people reach it**
+- Every new issue or PR posted to the channel
+- Replies in the thread to dig deeper
+
+**What it does**
+- Adds :eyes: so the team knows it's looking
+- Replies in the thread with an answer ready to paste into GitHub
+
+_My calls: thumbs up and down on each answer, an AI disclaimer footer._
+```
+
+Describe what people see, like "buttons for the common requests on the app's Home tab", not "App Home with `views.publish`". Put every default you chose in the italic "My calls" line, so the developer can reject it. If the question tool has no preview, write the summary as text in the reply, then ask.
 
 Revise until they approve.
 
@@ -125,7 +125,7 @@ Once the developer approves the spec:
 
 ## Notes
 
-- Don't put emoji in headings, in the playback, the summary, or the spec. Terminals draw emoji at different widths, which can misalign the text that follows, and plain headings scan faster.
+- Don't put emoji in headings, in the summary or the spec. Terminals draw emoji at different widths, which can misalign the text that follows, and plain headings scan faster.
 - This skill plans. It does not write app code, and it does not own Block Kit JSON, scaffolding, or running the app.
 - Don't ask for API keys or other credentials while planning. The `slack:create-slack-app` skill collects them when the project needs them.
 - A spec is a plan, not a contract. If the developer changes their mind while building, update the spec to match.

@@ -18,7 +18,7 @@ The agent features come from Slack's [Agent design](https://docs.slack.dev/conce
 | Direct messages | A private conversation with the app | Agent, App | `features.app_home.messages_tab_enabled`, `message.im` bot event |
 | Channel mentions | Ask the app for help in a channel without leaving the conversation | Agent, App | `app_mention` bot event, `app_mentions:read` scope |
 | App Home tab | A home page for the app: a welcome, common actions, and a place to review what the agent did for the person | Agent, App | `features.app_home.home_tab_enabled`, `app_home_opened` event, `views.publish` |
-| Slash commands | A quick action typed in the message box, like `/ticket` | Optional | `features.slash_commands` |
+| Slash commands | A quick action typed in the message box, like `/ticket`. Pick a name Slack doesn't already use: built-in commands like `/status` and `/remind` fail manifest validation | Optional | `features.slash_commands` |
 | Shortcuts | An action from the shortcuts menu, or from a message's menu | Optional | `features.shortcuts` |
 | Workflow Builder steps | Lets people use the app as a step in workflows they build themselves | Optional | `functions` in the manifest, `function_executed` event |
 | Code channels | For a coding agent: one channel per task, with diffs, previews, and canvases in the channel's Artifacts panel | Optional, coding agents only | See "Code channels" in the Agent design guide |

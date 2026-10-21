@@ -18,7 +18,7 @@ Nothing gets scaffolded until the developer approves the spec. That includes run
 Ask every question with AskUserQuestion, one question per call, including approvals. A developer who skims can miss a question at the end of a long message, and the prompt makes the next step obvious.
 
 - Offer 2-3 short options drawn from what the developer has already said, with the one you'd pick first and marked "(Recommended)". The tool's own free-text choice lets them answer in their own words, so don't add an "Other" option.
-- Keep the message before a question short. Put detail in the playback, not in the question.
+- **Show before you ask.** Write the outline (Step 3) and the spec summary (Step 5) as text in your reply, then ask in the same turn. The developer sees only what's in the reply, so a question with nothing above it asks them to approve something they haven't seen. Outside those two steps, keep the text before a question to a line or two.
 - If the coding agent has no question tool, end the message with the question on its own line, in bold.
 
 ---
@@ -75,18 +75,17 @@ Read `references/slack-app-features.md`. It lists the current Slack features an 
    _My calls: thumbs up and down on each answer, an AI disclaimer footer._
    ```
 
-   Describe what people see, like "buttons for the common requests on the app's Home tab", not "App Home with `views.publish`". Put every default you chose in the italic "My calls" line, so the developer can reject it. Then ask whether it matches what they want, with options to keep going or change something.
+   Describe what people see, like "buttons for the common requests on the app's Home tab", not "App Home with `views.publish`". Put every default you chose in the italic "My calls" line, so the developer can reject it. Write it in your reply, then ask whether it matches what they want, with options to keep going or change something.
 
 ---
 
 ## Step 4: Make It Theirs
 
-Ask 2-4 questions, one per message, picking whichever ones are still open:
+Ask whichever of these are still open, one at a time:
 
 - **The moment it helps.** "Walk me through the last time this came up. What would the app have done?" This gives you the key scenarios.
 - **What it connects to.** "Which tools or data does it need to reach?" These become the agent's tools or the app's integrations.
 - **Name and voice.** "What should it be called, and how should it sound?" Offer a guess they can correct. Slack's guidance is that an agent's name says what it does ("Deal Desk", "Support Scout") rather than sounding like a person, so suggest a name like that even when the voice has personality.
-- **What to cut.** "Is there anything in what I described that you don't want?"
 
 Ask which language they want (JavaScript or Python) only if they haven't said, and only if they care. Otherwise leave the question to `slack:create-slack-app`. Don't ask about scopes, events, Socket Mode, or manifest settings: derive those from the features in the spec.
 
@@ -103,7 +102,13 @@ Write the spec to `<app-name>-spec.md` in the current directory, following `refe
 - **Don't name AI models.** The template sets the default model, and model names go stale.
 - **Don't invent Slack API methods or scopes.** For anything the features reference doesn't already name, check with the `slack:slack-api` or `slack:slack-docs` skill.
 
-Show the developer a short summary: the spec's path, then the name and one-line purpose, and a few bullets on how people reach it and what it does. Keep it under 10 lines. They can open the spec or ask for detail. Then ask for approval, with options to approve and create the app, change something, or approve without creating the app yet. Revise until they approve.
+Write a short summary in your reply: the spec's path, then the name and one-line purpose, and a few bullets on how people reach it and what it does. Keep it under 10 lines. They can open the spec or ask for detail. Then ask for approval with three options:
+
+- **Approve and set up the app** (recommended), described as: "Next, a few setup questions, like language and workspace, before anything is created."
+- **Change something.**
+- **Approve, set up later.**
+
+Revise until they approve.
 
 ---
 

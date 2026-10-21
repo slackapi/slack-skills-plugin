@@ -110,6 +110,11 @@ SCENARIOS: list[Scenario] = [
         "accepted_tools": ["plan-slack-app"],
     },
     {
+        "id": "skill-plan-app-spec",
+        "prompt": "Write a product spec for a Slack agent that triages incoming support requests",
+        "accepted_tools": ["plan-slack-app"],
+    },
+    {
         # Pins the boundary with create-slack-app: a developer who already knows the
         # template has nothing to plan.
         "id": "skill-plan-app-vs-create-known-template",

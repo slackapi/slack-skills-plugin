@@ -1,6 +1,6 @@
 ---
 name: plan-slack-app
-description: 'Use when a developer has an idea or a problem for a new Slack app or agent but no plan yet, before anything is scaffolded: "build a Slack app that...", "an agent in Slack that helps the team with...", "plan a Slack bot for...", "what should a Slack app for this do?". Turns the idea into a product spec covering App Home, the agent view, DMs, channel mentions, slash commands, and Block Kit, ready for `create-slack-app`.'
+description: 'Use when a developer wants to plan, design, or write a spec for a Slack app or agent before any code exists, or describes an idea, a problem to solve, or what an app in Slack should do for their team: "plan a Slack app for...", "an idea for a Slack agent that...", "what should a Slack bot for this do?", "write a spec for a Slack agent". Produces a product spec covering the agent view, App Home, streaming, and Block Kit. Scaffolding is `create-slack-app`.'
 ---
 
 # Plan Slack App
@@ -60,7 +60,7 @@ Ask 2-4 questions, one per message, picking whichever ones are still open:
 
 - **The moment it helps.** "Walk me through the last time this came up. What would the app have done?" This gives you the key scenarios.
 - **What it connects to.** "Which tools or data does it need to reach?" These become the agent's tools or the app's integrations.
-- **Name and voice.** "What should it be called, and how should it sound?" Offer a guess they can correct.
+- **Name and voice.** "What should it be called, and how should it sound?" Offer a guess they can correct. Slack's guidance is that an agent's name says what it does ("Deal Desk", "Support Scout") rather than sounding like a person, so suggest a name like that even when the voice has personality.
 - **What to cut.** "Is there anything in what I described that you don't want?"
 
 Ask which language they want (JavaScript or Python) only if they haven't said, and only if they care. Otherwise leave the question to `slack:create-slack-app`. Don't ask about scopes, events, Socket Mode, or manifest settings: derive those from the features in the spec.

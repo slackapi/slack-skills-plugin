@@ -38,9 +38,13 @@ User (in #help-it): @<App Name> <message>
 <App Name> (in thread): <reply>
 ```
 
+## When Things Go Wrong
+
+<What it says when a tool fails, when it lacks access to something, and when it can't do what was asked. Keep finished work, name the limit plainly, and offer 2-3 next steps.>
+
 ## Agent Instructions
 
-<For an agent, the system prompt: role, voice, what it can do, how it works through a request, when it asks before acting, and when it hands off to a person. Skip for an app that isn't an agent.>
+<For an agent, the system prompt: role, voice, what it can do, how it works through a request, when it asks before acting, how it cites sources, and when it hands off to a person. Skip for an app that isn't an agent.>
 
 ## Slack Setup
 

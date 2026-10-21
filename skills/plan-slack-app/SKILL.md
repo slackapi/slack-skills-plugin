@@ -90,6 +90,8 @@ Ask 2-4 questions, one per message, picking whichever ones are still open:
 
 Ask which language they want (JavaScript or Python) only if they haven't said, and only if they care. Otherwise leave the question to `slack:create-slack-app`. Don't ask about scopes, events, Socket Mode, or manifest settings: derive those from the features in the spec.
 
+Ask one question per topic. When the developer names a source or a tool, like a runbook or a set of repos, don't follow up on its format, hosting, or access. Those are build details, so list them under Open Questions in the spec and move on.
+
 When an answer changes the outline, play back only the part that changed.
 
 ---
@@ -110,7 +112,7 @@ Show the developer a short summary: the spec's path, then the name and one-line 
 Once the developer approves the spec:
 
 1. **Pick the template the spec points to.** An agent starts from the Starter Agent template, or the Support Agent template when the idea is a helpdesk or support agent. An app that isn't an agent starts from the Starter Template.
-2. **Use the `slack:create-slack-app` skill** to scaffold the project, passing `bolt-js` or `bolt-python` if the language is settled. It walks through the CLI, login, and choosing a workspace. When it asks which template or AI provider to use, recommend the one the spec names.
+2. **Use the `slack:create-slack-app` skill** to scaffold the project. Pass `bolt-js` or `bolt-python` as its only argument when the developer has chosen a language, and pass no argument otherwise, so it asks. It walks through the CLI, login, and choosing a workspace. When it asks which template or AI provider to use, recommend the one the spec names, and suggest a project folder named after the app.
 3. **Move the spec into the new project folder**, so it travels with the code.
 4. **Build from the spec.** Work through it one scenario at a time. For any message, modal, or Home tab layout, use the `slack:block-kit` skill. To confirm the app works, use the `slack:test-slack-app` skill.
 

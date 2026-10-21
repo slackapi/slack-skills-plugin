@@ -54,6 +54,10 @@ User (in #help-it): @<App Name> <message>
 - **Features:** <the features from the shell this app uses>
 - **Scopes and events:** <derived from the features, as a starting list>
 
+## Open Questions
+
+<Details to settle while building, like which messages should trigger the agent, or how it reads a source the developer named. One bullet each.>
+
 ## Not Now
 
 <What the developer cut, and ideas for later.>

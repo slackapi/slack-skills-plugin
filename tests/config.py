@@ -25,6 +25,7 @@ EXPECTED_SKILLS = (
     "create-slack-app",
     "block-kit",
     "deploy-slack-app",
+    "plan-slack-app",
     "slack-api",
     "slack-cli",
     "slack-docs",

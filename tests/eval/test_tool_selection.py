@@ -100,6 +100,28 @@ SCENARIOS: list[Scenario] = [
         "accepted_tools": ["create-slack-app"],
     },
     {
+        "id": "skill-plan-app-idea",
+        "prompt": "I want a Slack agent that answers my team's questions about our on-call runbooks",
+        "accepted_tools": ["plan-slack-app"],
+    },
+    {
+        "id": "skill-plan-app-help-plan",
+        "prompt": "Help me plan a Slack app for collecting weekly status updates from my team",
+        "accepted_tools": ["plan-slack-app"],
+    },
+    {
+        "id": "skill-plan-app-spec",
+        "prompt": "Write a product spec for a Slack agent that triages incoming support requests",
+        "accepted_tools": ["plan-slack-app"],
+    },
+    {
+        # Pins the boundary with create-slack-app: a developer who already knows the
+        # template has nothing to plan.
+        "id": "skill-plan-app-vs-create-known-template",
+        "prompt": "Scaffold a new Bolt for Python app from the starter agent template",
+        "accepted_tools": ["create-slack-app"],
+    },
+    {
         "id": "skill-deploy-app-keep-running",
         "prompt": "Deploy my Slack app somewhere it keeps running after I close my laptop",
         "accepted_tools": ["deploy-slack-app"],
@@ -128,9 +150,10 @@ SCENARIOS: list[Scenario] = [
     },
     {
         # Pins the boundary the deploy-slack-app description is most likely to blur:
-        # running locally stays with slack-cli.
+        # running locally stays with slack-cli. "Try" is left out because
+        # test-slack-app owns trying an app out.
         "id": "skill-deploy-app-vs-cli-run-local",
-        "prompt": "Start my Slack app on my own machine so I can try a code change",
+        "prompt": "Start my Slack app on my own machine while I work on a code change",
         "accepted_tools": ["slack-cli"],
     },
     {

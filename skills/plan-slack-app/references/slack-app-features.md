@@ -27,10 +27,9 @@ The agent features come from Slack's [Agent design](https://docs.slack.dev/conce
 
 | Feature | What it gives people | Default | How to detect it |
 |---|---|---|---|
-| Agent sessions | Shows the agent's status and progress in the person's sessions list from the moment it starts working | Agent | `agents.sessions.create` before the first reply |
-| Status | A loading indicator while the agent works, cleared when it's done | Agent | `agents.sessions.setStatus` with `processing`, then `active` (or `suspended` when the person needs to step in). Bolt `setStatus` or `set_status`, which also takes `loading_messages`. The older `assistant.threads.setStatus` still works |
+| Agent sessions and status | Shows the agent in the person's sessions list with a loading indicator while it works, cleared when it's done | Agent | `agents.sessions.setStatus` with `processing`, which creates the session if needed, then `active` (or `suspended` when the person needs to step in). It doesn't support custom loading messages. Bolt's `setStatus` (JavaScript) or `set_status` (Python) wraps the older `assistant.threads.setStatus`, which takes a free-text status and `loading_messages` |
 | Stop button | Lets people stop the agent mid-task | Agent | `agent_session_stopped` event |
-| Session titles | Names each conversation so people can find it later, and keeps the name in sync when they rename it | Agent | `agents.sessions.rename` (Bolt `setTitle`), `agent_session_title_changed` event |
+| Session titles | Names each conversation so people can find it later, and keeps the name in sync when they rename it | Agent | `agents.sessions.rename`, `agent_session_title_changed` event. Bolt's `setTitle` wraps the older `assistant.threads.setTitle` |
 | What the person is viewing | Tailors answers to the channel, thread, canvas, or list the person has open | Agent | `app_context_changed` event |
 | Streaming responses | Long answers appear as they're written, and people can redirect the agent early. Short or structured answers go out whole | Agent | `chat.startStream`, `chat.appendStream`, `chat.stopStream` with `markdown_text` chunks. Bolt `sayStream` (JavaScript) or `say_stream` (Python) |
 | Standard markdown for generated text | Model output renders as written, using standard markdown rather than Slack's `mrkdwn` | Agent | `markdown_text` stream chunks, or the `markdown` block |

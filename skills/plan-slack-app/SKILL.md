@@ -44,7 +44,7 @@ The `superpowers:brainstorming` skill is a popular, general-purpose skill for pl
 
 Ask one open question about the problem, not the app. For example: "What problem should this app solve, and who runs into it?" Offer one or two guesses from the developer's request as options, plus one option to skip the questions and use sensible defaults.
 
-If they opt out of the questions, choose the shell defaults from Step 3, say the main choices in one line (agent or not, language, how people reach it), write the spec from those defaults, and go to Step 6.
+If they opt out of the questions, choose the shell defaults from Step 3, write the spec from those defaults, and go to Step 5 for approval. Opting out skips the questions, not the approval.
 
 Match the developer's words, and don't use Slack feature names they haven't used themselves. If they say "just guess" or "what do you think?", propose something concrete.
 
@@ -119,13 +119,13 @@ Once the developer approves the spec:
 1. **Pick the template the spec points to.** An agent starts from the Starter Agent template, or the Support Agent template when the idea is a helpdesk or support agent. An app that isn't an agent starts from the Starter Template.
 2. **Use the `slack:create-slack-app` skill** to scaffold the project. Pass `bolt-js` or `bolt-python` as its only argument when the developer has chosen a language, and pass no argument otherwise, so it asks. It walks through the CLI, login, and choosing a workspace. When it asks which template or AI provider to use, recommend the one the spec names, and suggest a project folder named after the app.
 3. **Move the spec into the new project folder**, so it travels with the code.
-4. **Build from the spec.** Work through it one scenario at a time. For any message, modal, or Home tab layout, use the `slack:block-kit` skill. To confirm the app works, use the `slack:test-slack-app` skill.
+4. **Ask before building.** Approving the spec covers scaffolding only. Ask whether to start building from the spec, with options to start with the first scenario or stop here. If they start, work through the spec one scenario at a time. For any message, modal, or Home tab layout, use the `slack:block-kit` skill. To confirm the app works, use the `slack:test-slack-app` skill.
 
 ---
 
 ## Notes
 
 - Don't put emoji in headings, in the summary or the spec. Terminals draw emoji at different widths, which can misalign the text that follows, and plain headings scan faster.
-- This skill plans. It does not write app code, and it does not own Block Kit JSON, scaffolding, or running the app.
+- This skill plans. Building starts only when the developer says so in Step 6, and Block Kit JSON, scaffolding, and running the app belong to the skills named there.
 - Don't ask for API keys or other credentials while planning. The `slack:create-slack-app` skill collects them when the project needs them.
 - A spec is a plan, not a contract. If the developer changes their mind while building, update the spec to match.

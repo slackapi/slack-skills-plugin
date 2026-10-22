@@ -115,6 +115,12 @@ SCENARIOS: list[Scenario] = [
         "accepted_tools": ["plan-slack-app"],
     },
     {
+        # An idea with no plan belongs here, even when it's phrased as "create".
+        "id": "skill-plan-app-create-with-idea",
+        "prompt": "Create a Slack app that collects weekly status updates from my team",
+        "accepted_tools": ["plan-slack-app"],
+    },
+    {
         # Pins the boundary with create-slack-app: a developer who already knows the
         # template has nothing to plan.
         "id": "skill-plan-app-vs-create-known-template",
@@ -150,10 +156,11 @@ SCENARIOS: list[Scenario] = [
     },
     {
         # Pins the boundary the deploy-slack-app description is most likely to blur:
-        # running locally stays with slack-cli.
+        # running locally is not a deploy. test-slack-app also starts the app with
+        # `slack run`, so either local-run skill passes.
         "id": "skill-deploy-app-vs-cli-run-local",
         "prompt": "Start my Slack app on my own machine so I can try a code change",
-        "accepted_tools": ["slack-cli"],
+        "accepted_tools": ["slack-cli", "test-slack-app"],
     },
     {
         # A conceptual question is not a deploy request.

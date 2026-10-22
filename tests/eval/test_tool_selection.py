@@ -156,11 +156,11 @@ SCENARIOS: list[Scenario] = [
     },
     {
         # Pins the boundary the deploy-slack-app description is most likely to blur:
-        # running locally is not a deploy. test-slack-app also starts the app with
-        # `slack run`, so either local-run skill passes.
+        # running locally stays with slack-cli. "Try" is left out because
+        # test-slack-app owns trying an app out.
         "id": "skill-deploy-app-vs-cli-run-local",
-        "prompt": "Start my Slack app on my own machine so I can try a code change",
-        "accepted_tools": ["slack-cli", "test-slack-app"],
+        "prompt": "Start my Slack app on my own machine while I work on a code change",
+        "accepted_tools": ["slack-cli"],
     },
     {
         # A conceptual question is not a deploy request.

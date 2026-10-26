@@ -5,7 +5,7 @@ description: Use when a developer wants to deploy, host, or run a Slack app some
 
 # Deploy Slack App
 
-Take a Slack app that already works locally and deploy it to a hosting provider as a separate Slack app, with its own app ID, that keeps running without the developer's machine. The local development app is unchanged, and **Step 5: Deploy** explains how the two coexist. This is the step after the `slack:test-slack-app` skill confirms the app responds.
+Take a Slack app that already works locally and deploy it to a hosting provider as a separate Slack app, with its own app ID, that keeps running without the developer's machine. The local development app is unchanged, and **Step 5: Deploy** explains how the two coexist. This is the step after the `test-slack-app` skill confirms the app responds.
 
 The mechanism is the Slack CLI's `deploy` hook. Adding a `deploy` key to the project's `.slack/hooks.json` replaces Slack's own hosted deployment with a script of your choosing, and the CLI runs that script _after_ it has created and installed the deployed app. That ordering is the whole reason this approach is worth using: the app's bot and app-level tokens are already in the script's environment by the time it runs, so nothing here has to prompt for a secret or store one.
 
@@ -24,7 +24,7 @@ Railway is the better default, and the reasons are in **Step 2a: Choose a Provid
 
 ### 1a. Detect the Slack CLI
 
-Use the `slack:slack-cli` skill (**Step 1: Detect the Slack CLI**) to check whether the public Slack CLI is installed and resolve its command name. The fingerprint check, alias fallback, and install instructions all live there; do not duplicate them. Refer to the resolved command as `SLACK_CMD` throughout.
+Use the `slack-cli` skill (**Step 1: Detect the Slack CLI**) to check whether the public Slack CLI is installed and resolve its command name. The fingerprint check, alias fallback, and install instructions all live there; do not duplicate them. Refer to the resolved command as `SLACK_CMD` throughout.
 
 This matters more than it looks. Some machines have an unrelated internal tool named `slack` on the path, and running that instead produces confusing failures well into the deploy.
 
@@ -72,7 +72,7 @@ Run `SLACK_CMD auth list`. If it lists one team, use it. If it lists more than o
 
 **Do not deploy an app that has not been seen working.** A broken deploy and a broken app look identical in a provider's logs, and separating them afterwards costs far more than checking first.
 
-Use the `slack:test-slack-app` skill to run the app with `SLACK_CMD run` and exercise at least one real surface, so there is a known-good behaviour to re-check after the deploy. Note which surface was used: the same one is the check in **Step 6: Verify the Deployment**.
+Use the `test-slack-app` skill to run the app with `SLACK_CMD run` and exercise at least one real surface, so there is a known-good behaviour to re-check after the deploy. Note which surface was used: the same one is the check in **Step 6: Verify the Deployment**.
 
 ---
 
@@ -195,6 +195,6 @@ Leave `.slack/hooks.json` and the deploy script in place, so a later `SLACK_CMD 
 
 **The token handoff is not a documented contract.** The Slack CLI does not pass the tokens to the deploy hook explicitly. It sets them on its own process during app installation, and the hook script inherits them because it runs later in that same process. It works, and it only works for apps with no Slack-hosted function runtime, which covers every Bolt app. That is why each deploy script checks for both tokens and stops with a readable message instead of assuming they are present.
 
-**Not `slack deploy` without a hook.** With no `deploy` key in `.slack/hooks.json`, `SLACK_CMD deploy` targets Slack's own hosted infrastructure, which is a different product for a different kind of app. The `slack:slack-cli` skill covers the CLI's commands generally.
+**Not `slack deploy` without a hook.** With no `deploy` key in `.slack/hooks.json`, `SLACK_CMD deploy` targets Slack's own hosted infrastructure, which is a different product for a different kind of app. The `slack-cli` skill covers the CLI's commands generally.
 
-**Building the app comes first.** If there is no app yet, start with the `slack:create-slack-app` skill and come back here once it runs locally.
+**Building the app comes first.** If there is no app yet, start with the `create-slack-app` skill and come back here once it runs locally.

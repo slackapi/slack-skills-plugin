@@ -2,4 +2,4 @@
 "slack": patch
 ---
 
-Fix skill cross-references for agents that install the skills with `npx skills`. Skills now point at each other by bare name (the `slack-cli` skill) instead of `slack:slack-cli`, which only Claude Code registers, so agents like Cursor and Codex can follow a hand-off from one skill to the next.
+Reference other skills by their bare name (the `slack-cli` skill) instead of `slack:slack-cli`, a name only Claude Code registers. Every hand-off between skills now names a skill that exists on every install path, including agents set up with `npx skills`.

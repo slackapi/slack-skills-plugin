@@ -108,7 +108,7 @@ You need a token only when the method requires one. There are two ways to get on
 
 The CLI supplies an authenticated session, so once the developer is logged in you can call methods without handling a token yourself (Step 4, "Via the Slack CLI").
 
-Use the `slack-cli` skill — **Step 1: Detect the Slack CLI** — to check whether the public Slack CLI is installed and resolve its command name. That step also proposes installing the CLI when it is absent. The fingerprint check, alias fallback, and install instructions all live there; do not duplicate them here.
+Load the `slack-cli` skill (with your skill tool, if you have one) before running any command, and follow its **Step 1: Detect the Slack CLI** to check whether the public Slack CLI is installed and resolve its command name. Don't check for the CLI yourself first: a `slack` on `PATH` isn't always the public CLI, and that step tells them apart. That step also proposes installing the CLI when it is absent. The fingerprint check, alias fallback, and install instructions all live there; do not duplicate them here.
 
 Once resolved, use the detected command name for **all** CLI commands in this skill. We refer to it as `SLACK_CMD` — substitute the actual resolved command name everywhere you see `SLACK_CMD`.
 

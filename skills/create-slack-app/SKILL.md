@@ -16,7 +16,7 @@ This skill walks through the full setup: prerequisites, authentication, choosing
 
 ### 1a. Detect the Slack CLI command
 
-Use the `slack-cli` skill — **Step 1: Detect the Slack CLI** — to check whether the public Slack CLI is installed and resolve its command name. The fingerprint check, alias fallback, and install instructions all live there; do not duplicate them here.
+Load the `slack-cli` skill (with your skill tool, if you have one) before running any command, and follow its **Step 1: Detect the Slack CLI** to check whether the public Slack CLI is installed and resolve its command name. Don't check for the CLI yourself first: a `slack` on `PATH` isn't always the public CLI, and that step tells them apart. The fingerprint check, alias fallback, and install instructions all live there; do not duplicate them here.
 
 Once resolved, use the detected command name for **all** CLI commands throughout the rest of this skill. We refer to it as `SLACK_CMD` below — substitute the actual resolved command name everywhere you see `SLACK_CMD`.
 

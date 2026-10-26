@@ -189,7 +189,7 @@ Prefer the Slack CLI when it's available, since it reuses the slack-cli skill's 
 
 **Path A: Slack CLI (preferred).**
 
-Use the `slack-cli` skill, **Step 1: Detect the Slack CLI**, to check whether the public CLI is installed and resolve its command (`SLACK_CMD`).
+Load the `slack-cli` skill (with your skill tool, if you have one) before running any command, and follow its **Step 1: Detect the Slack CLI** to check whether the public CLI is installed and resolve its command (`SLACK_CMD`). Don't check for the CLI yourself first: a `slack` on `PATH` isn't always the public CLI, and that step tells them apart.
 
 If the CLI is available, use the `slack-cli` skill, **Step 4: Calling Web API Methods (`slack api`)**, to invoke it. That step covers the `SLACK_CMD api <method> key=value …` syntax. Run `SLACK_CMD api --help` first to confirm the syntax **and the flag that skips authentication**. `blocks.validate` needs no token, so call it without authentication. Don't hard-code that flag from memory; read it from the help output so this stays correct if it's ever renamed. Pass the payload as a positional `key=value` argument: `blocks=<JSON array>` for messages, or `view=<JSON view object>` for modals and home tabs.
 
@@ -260,7 +260,7 @@ Help the developer view their layout with the **Block Kit Builder**. Prefer the 
 
 **Path A: Slack CLI (preferred).**
 
-Use the `slack-cli` skill, **Step 1: Detect the Slack CLI**, to check whether the public CLI is installed and resolve its command (`SLACK_CMD`).
+Load the `slack-cli` skill (with your skill tool, if you have one) before running any command, and follow its **Step 1: Detect the Slack CLI** to check whether the public CLI is installed and resolve its command (`SLACK_CMD`). Don't check for the CLI yourself first: a `slack` on `PATH` isn't always the public CLI, and that step tells them apart.
 
 If the CLI is available, run `SLACK_CMD blocks preview --help` to see how to pass the blocks and open the preview. The command loads the blocks into the Block Kit Builder in the developer's browser.
 

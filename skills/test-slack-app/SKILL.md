@@ -21,7 +21,7 @@ This is guided manual checking, not an automated test suite: you drive the setup
 
 ### 1a. Detect the Slack CLI
 
-Use the `slack-cli` skill (**Step 1: Detect the Slack CLI**) to check whether the public Slack CLI is installed and resolve its command name. The fingerprint check, alias fallback, and install instructions all live there; do not duplicate them here. Refer to the resolved command as `SLACK_CMD` throughout. If the CLI is not installed, guide the developer through that same step to install it, since running the app needs it.
+Load the `slack-cli` skill (with your skill tool, if you have one) before running any command, and follow its **Step 1: Detect the Slack CLI** to check whether the public Slack CLI is installed and resolve its command name. Don't check for the CLI yourself first: a `slack` on `PATH` isn't always the public CLI, and that step tells them apart. The fingerprint check, alias fallback, and install instructions all live there; do not duplicate them here. Refer to the resolved command as `SLACK_CMD` throughout. If the CLI is not installed, guide the developer through that same step to install it, since running the app needs it.
 
 ### 1b. Make sure there is a safe workspace to test in
 

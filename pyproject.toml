@@ -67,6 +67,11 @@ respect-gitignore = true
 #   MD041 — commands use frontmatter before the first heading; skills validated by pytest
 disable = ["MD013", "MD028", "MD036", "MD041"]
 
+# Allow <div hidden> in docs pages: it keeps agent-only notes out of the docs.slack.dev
+# HTML while the generated .md keeps them. HTML comments can't do this, since MDX drops them.
+[tool.rumdl.MD033]
+allowed-elements = ["div"]
+
 # Emphasis markers: italics use _underscores_, bold uses **asterisks**.
 [tool.rumdl.MD049]
 style = "underscore"

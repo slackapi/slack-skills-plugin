@@ -60,7 +60,7 @@ Follow the `create-slack-app` skill from start to finish.
 While following the skill:
 
 - **Use the Starter Agent template.** When the skill asks which template to use, pick Starter Agent (`slack-samples/bolt-js-starter-agent` or `slack-samples/bolt-python-starter-agent`) without asking the user. Still ask which language (JavaScript or Python) and which AI provider they want.
-- **Resolve skill references from the hosted copies** when the plugin is not loaded. A reference like `slack:<name>` means the skill at `https://docs.slack.dev/.well-known/skills/<name>/SKILL.md`. A path like `references/<file>.md` is relative to that skill's folder at the same address. The full list of skills and their files is at [https://docs.slack.dev/.well-known/skills/index.json](https://docs.slack.dev/.well-known/skills/index.json).
+- **Resolve skill references from the hosted copies** when the plugin is not loaded. A reference like "the `<name>` skill" means the skill at `https://docs.slack.dev/.well-known/skills/<name>/SKILL.md`. A path like `references/<file>.md` is relative to that skill's folder at the same address. The full list of skills and their files is at [https://docs.slack.dev/.well-known/skills/index.json](https://docs.slack.dev/.well-known/skills/index.json).
 - **Let the skill ask its own questions**, such as which workspace to install into or which API key to use. Those choices are the user's.
 
 ---

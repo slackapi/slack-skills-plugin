@@ -84,7 +84,7 @@ If a categorized search returns no good hit, widen it: try the other likely cate
 
 - WebFetch `https://docs.slack.dev/llms-sitemap.md`, a flat list of every documentation page's `.md` URL, and scan it for the relevant path.
 - For API reference lookups, the enriched index pages are often faster: `https://docs.slack.dev/reference/methods.md`, `.../events.md`, `.../scopes.md`, `.../objects.md`, and `.../block-kit.md` each list every item with a one-line description and a `.md` link.
-- If the developer has the Slack CLI, `slack docs search "<query>"` does the same discovery from the terminal (see the `slack:slack-cli` skill).
+- If the developer has the Slack CLI, `slack docs search "<query>"` does the same discovery from the terminal (see the `slack-cli` skill).
 
 ---
 

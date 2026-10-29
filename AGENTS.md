@@ -40,7 +40,7 @@ Eval tests (`make test-eval`) need a Gemini API key and, for the MCP tool-select
 
 When one `SKILL.md` references another skill (e.g., to delegate a step instead of duplicating content), follow these rules:
 
-- Use the backticked `plugin:skill` form, e.g. `` `slack:slack-cli` ``.
+- Use the backticked skill name followed by "skill", e.g. "the `slack-cli` skill". Don't add the `slack:` plugin prefix: only Claude Code registers it, and agents that install with `npx skills` see the bare name.
 - When pointing at a specific step, include the step's heading text, not just the number, so references survive future reordering.
 - Add a sentence of prose explaining what the referenced section does and why you're delegating to it.
 - Don't use markdown anchor links (`[text](#step-1)`), `@`-include syntax (`@path/to/SKILL.md`), or bare file paths: none are idiomatic in installed skills, and `@`-includes force-load context.

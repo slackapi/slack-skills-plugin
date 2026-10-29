@@ -209,6 +209,8 @@ SLACK_CMD create my-slack-agent -t slack-samples/bolt-js-starter-agent --subdir 
 
 The CLI saves the app ID to the project's local environment and updates the project's manifest to match the app in App Settings, so keep the scopes and events the developer picked there. Don't change the manifest back to the template's.
 
+If `SLACK_CMD create` fails with `invalid_app_id`, the CLI has created the project folder but not linked the app, so stop before Step 5. Tell the developer that the app ID and team don't match a workspace they are logged in to, delete the new project folder, and ask them to check both values in App Settings.
+
 Confirm the project was created successfully by checking that the directory exists and listing its contents.
 
 ### 4c. Set required environment variables (agent templates only)

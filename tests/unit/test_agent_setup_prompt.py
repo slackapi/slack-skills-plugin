@@ -74,3 +74,14 @@ class TestAgentSetupPrompt:
             assert f"| `{name}` |" in self.prompt, (
                 f"{AGENT_SETUP_PROMPT.name} has no template table row for `{name}`, which App Settings sends"
             )
+
+    def test_prompt_maps_each_template_to_its_own_repo(self) -> None:
+        # Each template name has a repo per language, so a row that maps a name to a
+        # different template's repo gives the developer an app they did not choose.
+        for name in APP_SETTINGS_TEMPLATES:
+            suffix = name.removeprefix("bolt-")
+            row = f"| `{name}` | `slack-samples/bolt-js-{suffix}` | `slack-samples/bolt-python-{suffix}` |"
+            assert row in self.prompt, (
+                f"{AGENT_SETUP_PROMPT.name} does not map `{name}` to the matching JavaScript and "
+                f"Python repos; expected the row {row}"
+            )

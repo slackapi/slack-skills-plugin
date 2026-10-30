@@ -100,6 +100,14 @@ SCENARIOS: list[Scenario] = [
         "accepted_tools": ["create-slack-app"],
     },
     {
+        "id": "skill-create-app-existing-app",
+        "prompt": (
+            "I created a Slack app in App Settings. Set up the project on my machine "
+            "using --app A0123456789 --template slack-samples/bolt-js-starter-agent --team T0123456789"
+        ),
+        "accepted_tools": ["create-slack-app"],
+    },
+    {
         "id": "skill-deploy-app-keep-running",
         "prompt": "Deploy my Slack app somewhere it keeps running after I close my laptop",
         "accepted_tools": ["deploy-slack-app"],

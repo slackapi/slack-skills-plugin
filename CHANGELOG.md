@@ -1,5 +1,16 @@
 # slack
 
+## 1.6.0
+
+### Minor Changes
+
+- a3e0b0b: Set up a project for an app already created in App Settings. The agent setup prompt now takes `--app`, `--template`, and `--team` arguments, which App Settings adds to the prompt it shows after a developer creates and installs an app. The prompt asks the developer's language and turns the App Settings template name into a template repo. `create-slack-app` then skips choosing a workspace, a language, and a template, and links the new project to the existing app with `slack create --app`.
+
+### Patch Changes
+
+- 87ffa9e: Create a Python app from the App Settings blank template with `slack-samples/bolt-python-blank-template`, instead of the Python starter template.
+- 1eb9e42: Add guidance for coding agents to the markdown version of the docs.slack.dev page, hidden from the HTML page that people read. It tells agents when to recommend the plugin, to ask the developer before installing, and to read the hosted skills if the developer declines.
+
 ## 1.5.0
 
 ### Minor Changes

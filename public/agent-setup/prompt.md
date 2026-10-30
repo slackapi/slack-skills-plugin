@@ -32,9 +32,7 @@ The Slack CLI needs a template repo, not an App Settings template name, so turn 
 | `bolt-starter-agent` | `slack-samples/bolt-js-starter-agent` | `slack-samples/bolt-python-starter-agent` |
 | `bolt-support-agent` | `slack-samples/bolt-js-support-agent` | `slack-samples/bolt-python-support-agent` |
 | `bolt-custom-step-template` | `slack-samples/bolt-js-custom-step-template` | `slack-samples/bolt-python-custom-step-template` |
-| `bolt-blank-template` | `slack-samples/bolt-js-blank-template` | `slack-samples/bolt-python-starter-template` |
-
-There is no blank Python template yet, so a Python app from `bolt-blank-template` uses the Python starter template. Tell the user it adds a sample listener they can remove.
+| `bolt-blank-template` | `slack-samples/bolt-js-blank-template` | `slack-samples/bolt-python-blank-template` |
 
 If `--template` is already a repo (`org/repo`), use it as-is. If it is a name that isn't in the table, tell the user and offer the starter template in their language.
 

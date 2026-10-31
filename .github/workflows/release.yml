@@ -10,7 +10,7 @@ on:
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 env:
-  PY_VERSION: "3.14"
+  PY_VERSION: "3.15"
   NODE_VERSION: "26"
 
 jobs:
@@ -38,7 +38,7 @@ jobs:
         run: npm install
       - name: Changesets release
         id: changesets
-        uses: changesets/action@8488615a623b1b9c987934bb89eae8af6a946ac1 # v2.1.1
+        uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
         with:
           commit-message: "chore: release"
           create-github-releases: true
@@ -47,6 +47,38 @@ jobs:
           pr-title: "chore: release"
           publish-script: npx changeset publish
           version-script: bash scripts/changeset_version.sh
+      - name: Label and title the release pull request
+        if: steps.changesets.outputs.pr-number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.changesets.outputs.pr-number }}
+        run: |
+          current=$(git show "${GITHUB_SHA}:package.json" | jq -r .version)
+          head=$(gh pr view "$PR_NUMBER" --json headRefName -q .headRefName)
+          pkg=$(gh api "repos/${GITHUB_REPOSITORY}/contents/package.json?ref=${head}" -q .content | base64 -d)
+          name=$(jq -r '.name // empty' <<< "$pkg")
+          next=$(jq -r '.version // empty' <<< "$pkg")
+          IFS=. read -r cur_major cur_minor _ <<< "$current"
+          IFS=. read -r next_major next_minor _ <<< "$next"
+          if [ "$next_major" != "$cur_major" ]; then
+            bump=major
+          elif [ "$next_minor" != "$cur_minor" ]; then
+            bump=minor
+          else
+            bump=patch
+          fi
+          echo "Version ${current} -> ${next} (${bump})"
+          title="chore: release"
+          if [ -n "$name" ] && [ -n "$next" ]; then
+            title="chore: release ${name}@${next}"
+          fi
+          args=(--title "$title" --add-label release --add-label "semver:${bump}")
+          for label in $(gh pr view "$PR_NUMBER" --json labels -q '.labels[].name | select(startswith("semver:"))'); do
+            if [ "$label" != "semver:${bump}" ]; then
+              args+=(--remove-label "$label")
+            fi
+          done
+          gh pr edit "$PR_NUMBER" "${args[@]}"
       - name: Get publication details
         id: release
         if: steps.changesets.outputs.published == 'true'

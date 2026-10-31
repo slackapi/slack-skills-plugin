@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-  SUPPORTED_PY: "3.14"
+  SUPPORTED_PY: "3.15"
 
 jobs:
   lint:

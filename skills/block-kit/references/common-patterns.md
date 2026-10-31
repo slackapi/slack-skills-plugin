@@ -15,7 +15,7 @@ A notification with context and Approve/Reject buttons.
   "blocks": [
     {
       "type": "header",
-      "text": { "type": "plain_text", "text": "New Approval Request" }
+      "text": { "type": "plain_text", "text": "New approval request" }
     },
     {
       "type": "section",
@@ -58,8 +58,8 @@ A modal with text input, select menu, and optional checkbox.
 {
   "type": "modal",
   "callback_id": "feedback_form",
-  "title": { "type": "plain_text", "text": "Submit Feedback" },
-  "submit": { "type": "plain_text", "text": "Submit" },
+  "title": { "type": "plain_text", "text": "Send feedback" },
+  "submit": { "type": "plain_text", "text": "Send Feedback" },
   "close": { "type": "plain_text", "text": "Cancel" },
   "blocks": [
     {
@@ -71,9 +71,9 @@ A modal with text input, select menu, and optional checkbox.
         "action_id": "category_select",
         "placeholder": { "type": "plain_text", "text": "Choose a category" },
         "options": [
-          { "text": { "type": "plain_text", "text": "Bug Report" }, "value": "bug" },
-          { "text": { "type": "plain_text", "text": "Feature Request" }, "value": "feature" },
-          { "text": { "type": "plain_text", "text": "General Feedback" }, "value": "general" }
+          { "text": { "type": "plain_text", "text": "Bug report" }, "value": "bug" },
+          { "text": { "type": "plain_text", "text": "Feature request" }, "value": "feature" },
+          { "text": { "type": "plain_text", "text": "General feedback" }, "value": "general" }
         ]
       }
     },
@@ -85,7 +85,7 @@ A modal with text input, select menu, and optional checkbox.
         "type": "plain_text_input",
         "action_id": "description_input",
         "multiline": true,
-        "placeholder": { "type": "plain_text", "text": "Tell us more..." }
+        "placeholder": { "type": "plain_text", "text": "Ex. The export button does nothing" }
       }
     },
     {
@@ -113,15 +113,14 @@ A modal with text input, select menu, and optional checkbox.
 
 ## Notification Alert [M]
 
-An alert banner with description and timestamp context.
+A notification headline with description, timestamp context, and next actions. The `alert` block is available only in modals, so a message states its severity in words in the `header`. Keep emoji out of headers and buttons; Slack's style uses emoji only in running text.
 
 ```json
 {
   "blocks": [
     {
-      "type": "alert",
-      "text": { "type": "plain_text", "text": "Deployment failed for api-gateway" },
-      "level": "error"
+      "type": "header",
+      "text": { "type": "plain_text", "text": "Deployment failed: api-gateway" }
     },
     {
       "type": "section",
@@ -130,7 +129,7 @@ An alert banner with description and timestamp context.
     {
       "type": "context",
       "elements": [
-        { "type": "mrkdwn", "text": "Triggered by <@U0123456789> | <!date^1700000000^{date_short} at {time}|Nov 14, 2023>" }
+        { "type": "mrkdwn", "text": "Triggered by <@U0123456789> · <!date^1700000000^{date_short} at {time}|Nov 14, 2023>" }
       ]
     },
     {
@@ -144,7 +143,7 @@ An alert banner with description and timestamp context.
         },
         {
           "type": "button",
-          "text": { "type": "plain_text", "text": "Retry" },
+          "text": { "type": "plain_text", "text": "Retry Deploy" },
           "style": "primary",
           "action_id": "retry_deploy_btn"
         }
@@ -154,7 +153,7 @@ An alert banner with description and timestamp context.
 }
 ```
 
-**Customization points:** Level (`info`, `warning`, `error`, `success`), description text, action buttons.
+**Customization points:** Severity word and emoji in the header ("Deployment failed", "Warning: disk at 90%"), description text, action buttons. Also set the message's top-level `text` fallback to the headline, such as "Deployment failed: api-gateway". In a modal, use an `alert` block with a `level` instead of the header.
 
 ---
 
@@ -177,10 +176,10 @@ A welcome dashboard with metrics fields and quick-action buttons.
     {
       "type": "section",
       "fields": [
-        { "type": "mrkdwn", "text": "*Open Tickets:*\n12" },
-        { "type": "mrkdwn", "text": "*Resolved Today:*\n5" },
-        { "type": "mrkdwn", "text": "*Avg Response:*\n2.4 hrs" },
-        { "type": "mrkdwn", "text": "*SLA Status:*\n:white_check_mark: On Track" }
+        { "type": "mrkdwn", "text": "*Open tickets*\n12" },
+        { "type": "mrkdwn", "text": "*Resolved today*\n5" },
+        { "type": "mrkdwn", "text": "*Average response*\n2.4 hours" },
+        { "type": "mrkdwn", "text": "*SLA status*\nOn track :white_check_mark:" }
       ]
     },
     { "type": "divider" },
@@ -234,7 +233,7 @@ An action button with a confirmation dialog attached (prevents accidental clicks
           "action_id": "shutdown_btn",
           "value": "prod-server-01",
           "confirm": {
-            "title": { "type": "plain_text", "text": "Confirm Shutdown" },
+            "title": { "type": "plain_text", "text": "Shut down server" },
             "text": { "type": "plain_text", "text": "This will immediately terminate the server. Active connections will be dropped." },
             "confirm": { "type": "plain_text", "text": "Shut Down" },
             "deny": { "type": "plain_text", "text": "Cancel" },
@@ -260,7 +259,7 @@ A structured table for displaying tabular data. Only one table block per message
   "blocks": [
     {
       "type": "header",
-      "text": { "type": "plain_text", "text": "Sprint Summary" }
+      "text": { "type": "plain_text", "text": "Sprint summary" }
     },
     {
       "type": "table",
@@ -308,14 +307,14 @@ A modal combining different input types for a settings/preferences form.
 {
   "type": "modal",
   "callback_id": "settings_modal",
-  "title": { "type": "plain_text", "text": "Notification Settings" },
+  "title": { "type": "plain_text", "text": "Notification settings" },
   "submit": { "type": "plain_text", "text": "Save" },
   "close": { "type": "plain_text", "text": "Cancel" },
   "blocks": [
     {
       "type": "input",
       "block_id": "channel_block",
-      "label": { "type": "plain_text", "text": "Notification Channel" },
+      "label": { "type": "plain_text", "text": "Notification channel" },
       "element": {
         "type": "conversations_select",
         "action_id": "channel_select",
@@ -325,7 +324,7 @@ A modal combining different input types for a settings/preferences form.
     {
       "type": "input",
       "block_id": "frequency_block",
-      "label": { "type": "plain_text", "text": "Digest Frequency" },
+      "label": { "type": "plain_text", "text": "Digest frequency" },
       "element": {
         "type": "static_select",
         "action_id": "frequency_select",
@@ -429,7 +428,7 @@ A row-level "⋯" menu for actions that don't need dedicated buttons (edit, dupl
             { "text": { "type": "plain_text", "text": "Delete" }, "value": "delete" }
           ],
           "confirm": {
-            "title": { "type": "plain_text", "text": "Confirm delete" },
+            "title": { "type": "plain_text", "text": "Delete item" },
             "text": { "type": "plain_text", "text": "This can't be undone." },
             "confirm": { "type": "plain_text", "text": "Delete" },
             "deny": { "type": "plain_text", "text": "Cancel" },
@@ -461,7 +460,7 @@ An image/thumbnail-driven card — link preview, product card, or similar — wi
         "alt_text": "Wireless noise-cancelling headphones, matte black"
       },
       "title": { "type": "plain_text", "text": "Noise-Cancelling Headphones" },
-      "subtitle": { "type": "plain_text", "text": "$149.99 — In Stock" },
+      "subtitle": { "type": "plain_text", "text": "$149.99 — In stock" },
       "body": { "type": "mrkdwn", "text": "30-hour battery life, USB-C fast charging, and adaptive noise cancellation." },
       "actions": [
         {

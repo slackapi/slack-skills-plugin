@@ -21,7 +21,14 @@ PLUGIN_MANIFEST = Path(__file__).parent.parent / ".claude-plugin" / "plugin.json
 PLUGIN_NAME = json.loads(PLUGIN_MANIFEST.read_text())["name"]
 
 # Skill inventory (single source of truth)
-EXPECTED_SKILLS = ("create-slack-app", "block-kit", "slack-api", "slack-cli", "slack-docs")
+EXPECTED_SKILLS = (
+    "create-slack-app",
+    "block-kit",
+    "deploy-slack-app",
+    "slack-api",
+    "slack-cli",
+    "slack-docs",
+)
 
 # Gemini judge model. Any env var whose name starts with GEMINI_API_KEY contributes a
 # key to the pool; blank values are skipped so an empty GEMINI_API_KEY= doesn't sneak in.
@@ -31,3 +38,7 @@ GEMINI_MODEL = os.environ.get("GEMINI_MODEL_NAME", "gemini-3.1-flash-lite")
 # Slack MCP server
 SLACK_MCP_URL = "https://mcp.slack.com/mcp"
 SLACK_MCP_TOKEN = os.environ.get("SLACK_MCP_TOKEN", "")
+
+# Agent setup prompt, served on docs.slack.dev from public/
+AGENT_SETUP_PROMPT = Path(__file__).parent.parent / "public" / "agent-setup" / "prompt.md"
+README = Path(__file__).parent.parent / "README.md"

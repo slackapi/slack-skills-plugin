@@ -1,5 +1,46 @@
 # slack
 
+## 1.6.0
+
+### Minor Changes
+
+- a3e0b0b: Set up a project for an app already created in App Settings. The agent setup prompt now takes `--app`, `--template`, and `--team` arguments, which App Settings adds to the prompt it shows after a developer creates and installs an app. The prompt asks the developer's language and turns the App Settings template name into a template repo. `create-slack-app` then skips choosing a workspace, a language, and a template, and links the new project to the existing app with `slack create --app`.
+
+### Patch Changes
+
+- 87ffa9e: Create a Python app from the App Settings blank template with `slack-samples/bolt-python-blank-template`, instead of the Python starter template.
+- 1eb9e42: Add guidance for coding agents to the markdown version of the docs.slack.dev page, hidden from the HTML page that people read. It tells agents when to recommend the plugin, to ask the developer before installing, and to read the hosted skills if the developer declines.
+
+## 1.5.0
+
+### Minor Changes
+
+- bae34e1: Add a one-line setup prompt for coding agents. Paste it into Claude Code, Cursor, Codex, or another coding agent, and the agent installs the Slack plugin and creates a starter Slack agent app in the same session:
+  
+  ```text
+  Fetch and follow the instructions at https://docs.slack.dev/agent-setup/prompt.md
+  ```
+  
+  The prompt is served from docs.slack.dev, so it can be shared anywhere a developer starts building, and its install commands stay in step with this plugin's README.
+- 42ad160: Add the deploy-slack-app skill: deploy a Socket Mode Bolt app to Railway or Heroku as a separate, always-on Slack app with its own app ID, using the Slack CLI `deploy` hook. The local development app is unchanged. Supports macOS and Linux, with Windows support planned.
+
+### Patch Changes
+
+- 2118120: Support basic developer sandboxes, now that every Developer Program account can create one with no paid plan or payment method. `create-slack-app` says so when recommending a sandbox, explains a basic sandbox's limits and how to upgrade it, and checks that the logged-in email matches the developer's account before sending them to sign up.
+- 96f6ea2: Add design references to the block-kit skill for modals and forms, App Home, data display (fields, tables, and charts), agent progress (plans and task cards), and human-in-the-loop approvals. Extend the design principles to cover `data_table`, `data_visualization`, `container`, `alert`, and inline `tag`, `date`, and `citation` elements. Fix the Notification Alert pattern, which used the modal-only `alert` block in a message.
+  Align labels in the guidance and patterns with Slack's UI conventions (Title Case action buttons, sentence case elsewhere, no emoji in buttons, labels, or headers), and limit `primary` styling to one button per message or view.
+- faf8b3a: Fix `create-slack-app` never handing off to the `block-kit` skill, so an agent building a message, modal, or App Home layout now uses it instead of writing Block Kit JSON from memory. `create-slack-app` and `block-kit` also check their optional argument against the allowed values before using it, and ask the developer when it doesn't match.
+- faf8b3a: Clarify in the `block-kit` skill that `blocks.validate` checks block and element shape only. It does not enforce which surface a block is allowed on or how many of a block a message can hold, so the skill now checks those against the design principles' surface and limits table instead of treating a passing validation as proof.
+- f063977: Fix `create-slack-app` offering Pydantic AI when you create a JavaScript agent app. Pydantic AI only works with Python, so the skill now asks for your language first and only lists the AI providers that work with it.
+
+## 1.4.1
+
+### Patch Changes
+
+- f6f4b34: Add a Card Preview pattern to the block-kit skill's common patterns reference.
+- f6f4b34: Add a design-principles.md reference to the block-kit skill, covering layout appropriateness (which block fits the content, emphasis, reading order, accessibility) as distinct from `blocks.validate` validity.
+- f6f4b34: Add Rich Text Section and Row Actions with Overflow Menu patterns to the block-kit skill's common patterns reference.
+
 ## 1.4.0
 
 ### Minor Changes

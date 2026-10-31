@@ -33,8 +33,8 @@ brew install pyenv
 Install necessary Python runtime for development/testing.
 
 ```sh
-pyenv install 3.14 # select the latest patch version
-pyenv local 3.14
+pyenv install 3.15 # select the latest patch version
+pyenv local 3.15
 
 pyenv rehash
 ```
@@ -73,7 +73,7 @@ commands by hand.
 ### Setup
 
 Run the one-time setup, which creates the virtualenv and installs the test and
-lint dependencies (requires Python 3.14+, see above):
+lint dependencies (requires Python 3.15+, see above):
 
 ```sh
 make install

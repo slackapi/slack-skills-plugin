@@ -1,14 +1,27 @@
 ---
 name: create-slack-app
-description: 'Use when a developer wants to create, scaffold, or bootstrap a new Slack app or agent from scratch with the Slack CLI. Covers prerequisites, authentication, choosing a workspace to install into, and creating a project from a Bolt (JS or Python) template locally. Trigger on "create a Slack app", "new Bolt app", "start a Slack agent".'
+description: 'Use when a developer wants to create, scaffold, or bootstrap a new Slack app or agent from scratch with the Slack CLI, or scaffold the project for a new app just created in App Settings (`--app`, `--template`, `--team`). Covers prerequisites, authentication, choosing a workspace to install into, and creating a project from a Bolt (JS or Python) template locally. Trigger on "create a Slack app", "new Bolt app", "start a Slack agent".'
 argument-hint: "[bolt-js | bolt-python]"
 ---
 
 # Create Slack App
 
-Help the developer create a Slack app or agent using Bolt for **$0**.
+Help the developer create a Slack app or agent using Bolt. If `$0` is exactly `bolt-js` or `bolt-python`, treat it as the chosen framework and skip asking. Otherwise (including if it's empty or any other value), ignore it and ask the developer which framework they want before continuing.
 
 This skill walks through the full setup: prerequisites, authentication, choosing a workspace to install into, project scaffolding from a template, and running the app locally.
+
+## Existing App from App Settings
+
+The developer may already have created and installed the app in App Settings, which hands off with arguments in the developer's message, for example `--app A0123456789 --template slack-samples/bolt-js-starter-agent --team T0123456789`. The agent setup prompt passes them along, after turning the App Settings template name into a template repo:
+
+| Argument | Meaning | Accept only |
+|----------|---------|-------------|
+| `--app` | The existing app's ID | `A` followed by uppercase letters and digits |
+| `--template` | The template repo to create the project from | `org/repo`, each part letters, digits, dots, hyphens, and underscores |
+| `--team` | The workspace (or Enterprise org) the app is installed in | `T` or `E` followed by uppercase letters and digits |
+| `--subdir` (optional) | The template subdirectory to use | lowercase letters, digits, and hyphens |
+
+When `--app` is present, follow this skill as an **existing app**. The app ID, template, and team are already decided, so do not ask about them again. The framework is the template's language: `bolt-js` for a `slack-samples/bolt-js-*` repo and `bolt-python` for `slack-samples/bolt-python-*`, so do not ask for it either. Each step below says what changes. Check every value against the table before putting it in a command. If a value doesn't match, or `--app` comes without `--template` and `--team`, tell the developer which value is wrong and ask for it rather than guessing.
 
 ---
 
@@ -37,15 +50,19 @@ Use the `slack:slack-cli` skill — **Step 5: Authentication (`slack auth`)** �
 
 Wait for confirmation that authentication succeeded before proceeding.
 
+**Existing app:** the CLI must be logged in to the team from `--team`. Check that `SLACK_CMD auth list` shows that team ID. If it doesn't, log in to that workspace with the same flow.
+
 ---
 
 ## Step 3: Choose Where to Install the App
+
+**Existing app:** skip this step. The app is already installed in the team from `--team`.
 
 The app needs a Slack workspace to install into. Three targets work and they are not equivalent. Use AskUserQuestion to let the developer pick, presenting them in this order:
 
 | Target | Best for | Cost of entry |
 |--------|----------|---------------|
-| **Developer sandbox** (recommended) | Anything the developer plans to keep building on. A free Enterprise Grid org isolated from real users, so org-level features are testable. | Needs a Slack Developer Program account, which is free to join. |
+| **Developer sandbox** (recommended) | Anything the developer plans to keep building on. A free Enterprise Grid org isolated from real users, so org-level features are testable. | Needs a Slack Developer Program account, which is free to join. Every account can create a basic sandbox, with no paid plan or payment method. |
 | **Free Team** (second choice) | Starting right now, when Developer Program signup is the thing in the way. A free workspace the developer creates and owns. | Capped at 10 apps per workspace, and no Enterprise Grid org features. |
 | **Existing production workspace** (last resort) | Only when the app must reach real data or real coworkers. | Usually gated by admin approval, and the developer may not be the admin. |
 
@@ -61,7 +78,7 @@ List existing sandboxes. Pass `--team` so the CLI does not stop to ask which aut
 SLACK_CMD sandbox list --team <team_id>
 ```
 
-**If the developer has no Developer Program account**, `sandbox list` returns nothing useful, because sandboxes belong to the developer program account whose email matches the authenticated user rather than to the workspace. Point them at <https://api.slack.com/developer-program/join>, and offer the Free Team path in 3b as a way to start building now rather than waiting on signup.
+**If the developer has no Developer Program account**, `sandbox list` returns nothing useful, because sandboxes belong to the developer program account whose email matches the authenticated user rather than to the workspace. If they say they do have an account, check that the email they are logged in with matches it before sending them to sign up, and log into a workspace under that email if not. Point them at <https://api.slack.com/developer-program/join>, and offer the Free Team path in 3b as a way to start building now rather than waiting on signup.
 
 - **If a sandbox exists**: Show it and confirm they want to use it.
 - **If no sandbox exists**: Create one. Ask the developer for a name and a password with AskUserQuestion, then run:
@@ -75,6 +92,8 @@ SLACK_CMD sandbox list --team <team_id>
   Sandboxes can also be created in the browser at <https://api.slack.com/developer-program/sandboxes>.
 
 Once the sandbox exists, have the developer log into it with the Step 2 flow before continuing.
+
+**Basic sandboxes.** A developer who is not on a paid plan and has not added a payment method gets a basic sandbox. It works for everything this skill builds, with stricter limits: it is archived after 1 month of inactivity, has no Slack Connect, and does not support deploying apps to Slack infrastructure (ROSI). If the developer needs more, they can add a payment method (they are not charged) or join a paid plan, then upgrade the sandbox from <https://api.slack.com/developer-program/sandboxes> without losing their apps or data. Limits are listed at <https://docs.slack.dev/tools/developer-sandboxes#basic>.
 
 ### 3b. Free Team (second choice)
 
@@ -123,9 +142,13 @@ Ask the developer what kind of app they want to build. Present the available tem
 
 Use AskUserQuestion to let the developer pick a template. Recommend the **Starter Template** for first-timers or the **Starter Agent** if they want to build an AI agent.
 
+**Existing app:** do not ask which template. Use the repo from `--template`.
+
 ### 4a. Choose an AI provider (agent templates only)
 
-If the developer picks **Starter Agent** or **Support Agent**, these templates contain subdirectories for different AI providers. Ask the developer which provider they want to use via AskUserQuestion:
+If the developer picks **Starter Agent** or **Support Agent**, these templates contain subdirectories for different AI providers. Ask the developer which provider they want to use via AskUserQuestion, offering only the subdirectories for their framework (`$0`) from the tables below.
+
+The provider list depends on the framework, so the framework must be settled before you ask. If it isn't yet, ask for the framework first and wait for the answer. Do not batch the framework and provider questions into one AskUserQuestion call.
 
 **bolt-js subdirectories:**
 
@@ -143,6 +166,8 @@ If the developer picks **Starter Agent** or **Support Agent**, these templates c
 | `pydantic-ai` | Uses Pydantic AI (supports multiple LLM backends) |
 
 Recommend **Claude Agent SDK** as the default option.
+
+**Existing app:** the same rule applies when `--template` is a Starter Agent or Support Agent repo. If `--subdir` was given, use it and skip the question.
 
 ### 4b. Name and create the project
 
@@ -169,6 +194,22 @@ SLACK_CMD create my-slack-app -t slack-samples/bolt-js-starter-template
 # Agent template with provider subdir
 SLACK_CMD create my-slack-agent -t slack-samples/bolt-js-starter-agent --subdir claude-agent-sdk
 ```
+
+**Existing app:** link the project to the app instead of creating a new one. Add `--app`, `--team`, and `--environment local`, and `--subdir` for agent templates:
+
+```bash
+SLACK_CMD create <project-name> -t <template-repo> [--subdir <chosen-subdir>] --app <app-id> --team <team-id> --environment local
+```
+
+For example:
+
+```bash
+SLACK_CMD create my-slack-agent -t slack-samples/bolt-js-starter-agent --subdir claude-agent-sdk --app A0123456789 --team T0123456789 --environment local
+```
+
+The CLI saves the app ID to the project's local environment and updates the project's manifest to match the app in App Settings, so keep the scopes and events the developer picked there. Don't change the manifest back to the template's.
+
+If `SLACK_CMD create` fails with `invalid_app_id`, the CLI has created the project folder but not linked the app, so stop before Step 5. Tell the developer that the app ID and team don't match a workspace they are logged in to, delete the new project folder, and ask them to check both values in App Settings.
 
 Confirm the project was created successfully by checking that the directory exists and listing its contents.
 
@@ -206,6 +247,8 @@ Use the `slack:slack-cli` skill — **Step 6: Running an App Locally (`slack run
 
 Tell the developer their app is now running and installed in the workspace they chose in Step 3, and that file changes will auto-reload it.
 
+**Existing app:** the app runs as the app from `--app`, in the team from `--team`, so the developer can try it where App Settings installed it.
+
 If the install stops on an admin approval request, they picked a workspace with AAA turned on: see Step 3c for the options.
 
 ---
@@ -216,7 +259,7 @@ After the app is running, suggest next steps:
 
 1. **Explore the code**: Read through the project files together — offer to explain the app structure, manifest, listeners, etc.
 2. **Make a change**: Suggest a small modification (like changing a message response) to see hot-reload in action.
-3. **Add features**: Based on the template, suggest relevant Slack features to add (slash commands, events, modals, AI capabilities, etc.).
+3. **Add features**: Based on the template, suggest relevant Slack features to add (slash commands, events, modals, AI capabilities, etc.). For any Block Kit UI (a message layout, a modal, or a Home tab), use the `slack:block-kit` skill rather than building the JSON here.
 4. **Check the docs**: Point to <https://docs.slack.dev> for the full Slack Platform documentation.
 
 ---
@@ -225,6 +268,7 @@ After the app is running, suggest next steps:
 
 - `SLACK_CMD` is a placeholder — always substitute the actual command name resolved in Step 1a (typically `slack`, but may be an alias).
 - This skill focuses on **Bolt for JavaScript** and **Bolt for Python** only. Do not suggest Deno, workflow apps, or `slack deploy` (hosted deployment).
+- This skill scaffolds and runs the app. It does not own Block Kit JSON. If the developer asks to build or edit a message, modal, or Home tab layout (now or in Step 6), use the `slack:block-kit` skill instead of writing the blocks here from memory.
 - `SLACK_CMD sandbox create` prompts for a name and password only when those flags are missing. Supply `--team`, `--name`, and `--password` and it runs non-interactively, so you can run it yourself rather than handing it to the developer. `SLACK_CMD sandbox list` needs `--team` for the same reason: without it the CLI prompts for which authentication to use.
 - Free Teams and developer sandboxes both support everything this skill builds. The CLI's `free_team_not_allowed` error is scoped to low-code workflow and function apps, which this skill does not create.
 - If the developer hits issues, suggest `SLACK_CMD doctor` to diagnose their setup.

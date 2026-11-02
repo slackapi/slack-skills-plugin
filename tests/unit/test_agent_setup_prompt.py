@@ -1,6 +1,6 @@
 import re
 
-from tests.config import AGENT_SETUP_PROMPT, README
+from tests.config import AGENT_SETUP_PROMPT, README, SKILLS_ROOT
 
 # The prompt runs commands from the agent's shell, while the README shows some as
 # commands a person types. Each pair maps the prompt's form to the README's. The
@@ -11,6 +11,20 @@ SHELL_TO_README = (
     ("npx -y skills ", "npx skills "),
     (" -g ", " "),
 )
+
+
+# App Settings ends the prompt it shows with these arguments after a developer creates an
+# app there, and names its template without a language. Renaming an argument or dropping a
+# name from the prompt's table breaks every prompt developers have already copied.
+APP_SETTINGS_ARGUMENTS = ("--app", "--template", "--team")
+APP_SETTINGS_TEMPLATES = (
+    "bolt-starter-template",
+    "bolt-starter-agent",
+    "bolt-support-agent",
+    "bolt-custom-step-template",
+    "bolt-blank-template",
+)
+CREATE_SLACK_APP = SKILLS_ROOT / "create-slack-app" / "SKILL.md"
 
 
 def shell_commands(markdown: str) -> list[str]:
@@ -44,3 +58,30 @@ class TestAgentSetupPrompt:
             f"{AGENT_SETUP_PROMPT.name} uses `<url>` autolinks {autolinks}, which break the "
             "docs.slack.dev MDX build; write them as `[text](url)` instead"
         )
+
+    def test_prompt_and_skill_take_app_settings_arguments(self) -> None:
+        skill = CREATE_SLACK_APP.read_text()
+        for argument in APP_SETTINGS_ARGUMENTS:
+            assert f"`{argument}`" in self.prompt, (
+                f"{AGENT_SETUP_PROMPT.name} does not document `{argument}`, which App Settings passes to it"
+            )
+            assert f"`{argument}`" in skill, (
+                f"create-slack-app does not document `{argument}`, which {AGENT_SETUP_PROMPT.name} passes to it"
+            )
+
+    def test_prompt_maps_every_app_settings_template(self) -> None:
+        for name in APP_SETTINGS_TEMPLATES:
+            assert f"| `{name}` |" in self.prompt, (
+                f"{AGENT_SETUP_PROMPT.name} has no template table row for `{name}`, which App Settings sends"
+            )
+
+    def test_prompt_maps_each_template_to_its_own_repo(self) -> None:
+        # Each template name has a repo per language, so a row that maps a name to a
+        # different template's repo gives the developer an app they did not choose.
+        for name in APP_SETTINGS_TEMPLATES:
+            suffix = name.removeprefix("bolt-")
+            row = f"| `{name}` | `slack-samples/bolt-js-{suffix}` | `slack-samples/bolt-python-{suffix}` |"
+            assert row in self.prompt, (
+                f"{AGENT_SETUP_PROMPT.name} does not map `{name}` to the matching JavaScript and "
+                f"Python repos; expected the row {row}"
+            )

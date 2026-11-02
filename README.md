@@ -17,6 +17,13 @@ The plugin is published on the [official Claude marketplace](https://claude.com/
 
 The Slack MCP server is configured automatically. You'll be prompted to authenticate to your Slack workspace via OAuth on first use.
 
+To update an existing install to the latest version, run:
+
+```sh
+claude plugin marketplace update claude-plugins-official
+claude plugin update slack@claude-plugins-official
+```
+
 ### Cursor
 
 The plugin is published on the [official Cursor Marketplace](https://cursor.com/marketplace/slack). Install it from inside Cursor:
@@ -33,6 +40,13 @@ The plugin is published as a Codex marketplace in this repository. Add the marke
 
 ```sh
 codex plugin marketplace add slackapi/slack-skills-plugin
+codex plugin add slack@slack
+```
+
+To update an existing install, refresh the marketplace and add the plugin again:
+
+```sh
+codex plugin marketplace upgrade slack
 codex plugin add slack@slack
 ```
 
@@ -53,7 +67,7 @@ npx skills add slackapi/slack-skills-plugin -y -a gemini-cli
 npx skills add slackapi/slack-skills-plugin -y -a opencode
 ```
 
-Other popular agents include `crush`, `devin`, `hermes-agent`, `openclaw`, and `pi`. See [supported agents][npx-skills] for the full list of agents and their identifiers. Add `-g` to install for your user instead of the current project.
+Other popular agents include `crush`, `devin`, `hermes-agent`, `openclaw`, and `pi`. See [supported agents][npx-skills] for the full list of agents and their identifiers. Add `-g` to install for your user instead of the current project. Run the same command again to update the skills to the latest version.
 
 The `-y` flag installs every skill without prompting. Drop it to choose skills from a list, or pass `-s <skill>` to name the ones you want.
 

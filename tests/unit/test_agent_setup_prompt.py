@@ -93,3 +93,23 @@ class TestAgentSetupPrompt:
             assert form in self.prompt, (
                 f"{AGENT_SETUP_PROMPT.name} does not resolve skill references written as {form}"
             )
+
+    def test_prompt_updates_existing_installs(self) -> None:
+        # An older install can lack steps the prompt relies on, like the `--app` path in
+        # create-slack-app, so the prompt updates an existing install instead of skipping it.
+        for command in ("claude plugin update slack@", "codex plugin marketplace upgrade slack"):
+            assert command in self.prompt, (
+                f"{AGENT_SETUP_PROMPT.name} does not update an existing install with `{command}`"
+            )
+        assert "skip to Step 2" not in self.prompt, (
+            f"{AGENT_SETUP_PROMPT.name} skips the install when skills are present, leaving an older install"
+        )
+
+    def test_prompt_follows_the_hosted_create_slack_app(self) -> None:
+        # The hosted skills deploy with the prompt, while a loaded copy can be from an older
+        # install, so Step 2 always reads the hosted copy.
+        hosted = "https://docs.slack.dev/.well-known/skills/create-slack-app/SKILL.md"
+        assert hosted in self.prompt, f"{AGENT_SETUP_PROMPT.name} does not point Step 2 at {hosted}"
+        assert "If the skill is loaded" not in self.prompt, (
+            f"{AGENT_SETUP_PROMPT.name} prefers a loaded create-slack-app, which can be from an older install"
+        )

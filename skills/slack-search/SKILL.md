@@ -120,4 +120,4 @@ After finding relevant messages:
 
 ## Notes
 
-- **Scope:** this skill owns searching _workspace content_: messages, files, channels, and people inside Slack. To search and read the official Slack _platform documentation_ at docs.slack.dev (conceptual and how-to questions about Slack features), use the `slack:slack-docs` skill instead.
+- **Scope:** this skill owns searching _workspace content_: messages, files, channels, and people inside Slack. To search and read the official Slack _platform documentation_ at docs.slack.dev (conceptual and how-to questions about Slack features), use the `slack-docs` skill instead.

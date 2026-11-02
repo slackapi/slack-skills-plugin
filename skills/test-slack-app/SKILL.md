@@ -5,7 +5,7 @@ description: Use when a developer wants to test, try out, smoke-test, verify, or
 
 # Test Slack App
 
-Help a developer confirm that a Slack app they already built actually works. This is the last step of the build loop, after the `slack:create-slack-app` skill scaffolds an app and the `slack:slack-cli` skill runs it.
+Help a developer confirm that a Slack app they already built actually works. This is the last step of the build loop, after the `create-slack-app` skill scaffolds an app and the `slack-cli` skill runs it.
 
 The approach is simple and safe:
 
@@ -21,16 +21,16 @@ This is guided manual checking, not an automated test suite: you drive the setup
 
 ### 1a. Detect the Slack CLI
 
-Use the `slack:slack-cli` skill (**Step 1: Detect the Slack CLI**) to check whether the public Slack CLI is installed and resolve its command name. The fingerprint check, alias fallback, and install instructions all live there; do not duplicate them here. Refer to the resolved command as `SLACK_CMD` throughout. If the CLI is not installed, guide the developer through that same step to install it, since running the app needs it.
+Use the `slack-cli` skill (**Step 1: Detect the Slack CLI**) to check whether the public Slack CLI is installed and resolve its command name. The fingerprint check, alias fallback, and install instructions all live there; do not duplicate them here. Refer to the resolved command as `SLACK_CMD` throughout. If the CLI is not installed, guide the developer through that same step to install it, since running the app needs it.
 
 ### 1b. Make sure there is a safe workspace to test in
 
 Testing belongs in a workspace nobody is working in: a developer sandbox for preference, or a Free Team the developer created for this. Never a workspace with real coworkers in it.
 
-- **Explain it from the live docs, not from here.** Use the `slack:slack-docs` skill to fetch and summarize <https://docs.slack.dev/tools/developer-sandboxes.md>, so the recommendation always reflects the current docs rather than a copy that drifts out of date. Tell the developer that Slack recommends a sandbox for building and testing apps.
+- **Explain it from the live docs, not from here.** Use the `slack-docs` skill to fetch and summarize <https://docs.slack.dev/tools/developer-sandboxes.md>, so the recommendation always reflects the current docs rather than a copy that drifts out of date. Tell the developer that Slack recommends a sandbox for building and testing apps.
 - **Find the current target.** Run `SLACK_CMD auth list` for the authenticated workspaces and their team IDs, and, from the project directory, `SLACK_CMD app list` for the apps already installed and their IDs.
 - **Confirm the target is safe.** The CLI cannot tell a sandbox, a Free Team, and a workspace full of real users apart, so ask the developer which one they are pointed at. A sandbox or a Free Team they created for this is fine. A workspace with coworkers in it is not: stop and get them onto one of the other two.
-- **If there is no safe target yet**, set one up with the `slack:create-slack-app` skill (**Step 3: Choose Where to Install the App**), which owns the ranked targets, the `sandbox list` / `sandbox create` flow, and the Developer Program links. Either path finishes in the browser, so have the developer come back here once the workspace exists and they have logged into it.
+- **If there is no safe target yet**, set one up with the `create-slack-app` skill (**Step 3: Choose Where to Install the App**), which owns the ranked targets, the `sandbox list` / `sandbox create` flow, and the Developer Program links. Either path finishes in the browser, so have the developer come back here once the workspace exists and they have logged into it.
 
 ### 1c. Quick health check
 
@@ -49,7 +49,7 @@ Whichever path you use below, first turn the app's log level up to debug so you 
 
 ### CLI-managed apps (recommended)
 
-Follow **Step 6: Running an App Locally (`slack run`)** in the `slack:slack-cli` skill to start the local dev server in the background. This also installs the app into the target workspace, which matters for a fresh sandbox or Free Team where nothing is installed yet. Once it is running, file changes auto-reload.
+Follow **Step 6: Running an App Locally (`slack run`)** in the `slack-cli` skill to start the local dev server in the background. This also installs the app into the target workspace, which matters for a fresh sandbox or Free Team where nothing is installed yet. Once it is running, file changes auto-reload.
 
 ### Plain Bolt apps without the CLI (best-effort)
 
@@ -98,7 +98,7 @@ For every registered interaction, give the developer a concrete step and what a 
 While the developer interacts, help them confirm it is working:
 
 - If the app runs under `slack run`, watch its logs (ask "show me the output from slack run") to confirm events arrive and to read any errors.
-- If a response looks wrong (a malformed message or Block Kit view, or an API error), use the `slack:block-kit` and `slack:slack-api` skills to dig into the payload or method.
+- If a response looks wrong (a malformed message or Block Kit view, or an API error), use the `block-kit` and `slack-api` skills to dig into the payload or method.
 
 Close with a short summary: what you and the developer confirmed working, and what they should eyeball themselves. Remember this is manual checking: you are helping the developer watch the app respond, not producing an automated pass or fail.
 
@@ -107,5 +107,5 @@ Close with a short summary: what you and the developer confirmed working, and wh
 ## Notes
 
 - `SLACK_CMD` is a placeholder: always substitute the actual command name resolved in Step 1a.
-- Scope: this skill tests an app that already exists. To create or scaffold one, use the `slack:create-slack-app` skill; for raw CLI mechanics, use the `slack:slack-cli` skill; for message or Block Kit formatting, use the `slack:slack-messaging` and `slack:block-kit` skills.
+- Scope: this skill tests an app that already exists. To create or scaffold one, use the `create-slack-app` skill; for raw CLI mechanics, use the `slack-cli` skill; for message or Block Kit formatting, use the `slack-messaging` and `block-kit` skills.
 - Out of scope for now: automated test frameworks for Bolt, programmatically simulating user interactions, and driving the Slack UI with a browser. Today the developer performs the interactions; this skill makes sure they know exactly what to do and what to expect.

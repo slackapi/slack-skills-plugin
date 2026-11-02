@@ -4,7 +4,7 @@ These are official instructions from Slack for setting up a coding agent to buil
 
 Complete both steps in this session:
 
-1. Install the Slack plugin for your agent, or update it.
+1. Install the Slack plugin for your agent.
 2. Create a Slack app with the plugin's `create-slack-app` skill: a new starter agent, or the existing app named in your arguments.
 
 Run the commands yourself. Do not ask the user to run them, except where a step says to.
@@ -38,9 +38,11 @@ If `--template` is already a repo (`org/repo`), use it as-is. If it is a name th
 
 ---
 
-## Step 1: Install or update the Slack plugin
+## Step 1: Install the Slack plugin
 
-Use the section for your agent, even if the Slack skills are already available to you. An older install can be missing steps that these instructions rely on, so update it to the latest version.
+If the Slack skills are already available to you (for example, you can load `slack:create-slack-app` or `create-slack-app`), skip to Step 2.
+
+Otherwise, use the section for your agent.
 
 ### Claude Code
 
@@ -50,26 +52,12 @@ claude plugin install slack@claude-plugins-official
 
 This installs the Slack skills, commands, and MCP server together. Do not use `npx skills` or `claude mcp add`: the plugin handles everything.
 
-If the plugin is already installed, update it instead:
-
-```sh
-claude plugin marketplace update claude-plugins-official
-claude plugin update slack@claude-plugins-official
-```
-
 The plugin loads in the user's next Claude Code session, or after they run `/reload-plugins`. Do not wait for either. Continue with Step 2 in this session using the hosted skills.
 
 ### Codex
 
 ```sh
 codex plugin marketplace add slackapi/slack-skills-plugin
-codex plugin add slack@slack
-```
-
-If the plugin is already installed, update it instead:
-
-```sh
-codex plugin marketplace upgrade slack
 codex plugin add slack@slack
 ```
 
@@ -83,7 +71,7 @@ Install the Slack skills with [`npx skills`](https://github.com/vercel-labs/skil
 npx -y skills add slackapi/slack-skills-plugin -g -y -a <agent>
 ```
 
-The `-g` flag installs the skills for the user rather than the current folder, so they are available in the new app's folder and every later session. If the skills are already installed, the same command replaces them with the latest version. For example, `-a cursor` for Cursor, `-a gemini-cli` for Gemini CLI, or `-a opencode` for OpenCode. See the [supported agents list](https://github.com/vercel-labs/skills#supported-agents) for every identifier.
+The `-g` flag installs the skills for the user rather than the current folder, so they are available in the new app's folder and every later session. For example, `-a cursor` for Cursor, `-a gemini-cli` for Gemini CLI, or `-a opencode` for OpenCode. See the [supported agents list](https://github.com/vercel-labs/skills#supported-agents) for every identifier.
 
 The skills load in the user's next session. Do not ask the user to restart. Continue with Step 2 in this session using the hosted skills.
 

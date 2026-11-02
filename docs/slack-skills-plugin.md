@@ -34,7 +34,7 @@ To get each release as soon as it ships, install from the plugin's own marketpla
 
 Then turn on updates: run `/plugin`, open **Marketplaces**, select `slack`, and select **Enable auto-update**. Without it, run `/plugin marketplace update slack` to pick up a new release.
 
-Install from one marketplace or the other, not both. If you already installed `slack@claude-plugins-official`, uninstall it first with `/plugin uninstall slack@claude-plugins-official`.
+You can install the plugin from either marketplace, but don't install it from both. If you already installed `slack@claude-plugins-official`, uninstall it first with `/plugin uninstall slack@claude-plugins-official`.
 
 ### Installing the plugin for Codex {#codex-install}
 

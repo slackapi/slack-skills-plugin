@@ -85,3 +85,11 @@ class TestAgentSetupPrompt:
                 f"{AGENT_SETUP_PROMPT.name} does not map `{name}` to the matching JavaScript and "
                 f"Python repos; expected the row {row}"
             )
+
+    def test_prompt_resolves_both_skill_reference_forms(self) -> None:
+        # Skills written before the bare-name change say `slack:<name>`, and installed or
+        # cached copies keep saying it, so the prompt resolves both forms to a hosted copy.
+        for form in ('"the `<name>` skill"', "`slack:<name>`"):
+            assert form in self.prompt, (
+                f"{AGENT_SETUP_PROMPT.name} does not resolve skill references written as {form}"
+            )

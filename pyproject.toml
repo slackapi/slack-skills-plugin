@@ -13,6 +13,7 @@ test = [
     "pyyaml==6.0.3",
     "markdown==3.11",
     "mcp==2.3.0",
+    "certifi>=2026.10.19",
 ]
 tools = [
     "ruff==0.16.9",

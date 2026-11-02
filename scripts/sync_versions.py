@@ -12,6 +12,7 @@ PACKAGE_JSON_PATH = REPO_ROOT / "package.json"
 CLAUDE_PLUGIN_PATH = REPO_ROOT / ".claude-plugin" / "plugin.json"
 CURSOR_PLUGIN_PATH = REPO_ROOT / ".cursor-plugin" / "plugin.json"
 CODEX_PLUGIN_PATH = REPO_ROOT / ".codex-plugin" / "plugin.json"
+CLAUDE_MARKETPLACE_PATH = REPO_ROOT / ".claude-plugin" / "marketplace.json"
 
 
 def read_version(package_path: Path) -> str:
@@ -28,12 +29,24 @@ def write_version(plugin_path: Path, version: str) -> None:
     logger.info(f"Set {plugin_path} version to {version}")
 
 
+def write_marketplace_ref(marketplace_path: Path, version: str) -> None:
+    """Point the ``slack`` entry of a Claude Code marketplace at the release tag for ``version``."""
+    marketplace = json.loads(marketplace_path.read_text())
+    tag = f"v{version}"
+    for plugin in marketplace["plugins"]:
+        if plugin["name"] == "slack":
+            plugin["source"]["ref"] = tag
+    marketplace_path.write_text(json.dumps(marketplace, indent=2) + "\n")
+    logger.info(f"Set {marketplace_path} ref to {tag}")
+
+
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
     version = read_version(PACKAGE_JSON_PATH)
     write_version(CLAUDE_PLUGIN_PATH, version)
     write_version(CURSOR_PLUGIN_PATH, version)
     write_version(CODEX_PLUGIN_PATH, version)
+    write_marketplace_ref(CLAUDE_MARKETPLACE_PATH, version)
 
 
 if __name__ == "__main__":

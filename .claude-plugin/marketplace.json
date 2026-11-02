@@ -1,0 +1,17 @@
+{
+  "name": "slack",
+  "description": "The Slack plugin for Claude Code, updated with each release.",
+  "owner": {
+    "name": "Slack"
+  },
+  "plugins": [
+    {
+      "name": "slack",
+      "source": {
+        "source": "github",
+        "repo": "slackapi/slack-skills-plugin",
+        "ref": "v1.6.0"
+      }
+    }
+  ]
+}

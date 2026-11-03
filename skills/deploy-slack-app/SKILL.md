@@ -24,7 +24,7 @@ Railway is the better default, and the reasons are in **Step 2a: Choose a Provid
 
 ### 1a. Detect the Slack CLI
 
-Use the `slack-cli` skill (**Step 1: Detect the Slack CLI**) to check whether the public Slack CLI is installed and resolve its command name. The fingerprint check, alias fallback, and install instructions all live there; do not duplicate them. Refer to the resolved command as `SLACK_CMD` throughout.
+Load the `slack-cli` skill (with your skill tool, if you have one) before running any command, and follow its **Step 1: Detect the Slack CLI** to check whether the public Slack CLI is installed and resolve its command name. Don't check for the CLI yourself first: a `slack` on `PATH` isn't always the public CLI, and that step tells them apart. The fingerprint check, alias fallback, and install instructions all live there; do not duplicate them. Refer to the resolved command as `SLACK_CMD` throughout.
 
 This matters more than it looks. Some machines have an unrelated internal tool named `slack` on the path, and running that instead produces confusing failures well into the deploy.
 

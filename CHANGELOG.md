@@ -1,5 +1,17 @@
 # slack
 
+## 1.7.0
+
+### Minor Changes
+
+- 8d24df5: Add a Claude Code marketplace for the plugin, so you can install each release as soon as it ships: `/plugin marketplace add slackapi/slack-skills-plugin`, then `/plugin install slack@slack`. The marketplace installs from the latest release tag, and each release moves it to the new tag.
+
+### Patch Changes
+
+- 93a22e1: Reference other skills by their bare name (the `slack-cli` skill) instead of `slack:slack-cli`, a name only Claude Code registers. Every hand-off between skills now names a skill that exists on every install path, including agents set up with `npx skills`.
+- d437523: Skills that hand off to the `slack-cli` skill for CLI detection now ask the agent to load that skill before running any command. Agents like OpenCode used to check `PATH` for `slack` themselves, which can find a different tool with the same name, and then fall back to curl.
+- c32ae56: The `slack-cli` skill now tells the agent to suggest `slack upgrade` when a command or flag it describes is missing from the installed CLI.
+
 ## 1.6.0
 
 ### Minor Changes

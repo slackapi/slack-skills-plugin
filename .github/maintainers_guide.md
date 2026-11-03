@@ -268,6 +268,14 @@ Patch and minor updates are auto-approved and auto-merged via the
   - `dependencies`: dependency updates (Dependabot applies this automatically)
   - `security`: vulnerability fixes, hardening, and security audit findings
     (apply alongside `bug`/`build`/`dependencies` as appropriate)
+- Area labels mark the part of the plugin a change touches. A PR gets one type
+  label from the list above and any area labels that apply:
+  - `area:mcp`: MCP server, tools, OAuth, and workspace connectivity
+  - `area:skills`: skills and slash commands loaded by the plugin
+  - `area:claude`: Claude Code surface: `.claude-plugin` manifest, marketplace listing, and install paths
+  - `area:codex`: Codex CLI surface: `.codex-plugin` manifest, `.agents` marketplace, and install paths
+  - `area:cursor`: Cursor surface: `.cursor-plugin` manifest, MCP config, and install paths
+  - `area:agent-setup`: agent setup prompt served at `docs.slack.dev/agent-setup/prompt.md`
 
 ---
 

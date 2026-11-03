@@ -268,6 +268,9 @@ Patch and minor updates are auto-approved and auto-merged via the
   - `dependencies`: dependency updates (Dependabot applies this automatically)
   - `security`: vulnerability fixes, hardening, and security audit findings
     (apply alongside `bug`/`build`/`dependencies` as appropriate)
+- Area labels mark the part of the plugin a change touches. A PR gets one type
+  label from the list above and any area labels that apply. Run
+  `gh label list --search area` to see each area label and what it covers.
 
 ---
 

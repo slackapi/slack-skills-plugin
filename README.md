@@ -9,20 +9,31 @@ A [Claude Code][claude-code], [Cursor][cursor], and [Codex][codex-cli] plugin th
 
 ### Claude Code
 
-The plugin is published on the [official Claude marketplace](https://claude.com/plugins/slack). Install it from inside Claude Code:
+The plugin is published as a Claude Code marketplace in this repository, and each release is available as soon as it ships. Add the marketplace, then install the plugin from inside Claude Code:
 
 ```text
-/plugin install slack@claude-plugins-official
+/plugin marketplace add slackapi/slack-skills-plugin
+/plugin install slack@slack
 ```
 
 The Slack MCP server is configured automatically. You'll be prompted to authenticate to your Slack workspace via OAuth on first use.
 
-To update an existing install to the latest version, run:
+To get new releases automatically, run `/plugin`, open **Marketplaces**, select `slack`, and select **Enable auto-update**. Otherwise, update an existing install to the latest version with:
 
 ```sh
-claude plugin marketplace update claude-plugins-official
-claude plugin update slack@claude-plugins-official
+claude plugin marketplace update slack
+claude plugin update slack@slack
 ```
+
+#### Switching from the official Claude marketplace
+
+The plugin is also listed on the [official Claude marketplace](https://claude.com/plugins/slack) as `slack@claude-plugins-official`, but new releases can take a while to reach it. Install the plugin from one marketplace only: Claude Code keeps both copies enabled if you install both. If you installed `slack@claude-plugins-official`, uninstall it before installing `slack@slack`:
+
+```sh
+claude plugin uninstall slack@claude-plugins-official
+```
+
+Then run `claude plugin list` to confirm the switch. It shows each installed plugin with its marketplace, version, and status, and `slack@slack` should be the only Slack plugin listed.
 
 ### Cursor
 

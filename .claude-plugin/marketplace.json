@@ -8,8 +8,8 @@
     {
       "name": "slack",
       "source": {
-        "source": "github",
-        "repo": "slackapi/slack-skills-plugin",
+        "source": "url",
+        "url": "https://github.com/slackapi/slack-skills-plugin.git",
         "ref": "v1.7.0"
       }
     }

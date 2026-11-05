@@ -246,6 +246,8 @@ New official package versions are published when the release PR created from cha
 
 5. **Communicate the release**: A Slack announcement is posted automatically to the release-announcements channel by `.github/workflows/release.yml` when the release PR is merged and a tag is cut. For broader outreach (e.g. `#tools-bolt` on [Slack Community](https://community.slack.com/)), post manually if desired.
 
+6. **Add a docs changelog entry**: Add an entry for the release to the [docs.slack.dev changelog](https://docs.slack.dev/changelog), tagged `[Release, Slack Skills Plugin]`. List the changes developers will notice, such as new skills, install paths, and bug fixes, and leave out internal changes like CI and maintainer docs.
+
 ## Everything Else
 
 ### CODEOWNERS

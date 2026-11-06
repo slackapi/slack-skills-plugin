@@ -142,7 +142,8 @@ The repo also ships the `slack` Claude Code marketplace at
 `.claude-plugin/marketplace.json`. Its entry installs the plugin from the latest
 release tag, not from your checkout, so use `--plugin-dir` to test local changes.
 The release PR moves the entry's `ref` to the new tag, through
-`scripts/sync_versions.py`.
+`scripts/sync_versions.py`. The same script points the agent setup prompt's
+`npx skills add` command at the new tag.
 
 ### Testing in Cursor
 

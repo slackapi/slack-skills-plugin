@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 from pathlib import Path
 
 logger = logging.getLogger(Path(__file__).stem)
@@ -13,6 +14,8 @@ CLAUDE_PLUGIN_PATH = REPO_ROOT / ".claude-plugin" / "plugin.json"
 CURSOR_PLUGIN_PATH = REPO_ROOT / ".cursor-plugin" / "plugin.json"
 CODEX_PLUGIN_PATH = REPO_ROOT / ".codex-plugin" / "plugin.json"
 CLAUDE_MARKETPLACE_PATH = REPO_ROOT / ".claude-plugin" / "marketplace.json"
+AGENT_SETUP_PROMPT_PATH = REPO_ROOT / "public" / "agent-setup" / "prompt.md"
+SKILLS_SOURCE_PATTERN = re.compile(r"(https://github\.com/slackapi/slack-skills-plugin/tree/)v[^\s)]+")
 
 
 def read_version(package_path: Path) -> str:
@@ -40,6 +43,16 @@ def write_marketplace_ref(marketplace_path: Path, version: str) -> None:
     logger.info(f"Set {marketplace_path} ref to {tag}")
 
 
+def write_agent_setup_ref(prompt_path: Path, version: str) -> None:
+    """Point the agent setup prompt's ``npx skills add`` source at the release tag for ``version``."""
+    tag = f"v{version}"
+    prompt, count = SKILLS_SOURCE_PATTERN.subn(rf"\g<1>{tag}", prompt_path.read_text())
+    if count == 0:
+        raise ValueError(f"{prompt_path} has no slack-skills-plugin tree URL to point at {tag}")
+    prompt_path.write_text(prompt)
+    logger.info(f"Set {prompt_path} skills source to {tag}")
+
+
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
     version = read_version(PACKAGE_JSON_PATH)
@@ -47,6 +60,7 @@ def main() -> None:
     write_version(CURSOR_PLUGIN_PATH, version)
     write_version(CODEX_PLUGIN_PATH, version)
     write_marketplace_ref(CLAUDE_MARKETPLACE_PATH, version)
+    write_agent_setup_ref(AGENT_SETUP_PROMPT_PATH, version)
 
 
 if __name__ == "__main__":

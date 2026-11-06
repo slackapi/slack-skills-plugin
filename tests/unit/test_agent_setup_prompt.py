@@ -1,15 +1,24 @@
+import json
 import re
 
 from tests.config import AGENT_SETUP_PROMPT, README, SKILLS_ROOT
 
+# `npx skills` installs the skills from the release tag that matches package.json, so an
+# agent gets the skills that shipped with this prompt, not whatever is on main. The
+# release PR moves the tag through scripts/sync_versions.py.
+PACKAGE_JSON = AGENT_SETUP_PROMPT.parents[2] / "package.json"
+RELEASE_TAG = f"v{json.loads(PACKAGE_JSON.read_text())['version']}"
+SKILLS_SOURCE = f"https://github.com/slackapi/slack-skills-plugin/tree/{RELEASE_TAG}"
+
 # The prompt runs commands from the agent's shell, while the README shows some as
 # commands a person types. Each pair maps the prompt's form to the README's. The
-# prompt also installs `npx skills` globally (`-g`), which the README documents as
-# an option rather than in the command itself.
+# prompt also installs `npx skills` globally (`-g`) from a release tag, which the
+# README documents as an option and a repo name rather than in the command itself.
 SHELL_TO_README = (
     ("claude plugin install ", "/plugin install "),
     ("claude plugin marketplace add ", "/plugin marketplace add "),
     ("npx -y skills@latest ", "npx skills "),
+    (SKILLS_SOURCE, "slackapi/slack-skills-plugin"),
     (" -g ", " "),
 )
 
@@ -50,6 +59,12 @@ class TestAgentSetupPrompt:
                 f"{AGENT_SETUP_PROMPT.name} runs `{command}`, but README.md has no `{expected}`; "
                 "update both install sections together"
             )
+
+    def test_npx_skills_installs_this_release(self) -> None:
+        assert f"npx -y skills@latest add {SKILLS_SOURCE} " in self.prompt, (
+            f"{AGENT_SETUP_PROMPT.name} does not install the skills from {SKILLS_SOURCE}; "
+            "run scripts/sync_versions.py to point it at the package.json version"
+        )
 
     def test_prompt_compiles_as_mdx(self) -> None:
         # docs.slack.dev builds with Docusaurus, which compiles this file as MDX.

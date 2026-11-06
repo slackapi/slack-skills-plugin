@@ -1,5 +1,13 @@
 # slack
 
+## 1.7.1
+
+### Patch Changes
+
+- 99e027a: Name `skills@latest` in the agent setup prompt's `npx skills` install command, so tracking the latest `skills` release reads as a deliberate choice. Current npm already resolves the latest release for a bare `npx skills`, so the installed version does not change.
+- 2a2b7ae: Claude Code install instructions now list Slack's Claude marketplace first. Updates on the official Claude marketplace are experiencing large delays, so we recommend Slack's marketplace until that is resolved.
+- caac336: Updating the plugin from the `slack` Claude Code marketplace now works without a GitHub SSH key. `claude plugin update slack@slack` used to fail with `Permission denied (publickey)` on machines that clone GitHub over HTTPS, even though the install itself worked.
+
 ## 1.7.0
 
 ### Minor Changes

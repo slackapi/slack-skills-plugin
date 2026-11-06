@@ -18,17 +18,8 @@ Then turn on auto-update:
 3. Select `slack`.
 4. Select **Enable auto-update**.
 
-Without auto-update, update an existing install to the latest version with:
-
-```sh
-claude plugin marketplace update slack
-claude plugin update slack@slack
-```
-
 If you installed the plugin from the official Claude marketplace, uninstall it first, so that only one copy is enabled:
 
 ```sh
 claude plugin uninstall slack@claude-plugins-official
 ```
-
-Then install from Slack's marketplace as shown above, and run `claude plugin list` to confirm that `slack@slack` is the only Slack plugin listed.

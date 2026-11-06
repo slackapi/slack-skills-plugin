@@ -16,16 +16,29 @@ The plugin is published on [Slack's Claude marketplace](https://github.com/slack
 /plugin install slack@slack
 ```
 
-The plugin is also published on the [official Claude marketplace](https://claude.com/plugins/slack), but its updates are experiencing large delays. We recommend the marketplace above until this is resolved. Install from one marketplace only.
-
 The Slack MCP server is configured automatically. You'll be prompted to authenticate to your Slack workspace via OAuth on first use.
 
-To update an existing install to the latest version, run:
+Then turn on auto-update:
+
+1. Run `/plugin`.
+2. Open **Marketplaces**.
+3. Select `slack`.
+4. Select **Enable auto-update**.
+
+Without auto-update, update an existing install to the latest version with:
 
 ```sh
 claude plugin marketplace update slack
 claude plugin update slack@slack
 ```
+
+The plugin is also published on the [official Claude marketplace](https://claude.com/plugins/slack), but its updates are experiencing large delays. We recommend the marketplace above until this is resolved:
+
+```text
+/plugin install slack@claude-plugins-official
+```
+
+You can install the plugin from either marketplace, but don't install it from both.
 
 #### Switching from the official Claude marketplace
 

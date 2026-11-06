@@ -19,7 +19,7 @@ Read on for instructions on installing the Plugin for your AI tool of your choic
 
 ### Installing the plugin for Claude Code {#claude-code-install}
 
-The plugin is published as a marketplace in its [GitHub repository](https://github.com/slackapi/slack-skills-plugin). You can install the plugin directly from a Claude Code session with slash commands:
+The plugin is published on [Slack's Claude marketplace](https://github.com/slackapi/slack-skills-plugin). You can install the plugin directly from a Claude Code session with slash commands:
 
 ```sh
 /plugin marketplace add slackapi/slack-skills-plugin
@@ -34,7 +34,19 @@ The plugin is also published on the [official Claude marketplace](https://claude
 /plugin install slack@claude-plugins-official
 ```
 
-You can install the plugin from either marketplace, but don't install it from both. If you already installed `slack@claude-plugins-official`, uninstall it first with `/plugin uninstall slack@claude-plugins-official`.
+You can install the plugin from either marketplace, but don't install it from both.
+
+#### Switching from the official Claude marketplace {#claude-code-switch}
+
+If you installed the plugin from the official Claude marketplace, switch to Slack's marketplace from a terminal, so that only one copy is enabled:
+
+```sh
+claude plugin uninstall slack@claude-plugins-official
+claude plugin marketplace add slackapi/slack-skills-plugin
+claude plugin install slack@slack
+```
+
+Then run `claude plugin list` to confirm that `slack@slack` is the only Slack plugin listed, with the latest version.
 
 ### Installing the plugin for Codex {#codex-install}
 

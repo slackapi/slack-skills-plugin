@@ -9,20 +9,46 @@ A [Claude Code][claude-code], [Cursor][cursor], and [Codex][codex-cli] plugin th
 
 ### Claude Code
 
-The plugin is published on the [official Claude marketplace](https://claude.com/plugins/slack). Install it from inside Claude Code:
+The plugin is published on [Slack's Claude marketplace](https://github.com/slackapi/slack-skills-plugin). Install it from inside Claude Code:
+
+```text
+/plugin marketplace add slackapi/slack-skills-plugin
+/plugin install slack@slack
+```
+
+The Slack MCP server is configured automatically. You'll be prompted to authenticate to your Slack workspace via OAuth on first use.
+
+Then turn on auto-update:
+
+1. Run `/plugin`.
+2. Open **Marketplaces**.
+3. Select `slack`.
+4. Select **Enable auto-update**.
+
+Without auto-update, update an existing install to the latest version with:
+
+```sh
+claude plugin marketplace update slack
+claude plugin update slack@slack
+```
+
+The plugin is also published on the [official Claude marketplace](https://claude.com/plugins/slack), but its updates are experiencing large delays. We recommend the marketplace above until this is resolved:
 
 ```text
 /plugin install slack@claude-plugins-official
 ```
 
-The Slack MCP server is configured automatically. You'll be prompted to authenticate to your Slack workspace via OAuth on first use.
+You can install the plugin from either marketplace, but don't install it from both.
 
-To update an existing install to the latest version, run:
+#### Switching from the official Claude marketplace
+
+If you installed the plugin from the official Claude marketplace, uninstall it first, so that only one copy is enabled:
 
 ```sh
-claude plugin marketplace update claude-plugins-official
-claude plugin update slack@claude-plugins-official
+claude plugin uninstall slack@claude-plugins-official
 ```
+
+Then follow the [install steps](#claude-code) above. Run `claude plugin list` to confirm that `slack@slack` is the only Slack plugin listed.
 
 ### Cursor
 

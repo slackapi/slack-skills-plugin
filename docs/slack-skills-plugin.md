@@ -33,7 +33,12 @@ Then turn on auto-update:
 3. Select `slack`.
 4. Select **Enable auto-update**.
 
-Without auto-update, run `/plugin marketplace update slack` to pick up a new release.
+Without auto-update, update an existing install to the latest version with:
+
+```sh
+/plugin marketplace update slack
+/plugin update slack@slack
+```
 
 The plugin is also published on the [official Claude marketplace](https://claude.com/plugins/slack), but its updates are experiencing large delays. We recommend the marketplace above until this is resolved:
 

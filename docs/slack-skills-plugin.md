@@ -26,7 +26,14 @@ The plugin is published on [Slack's Claude marketplace](https://github.com/slack
 /plugin install slack@slack
 ```
 
-Then turn on updates: run `/plugin`, open **Marketplaces**, select `slack`, and select **Enable auto-update**. Without it, run `/plugin marketplace update slack` to pick up a new release.
+Then turn on auto-update:
+
+1. Run `/plugin`.
+2. Open **Marketplaces**.
+3. Select `slack`.
+4. Select **Enable auto-update**.
+
+Without auto-update, run `/plugin marketplace update slack` to pick up a new release.
 
 The plugin is also published on the [official Claude marketplace](https://claude.com/plugins/slack), but its updates are experiencing large delays. We recommend the marketplace above until this is resolved:
 

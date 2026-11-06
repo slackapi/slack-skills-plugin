@@ -5,7 +5,8 @@
       "url": "https://mcp.slack.com/mcp",
       "oauth": {
         "clientId": "1601185624273.8899143856786",
-        "callbackPort": 3118
+        "callbackPort": 3118,
+        "scopes": "canvases:read canvases:write channels:history channels:read channels:write chat:write emoji:read files:read files:write groups:history groups:read groups:write im:history im:read im:write lists:read lists:write mpim:history mpim:read mpim:write reactions:read reactions:write search:read.files search:read.im search:read.mpim search:read.private search:read.public search:read.users users:read users:read.email"
       }
     }
   }

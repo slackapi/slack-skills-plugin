@@ -29,15 +29,13 @@ claude plugin update slack@slack
 
 #### Switching from the official Claude marketplace
 
-If you installed the plugin from the official Claude marketplace, switch to Slack's marketplace from a terminal, so that only one copy is enabled:
+If you installed the plugin from the official Claude marketplace, uninstall it first, so that only one copy is enabled:
 
 ```sh
 claude plugin uninstall slack@claude-plugins-official
-claude plugin marketplace add slackapi/slack-skills-plugin
-claude plugin install slack@slack
 ```
 
-Then run `claude plugin list` to confirm that `slack@slack` is the only Slack plugin listed, with the latest version.
+Then follow the [install steps](#claude-code) above. Run `claude plugin list` to confirm that `slack@slack` is the only Slack plugin listed.
 
 ### Cursor
 

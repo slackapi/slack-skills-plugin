@@ -45,15 +45,13 @@ You can install the plugin from either marketplace, but don't install it from bo
 
 #### Switching from the official Claude marketplace {#claude-code-switch}
 
-If you installed the plugin from the official Claude marketplace, switch to Slack's marketplace from a terminal, so that only one copy is enabled:
+If you installed the plugin from the official Claude marketplace, uninstall it first, so that only one copy is enabled:
 
 ```sh
-claude plugin uninstall slack@claude-plugins-official
-claude plugin marketplace add slackapi/slack-skills-plugin
-claude plugin install slack@slack
+/plugin uninstall slack@claude-plugins-official
 ```
 
-Then run `claude plugin list` to confirm that `slack@slack` is the only Slack plugin listed, with the latest version.
+Then follow the [install steps](#claude-code-install) above. Run `claude plugin list` to confirm that `slack@slack` is the only Slack plugin listed.
 
 ### Installing the plugin for Codex {#codex-install}
 

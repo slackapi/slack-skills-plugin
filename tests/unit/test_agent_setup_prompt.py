@@ -9,7 +9,7 @@ from tests.config import AGENT_SETUP_PROMPT, README, SKILLS_ROOT
 SHELL_TO_README = (
     ("claude plugin install ", "/plugin install "),
     ("claude plugin marketplace add ", "/plugin marketplace add "),
-    ("npx -y skills ", "npx skills "),
+    ("npx -y skills@latest ", "npx skills "),
     (" -g ", " "),
 )
 

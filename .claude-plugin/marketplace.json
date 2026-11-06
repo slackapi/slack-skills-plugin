@@ -10,7 +10,7 @@
       "source": {
         "source": "url",
         "url": "https://github.com/slackapi/slack-skills-plugin.git",
-        "ref": "v1.7.0"
+        "ref": "v1.7.1"
       }
     }
   ]

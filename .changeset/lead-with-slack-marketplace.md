@@ -2,4 +2,4 @@
 "slack": patch
 ---
 
-Claude Code installs now start from the plugin's own marketplace, `slack@slack`, which gets each release as soon as it ships. The README, the docs.slack.dev page, and the agent setup prompt all lead with it. If you installed `slack@claude-plugins-official`, switch with `claude plugin uninstall slack@claude-plugins-official`, then `claude plugin marketplace add slackapi/slack-skills-plugin` and `claude plugin install slack@slack`. Run `claude plugin list` to confirm that `slack@slack` is the only Slack plugin installed.
+Claude Code install instructions now list the plugin's own marketplace first: `/plugin marketplace add slackapi/slack-skills-plugin`, then `/plugin install slack@slack`. Updates on the official Claude marketplace are experiencing large delays, so we recommend this marketplace until that is resolved. If you installed `slack@claude-plugins-official`, uninstall it first so only one copy is enabled.

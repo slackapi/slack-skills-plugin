@@ -19,7 +19,7 @@ Read on for instructions on installing the Plugin for your AI tool of your choic
 
 ### Installing the plugin for Claude Code {#claude-code-install}
 
-The plugin is published as a Claude Code marketplace in its [GitHub repository](https://github.com/slackapi/slack-skills-plugin), and each release is available as soon as it ships. Add the marketplace, then install the plugin from a Claude Code session with slash commands:
+The plugin is published as a marketplace in its [GitHub repository](https://github.com/slackapi/slack-skills-plugin). You can install the plugin directly from a Claude Code session with slash commands:
 
 ```sh
 /plugin marketplace add slackapi/slack-skills-plugin
@@ -28,15 +28,13 @@ The plugin is published as a Claude Code marketplace in its [GitHub repository](
 
 Then turn on updates: run `/plugin`, open **Marketplaces**, select `slack`, and select **Enable auto-update**. Without it, run `/plugin marketplace update slack` to pick up a new release.
 
-#### Switching from the official Claude marketplace {#claude-code-switch}
-
-The plugin is also listed on the [official Claude marketplace](https://claude.com/plugins/slack) as `slack@claude-plugins-official`, but new releases can take a while to reach it. Install the plugin from one marketplace only: Claude Code keeps both copies enabled if you install both. If you installed `slack@claude-plugins-official`, uninstall it before installing `slack@slack`:
+The plugin is also published on the [official Claude marketplace](https://claude.com/plugins/slack), but its updates are experiencing large delays. We recommend the marketplace above until this is resolved:
 
 ```sh
-/plugin uninstall slack@claude-plugins-official
+/plugin install slack@claude-plugins-official
 ```
 
-Then run `claude plugin list` from a terminal to confirm the switch. It shows each installed plugin with its marketplace, version, and status, and `slack@slack` should be the only Slack plugin listed.
+You can install the plugin from either marketplace, but don't install it from both. If you already installed `slack@claude-plugins-official`, uninstall it first with `/plugin uninstall slack@claude-plugins-official`.
 
 ### Installing the plugin for Codex {#codex-install}
 

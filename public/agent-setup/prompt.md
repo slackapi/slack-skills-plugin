@@ -44,29 +44,25 @@ Use the section for your agent, even if the Slack skills are already available t
 
 ### Claude Code
 
-Run `claude plugin list` to see which Slack plugin is installed, if any.
-
-If it lists `slack@claude-plugins-official`, uninstall it, then install the plugin as described below. That copy comes from the official Claude marketplace, which can be behind the latest release, and Claude Code keeps both copies enabled if both are installed:
-
-```sh
-claude plugin uninstall slack@claude-plugins-official
-```
-
-If it lists `slack@slack`, update it to the latest version:
-
-```sh
-claude plugin marketplace update slack
-claude plugin update slack@slack
-```
-
-If neither is listed, or you just uninstalled `slack@claude-plugins-official`, install the plugin from its own marketplace:
-
 ```sh
 claude plugin marketplace add slackapi/slack-skills-plugin
 claude plugin install slack@slack
 ```
 
+If `claude plugin list` shows `slack@claude-plugins-official`, uninstall it first. Its updates are experiencing large delays, and both copies stay enabled if both are installed:
+
+```sh
+claude plugin uninstall slack@claude-plugins-official
+```
+
 This installs the Slack skills, commands, and MCP server together. Do not use `npx skills` or `claude mcp add`: the plugin handles everything.
+
+If the plugin is already installed, update it instead:
+
+```sh
+claude plugin marketplace update slack
+claude plugin update slack@slack
+```
 
 The plugin loads in the user's next Claude Code session, or after they run `/reload-plugins`. Do not wait for either. Continue with Step 2 in this session using the hosted skills.
 

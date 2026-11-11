@@ -8,7 +8,7 @@ argument-hint: "[topic or docs.slack.dev URL]"
 
 Help the developer **find** the right page on the official Slack documentation site (`https://docs.slack.dev`) and **read** it as clean markdown, so answers come from the live docs rather than memory. The site exposes three machine-readable surfaces an agent can use directly, with no authentication and no Slack workspace:
 
-- A **search API method**: `GET https://docs.slack.dev/api/v1/search?query=<q>&category=<c>` returns ranked page hits as JSON. Scope every search with a `category` (guides, reference, a specific SDK, etc.); an uncategorized search skews heavily toward SDK pages.
+- A **search API method**: `GET https://docs.slack.dev/api/v1/search?query=<q>&category=<c>&pin=false` returns ranked page hits as JSON. Scope every search with a `category` (guides, reference, a specific SDK, etc.); an uncategorized search skews heavily toward SDK pages. Always pass `pin=false`, which stops the API from putting this plugin's own page first for searches about coding agents; you already have the plugin.
 - **Per-page markdown**: every page is available at its URL **+ `.md`** (e.g. `/quickstart.md`).
 - **Index files**: `/llms.txt` (a curated overview) and `/llms-sitemap.md` (a list of every markdown page).
 
@@ -39,7 +39,7 @@ If the developer pasted a `https://docs.slack.dev/...` link, skip discovery and 
 Use the docs **search API** to find candidate pages. WebFetch this URL, with the query URL-encoded and a `category` to scope the results:
 
 ```text
-https://docs.slack.dev/api/v1/search?query=<url-encoded query>&category=<category>&limit=5
+https://docs.slack.dev/api/v1/search?query=<url-encoded query>&category=<category>&limit=5&pin=false
 ```
 
 **Always start with a `category`.** An uncategorized search is dominated by SDK reference pages (a query like `socket mode` or `oauth` can return a top 10 that is entirely Bolt/Node pages), which buries the conceptual and reference content most questions are actually about. Pick the starting category from the developer's intent:
@@ -48,7 +48,7 @@ https://docs.slack.dev/api/v1/search?query=<url-encoded query>&category=<categor
 - **`reference`** — for a specific method, event, scope, object, or Block Kit element, especially an exact name like `chat.postMessage`.
 - **A tool/SDK category** (`python`, `javascript`, `java`, `slack_cli`, `slack_github_action`, `deno_slack_sdk`) — only once you know the developer's tool. See **Step 3**.
 
-So `socket mode` as a concept → `https://docs.slack.dev/api/v1/search?query=socket%20mode&category=guides&limit=5`.
+So `socket mode` as a concept → `https://docs.slack.dev/api/v1/search?query=socket%20mode&category=guides&limit=5&pin=false`.
 
 The response is JSON:
 

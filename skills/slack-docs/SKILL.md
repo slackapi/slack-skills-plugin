@@ -44,7 +44,7 @@ SLACK_CMD docs search "<query>" --category=<category> --limit=5 --hide-pinned
 
 It calls the same search API and takes the same categories as below. When a coding agent runs it, each result links to the page's `.md` version, ready for **Step 2**. `--hide-pinned` leaves out the Slack MCP and Skills Plugin page that the API pins to the top of searches about coding agents. You already have the plugin.
 
-If `SLACK_CMD docs search --help` doesn't list `--hide-pinned`, the CLI is older than this skill. Search without the flag and skip the plugin page if it comes first, or use the search API below. Suggest `SLACK_CMD upgrade` once, as the `slack-cli` skill's **Step 2: Command Discovery via Help** does for a missing command or flag.
+If `SLACK_CMD docs --help` doesn't list `search`, use the search API below. If `SLACK_CMD docs search --help` doesn't list `--hide-pinned`, the CLI is older than this skill. Search without the flag and skip the plugin page if it comes first, or use the search API below. Suggest `SLACK_CMD upgrade` once, as the `slack-cli` skill's **Step 2: Command Discovery via Help** does for a missing command or flag.
 
 **Otherwise, use the search API.** WebFetch this URL, with the query URL-encoded and a `category` to scope the results:
 
@@ -101,7 +101,7 @@ If a categorized search returns no good hit, widen it: try the other likely cate
 
 Given a page reference (a `url` from Step 1, or a link the developer pasted), read its markdown.
 
-**If you resolved `SLACK_CMD` in Step 1, print the page from the terminal:**
+**If the Slack CLI is installed, print the page from the terminal.** Use the `SLACK_CMD` from Step 1. When you came here from the Fast Path with a pasted link, resolve it the same way first: the `slack-cli` skill's **Step 1: Detect the Slack CLI**.
 
 ```bash
 SLACK_CMD docs get <url or path>

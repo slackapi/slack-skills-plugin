@@ -36,7 +36,17 @@ If the developer pasted a `https://docs.slack.dev/...` link, skip discovery and 
 
 ## Step 1: Discover the Page (search)
 
-Use the docs **search API** to find candidate pages. WebFetch this URL, with the query URL-encoded and a `category` to scope the results:
+**If the Slack CLI is installed, search from the terminal:**
+
+```bash
+slack docs search "<query>" --category=<category> --limit=5 --hide-pinned
+```
+
+It calls the same search API and takes the same categories as below. When a coding agent runs it, each result links to the page's `.md` version, ready for **Step 2**. `--hide-pinned` leaves out the Slack MCP and Skills Plugin page that the API pins to the top of searches about coding agents. You already have the plugin.
+
+If the CLI rejects the command or `--hide-pinned`, it is older than this skill. Run it again without `--hide-pinned` and skip the plugin page if it comes first, or use the search API below. Suggest `slack upgrade` once, as the `slack-cli` skill does when a command is missing.
+
+**Otherwise, use the search API.** WebFetch this URL, with the query URL-encoded and a `category` to scope the results:
 
 ```text
 https://docs.slack.dev/api/v1/search?query=<url-encoded query>&category=<category>&limit=5&pin=false
@@ -84,13 +94,22 @@ If a categorized search returns no good hit, widen it: try the other likely cate
 
 - WebFetch `https://docs.slack.dev/llms-sitemap.md`, a flat list of every documentation page's `.md` URL, and scan it for the relevant path.
 - For API reference lookups, the enriched index pages are often faster: `https://docs.slack.dev/reference/methods.md`, `.../events.md`, `.../scopes.md`, `.../objects.md`, and `.../block-kit.md` each list every item with a one-line description and a `.md` link.
-- If the developer has the Slack CLI, `slack docs search "<query>"` does the same discovery from the terminal (see the `slack-cli` skill).
 
 ---
 
 ## Step 2: Read the Page (fetch markdown)
 
-Given a page reference (a `url` from Step 1, or a link the developer pasted), read its markdown:
+Given a page reference (a `url` from Step 1, or a link the developer pasted), read its markdown.
+
+**If the Slack CLI is installed, print the page from the terminal:**
+
+```bash
+slack docs get <url or path>
+```
+
+It accepts a link from `slack docs search`, a pasted docs.slack.dev URL, or a site path, with or without `.md` or an `#anchor`, and prints the page's markdown. If the CLI rejects `docs get`, it is older than this skill: suggest `slack upgrade` once and fetch the page as below.
+
+**Otherwise, fetch the markdown:**
 
 1. Normalize the reference to its `.md` URL:
    - A site-relative path from Step 1 (e.g. `/apis/events-api/using-socket-mode`): prepend `https://docs.slack.dev`.

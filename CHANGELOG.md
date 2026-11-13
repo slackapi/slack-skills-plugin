@@ -1,5 +1,18 @@
 # slack
 
+## 1.8.0
+
+### Minor Changes
+
+- 2416523: The `slack-docs` skill now searches and reads docs.slack.dev with the Slack CLI when it is installed, using `slack docs search --hide-pinned` and `slack docs get`. On an older CLI, it uses each command only when the CLI has it, and suggests `slack upgrade`. Agents without the CLI keep using the search API and fetching the page's markdown.
+
+### Patch Changes
+
+- 99e027a: Name `skills@latest` in the agent setup prompt's `npx skills` install command, so tracking the latest `skills` release reads as a deliberate choice. Current npm already resolves the latest release for a bare `npx skills`, so the installed version does not change.
+- 2a2b7ae: Claude Code install instructions now list Slack's Claude marketplace first. Updates on the official Claude marketplace are experiencing large delays, so we recommend Slack's marketplace until that is resolved.
+- caac336: Updating the plugin from the `slack` Claude Code marketplace now works without a GitHub SSH key. `claude plugin update slack@slack` used to fail with `Permission denied (publickey)` on machines that clone GitHub over HTTPS, even though the install itself worked.
+- 466ef0a: Have the `slack-docs` skill pass `pin=false` to the docs search API, so searches about Claude, Cursor, Codex, MCP, or coding agents return docs pages instead of putting this plugin's own page first. The API ignores the parameter until docs.slack.dev supports it, so the change is safe to release before then.
+
 ## 1.7.0
 
 ### Minor Changes

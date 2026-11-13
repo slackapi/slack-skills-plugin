@@ -109,6 +109,8 @@ SLACK_CMD docs get <url or path>
 
 It accepts a link from `SLACK_CMD docs search`, a pasted docs.slack.dev URL, or a site path, with or without `.md` or an `#anchor`, and prints the page's markdown. If `SLACK_CMD docs --help` doesn't list `get`, the CLI is older than this skill: suggest `SLACK_CMD upgrade` once and fetch the page as below.
 
+Generated SDK reference pages end in `.html` and have no markdown version, so `docs get` reports that and appending `.md` fails too. WebFetch a `.html` link as it is.
+
 **Otherwise, fetch the markdown:**
 
 1. Normalize the reference to its `.md` URL:

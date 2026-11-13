@@ -42,7 +42,7 @@ If the developer pasted a `https://docs.slack.dev/...` link, skip discovery and 
 SLACK_CMD docs search '<query>' --category=<category> --limit=5 --hide-pinned
 ```
 
-Keep the query in single quotes, so the shell doesn't run anything inside it. It calls the same search API and takes the same categories as below. On a current CLI, each result links to the page's `.md` version, ready for **Step 2**. An older CLI returns the page URL, which Step 2 turns into its `.md` version. `--hide-pinned` leaves out the Slack MCP and Skills Plugin page that the API pins to the top of searches about coding agents. You already have the plugin.
+Keep the query in single quotes, so the shell doesn't run anything inside it, and leave any `'` out of the query (`whats socket mode`). Search ignores punctuation. It calls the same search API and takes the same categories as below. On a current CLI, each result links to the page's `.md` version, ready for **Step 2**. An older CLI returns the page URL, which Step 2 turns into its `.md` version. `--hide-pinned` leaves out the Slack MCP and Skills Plugin page that the API pins to the top of searches about coding agents. You already have the plugin.
 
 Check `SLACK_CMD docs search --help` first. If `search` or its `--category` flag is missing, use the search API below. If only `--hide-pinned` is missing, the CLI is older than this skill: search without it and skip the plugin page (`https://docs.slack.dev/ai/slack-skills-plugin/`) if it comes first. Suggest `SLACK_CMD upgrade` once, as the `slack-cli` skill's **Step 2: Command Discovery via Help** does for a missing command or flag.
 
@@ -116,7 +116,7 @@ Generated SDK reference pages end in `.html` and have no markdown version, so `d
 1. Normalize the reference to its `.md` URL:
    - A site-relative path from Step 1 (e.g. `/apis/events-api/using-socket-mode`): prepend `https://docs.slack.dev`.
    - A full URL the developer pasted, or a link from `SLACK_CMD docs search`: drop any `#anchor` first.
-   - Drop a trailing `/`, then append `.md`, e.g. `…/using-socket-mode/` → `https://docs.slack.dev/apis/events-api/using-socket-mode.md`. Keeping the slash (`…/using-socket-mode/.md`) returns a 404.
+   - Unless it already ends in `.md`, drop a trailing `/`, then append `.md`, e.g. `…/using-socket-mode/` → `https://docs.slack.dev/apis/events-api/using-socket-mode.md`. Keeping the slash (`…/using-socket-mode/.md`) returns a 404.
    The server lowercases `.md` requests, so casing does not matter: `chat.postMessage.md` and `chat.postmessage.md` both resolve.
 2. **WebFetch** it. The page opens with `Source: <original-url>`; the rest is the page body in markdown.
 3. Answer the developer from the fetched content, and cite the `Source` URL.

@@ -36,7 +36,17 @@ If the developer pasted a `https://docs.slack.dev/...` link, skip discovery and 
 
 ## Step 1: Discover the Page (search)
 
-Use the docs **search API** to find candidate pages. WebFetch this URL, with the query URL-encoded and a `category` to scope the results:
+**If the Slack CLI is installed, search from the terminal.** Load the `slack-cli` skill (with your skill tool, if you have one) and follow **1a** and **1b** of its **Step 1: Detect the Slack CLI** to check whether the public CLI is installed and resolve its command (`SLACK_CMD`). Don't check for the CLI yourself first: a `slack` on `PATH` isn't always the public CLI, and that step tells them apart. Stop there: don't ask the developer about an alias or offer to install the CLI just to search the docs. If neither finds it, use the search API below.
+
+```bash
+SLACK_CMD docs search '<query>' --category=<category> --limit=5 --hide-pinned
+```
+
+Keep the query in single quotes, so the shell doesn't run anything inside it, and leave any `'` out of the query (`whats socket mode`). Search ignores punctuation. It calls the same search API and takes the same categories as below. On a current CLI, each result links to the page's `.md` version, ready for **Step 2**. An older CLI returns the page URL, which Step 2 turns into its `.md` version. `--hide-pinned` leaves out the Slack MCP and Skills Plugin page that the API pins to the top of searches about coding agents. You already have the plugin.
+
+Check `SLACK_CMD docs search --help` first. If `search` or its `--category` flag is missing, use the search API below. If only `--hide-pinned` is missing, the CLI is older than this skill: search without it and skip the plugin page (`https://docs.slack.dev/ai/slack-skills-plugin/`) if it comes first. Suggest `SLACK_CMD upgrade` once, as the `slack-cli` skill's **Step 2: Command Discovery via Help** does for a missing command or flag.
+
+**Otherwise, use the search API.** WebFetch this URL, with the query URL-encoded and a `category` to scope the results:
 
 ```text
 https://docs.slack.dev/api/v1/search?query=<url-encoded query>&category=<category>&limit=5&pin=false
@@ -84,18 +94,29 @@ If a categorized search returns no good hit, widen it: try the other likely cate
 
 - WebFetch `https://docs.slack.dev/llms-sitemap.md`, a flat list of every documentation page's `.md` URL, and scan it for the relevant path.
 - For API reference lookups, the enriched index pages are often faster: `https://docs.slack.dev/reference/methods.md`, `.../events.md`, `.../scopes.md`, `.../objects.md`, and `.../block-kit.md` each list every item with a one-line description and a `.md` link.
-- If the developer has the Slack CLI, `slack docs search "<query>"` does the same discovery from the terminal (see the `slack-cli` skill).
 
 ---
 
 ## Step 2: Read the Page (fetch markdown)
 
-Given a page reference (a `url` from Step 1, or a link the developer pasted), read its markdown:
+Given a page reference (a `url` from Step 1, or a link the developer pasted), read its markdown.
+
+**If the Slack CLI is installed, print the page from the terminal.** Use the `SLACK_CMD` from Step 1. When you came here from the Fast Path with a pasted link, resolve it the same way first, with **1a** and **1b** of the `slack-cli` skill's **Step 1: Detect the Slack CLI**.
+
+```bash
+SLACK_CMD docs get '<url or path>'
+```
+
+It accepts a link from `SLACK_CMD docs search`, a pasted docs.slack.dev URL, or a site path, with or without `.md` or an `#anchor`, and prints the page's markdown. If `SLACK_CMD docs --help` doesn't list `get`, the CLI is older than this skill: suggest `SLACK_CMD upgrade` once and fetch the page as below.
+
+Generated SDK reference pages end in `.html` and have no markdown version, so `docs get` reports that and appending `.md` fails too. WebFetch a `.html` link as it is.
+
+**Otherwise, fetch the markdown:**
 
 1. Normalize the reference to its `.md` URL:
    - A site-relative path from Step 1 (e.g. `/apis/events-api/using-socket-mode`): prepend `https://docs.slack.dev`.
-   - A full URL the developer pasted: drop any `#anchor` first.
-   - Append `.md`, e.g. `…/using-socket-mode` → `https://docs.slack.dev/apis/events-api/using-socket-mode.md`.
+   - A full URL the developer pasted, or a link from `SLACK_CMD docs search`: drop any `#anchor` first.
+   - Unless it already ends in `.md`, drop a trailing `/`, then append `.md`, e.g. `…/using-socket-mode/` → `https://docs.slack.dev/apis/events-api/using-socket-mode.md`. Keeping the slash (`…/using-socket-mode/.md`) returns a 404.
    The server lowercases `.md` requests, so casing does not matter: `chat.postMessage.md` and `chat.postmessage.md` both resolve.
 2. **WebFetch** it. The page opens with `Source: <original-url>`; the rest is the page body in markdown.
 3. Answer the developer from the fetched content, and cite the `Source` URL.

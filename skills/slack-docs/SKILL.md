@@ -36,7 +36,7 @@ If the developer pasted a `https://docs.slack.dev/...` link, skip discovery and 
 
 ## Step 1: Discover the Page (search)
 
-**If the Slack CLI is installed, search from the terminal.** Load the `slack-cli` skill (with your skill tool, if you have one) and follow its **Step 1: Detect the Slack CLI** to check whether the public CLI is installed and resolve its command (`SLACK_CMD`). Don't check for the CLI yourself first: a `slack` on `PATH` isn't always the public CLI, and that step tells them apart. Don't install the CLI just to search the docs. Without it, use the search API below.
+**If the Slack CLI is installed, search from the terminal.** Load the `slack-cli` skill (with your skill tool, if you have one) and follow **1a** and **1b** of its **Step 1: Detect the Slack CLI** to check whether the public CLI is installed and resolve its command (`SLACK_CMD`). Don't check for the CLI yourself first: a `slack` on `PATH` isn't always the public CLI, and that step tells them apart. Stop there: don't ask the developer about an alias or offer to install the CLI just to search the docs. If neither finds it, use the search API below.
 
 ```bash
 SLACK_CMD docs search "<query>" --category=<category> --limit=5 --hide-pinned
@@ -44,7 +44,7 @@ SLACK_CMD docs search "<query>" --category=<category> --limit=5 --hide-pinned
 
 It calls the same search API and takes the same categories as below. When a coding agent runs it, each result links to the page's `.md` version, ready for **Step 2**. `--hide-pinned` leaves out the Slack MCP and Skills Plugin page that the API pins to the top of searches about coding agents. You already have the plugin.
 
-If `SLACK_CMD docs --help` doesn't list `search`, use the search API below. If `SLACK_CMD docs search --help` doesn't list `--hide-pinned`, the CLI is older than this skill. Search without the flag and skip the plugin page if it comes first, or use the search API below. Suggest `SLACK_CMD upgrade` once, as the `slack-cli` skill's **Step 2: Command Discovery via Help** does for a missing command or flag.
+Check `SLACK_CMD docs search --help` first. If `search` or its `--category` flag is missing, use the search API below. If only `--hide-pinned` is missing, the CLI is older than this skill: search without it and skip the plugin page if it comes first. Suggest `SLACK_CMD upgrade` once, as the `slack-cli` skill's **Step 2: Command Discovery via Help** does for a missing command or flag.
 
 **Otherwise, use the search API.** WebFetch this URL, with the query URL-encoded and a `category` to scope the results:
 
@@ -101,7 +101,7 @@ If a categorized search returns no good hit, widen it: try the other likely cate
 
 Given a page reference (a `url` from Step 1, or a link the developer pasted), read its markdown.
 
-**If the Slack CLI is installed, print the page from the terminal.** Use the `SLACK_CMD` from Step 1. When you came here from the Fast Path with a pasted link, resolve it the same way first: the `slack-cli` skill's **Step 1: Detect the Slack CLI**.
+**If the Slack CLI is installed, print the page from the terminal.** Use the `SLACK_CMD` from Step 1. When you came here from the Fast Path with a pasted link, resolve it the same way first, with **1a** and **1b** of the `slack-cli` skill's **Step 1: Detect the Slack CLI**.
 
 ```bash
 SLACK_CMD docs get <url or path>

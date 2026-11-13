@@ -36,15 +36,15 @@ If the developer pasted a `https://docs.slack.dev/...` link, skip discovery and 
 
 ## Step 1: Discover the Page (search)
 
-**If the Slack CLI is installed, search from the terminal:**
+**If the Slack CLI is installed, search from the terminal.** Load the `slack-cli` skill (with your skill tool, if you have one) and follow its **Step 1: Detect the Slack CLI** to check whether the public CLI is installed and resolve its command (`SLACK_CMD`). Don't check for the CLI yourself first: a `slack` on `PATH` isn't always the public CLI, and that step tells them apart. Don't install the CLI just to search the docs. Without it, use the search API below.
 
 ```bash
-slack docs search "<query>" --category=<category> --limit=5 --hide-pinned
+SLACK_CMD docs search "<query>" --category=<category> --limit=5 --hide-pinned
 ```
 
 It calls the same search API and takes the same categories as below. When a coding agent runs it, each result links to the page's `.md` version, ready for **Step 2**. `--hide-pinned` leaves out the Slack MCP and Skills Plugin page that the API pins to the top of searches about coding agents. You already have the plugin.
 
-If the CLI rejects the command or `--hide-pinned`, it is older than this skill. Run it again without `--hide-pinned` and skip the plugin page if it comes first, or use the search API below. Suggest `slack upgrade` once, as the `slack-cli` skill does when a command is missing.
+If `SLACK_CMD docs search --help` doesn't list `--hide-pinned`, the CLI is older than this skill. Search without the flag and skip the plugin page if it comes first, or use the search API below. Suggest `SLACK_CMD upgrade` once, as the `slack-cli` skill's **Step 2: Command Discovery via Help** does for a missing command or flag.
 
 **Otherwise, use the search API.** WebFetch this URL, with the query URL-encoded and a `category` to scope the results:
 
@@ -101,13 +101,13 @@ If a categorized search returns no good hit, widen it: try the other likely cate
 
 Given a page reference (a `url` from Step 1, or a link the developer pasted), read its markdown.
 
-**If the Slack CLI is installed, print the page from the terminal:**
+**If you resolved `SLACK_CMD` in Step 1, print the page from the terminal:**
 
 ```bash
-slack docs get <url or path>
+SLACK_CMD docs get <url or path>
 ```
 
-It accepts a link from `slack docs search`, a pasted docs.slack.dev URL, or a site path, with or without `.md` or an `#anchor`, and prints the page's markdown. If the CLI rejects `docs get`, it is older than this skill: suggest `slack upgrade` once and fetch the page as below.
+It accepts a link from `SLACK_CMD docs search`, a pasted docs.slack.dev URL, or a site path, with or without `.md` or an `#anchor`, and prints the page's markdown. If `SLACK_CMD docs --help` doesn't list `get`, the CLI is older than this skill: suggest `SLACK_CMD upgrade` once and fetch the page as below.
 
 **Otherwise, fetch the markdown:**
 

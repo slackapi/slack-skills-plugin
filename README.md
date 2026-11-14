@@ -106,9 +106,10 @@ This path carries the skills only: no commands, and no MCP server.
 The plugin connects your AI tool to Slack's hosted [MCP server][slack-mcp-docs]:
 
 - **Search** - find messages, files, users, and channels (public and private)
-- **Messaging** - send and schedule messages, read channels, follow threads, add reactions
+- **Messaging** - send, draft, and schedule messages, create channels and DMs, read channels, follow threads, add and read reactions
 - **Canvas** - create, read, and update canvas documents
 - **Files** - upload files and images and share them in a channel or thread
+- **Lists** - create, read, and update lists and their records
 - **Users** - read profiles and list channel members
 
 ### Skills

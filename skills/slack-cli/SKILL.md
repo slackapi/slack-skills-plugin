@@ -227,7 +227,7 @@ cd <project-dir> && SLACK_CMD run --team=<team_id>
 
 The first time an app is installed to an Enterprise organization, the CLI asks which of the organization's workspaces the app can access. A background process cannot answer, so the CLI stops with `The input device is not a TTY or does not support interactivity` and prints the prompt it would have shown:
 
-```
+```text
 › Choose a workspace to grant access:
     All of them
     Acme Sales T0123456789
@@ -241,7 +241,9 @@ When you see this, **ask the developer the same question, with the choices in th
 
 If the CLI stops without listing the workspaces, ask the developer whether to grant all workspaces or just one, and for that workspace's team ID if they pick one.
 
-Tell the developer the app is running in the background. They can ask:
+### Confirm the app is running
+
+Read the background process's output before saying anything to the developer. The workspace question above only shows up there, and the process has already exited when it does. Once the output shows the app has started, tell the developer the app is running in the background. They can ask:
 
 - "What's the status of the dev server?" — to check on it
 - "Show me the output from slack run" — to see activity logs

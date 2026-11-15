@@ -135,7 +135,7 @@ HEROKU_TEAM=<team> HEROKU_APP_NAME=<name> SLACK_CMD deploy --skip-update --team 
 
 **On an Enterprise organization, ask the developer which workspaces to grant.** The first deploy to an organization stops on one more question, and the error prints it:
 
-```
+```text
 › Choose a workspace to grant access:
     All of them
     Acme Sales T0123456789

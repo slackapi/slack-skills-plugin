@@ -87,7 +87,7 @@ SLACK_CMD sandbox list --team <team_id>
   SLACK_CMD sandbox create --team <team_id> --name <sandbox-name>
   ```
 
-  Do not pass `--password`, and do not ask the developer for a password. Without it, the developer signs into the sandbox with a link sent to their email, so no credential passes through this conversation or the command line. This needs Slack CLI v4.11.0 or later. If the CLI asks for a password instead, it is older: ask the developer to run `SLACK_CMD upgrade`, then run the command again. If the developer wants password sign-in, have them create the sandbox in the browser and set the password there.
+  Do not pass `--password`, and do not ask the developer for a password. Without it, the developer signs into the sandbox with a link sent to their email, so no credential passes through this conversation or the command line. This needs Slack CLI v4.11.0 or later. Check the version from Step 1b before running it, and if it is older, ask the developer to run `SLACK_CMD upgrade` first. An older CLI prompts for a password, which fails when run from the agent. If the developer wants password sign-in, have them create the sandbox in the browser and set the password there.
 
   Sandboxes can also be created in the browser at <https://api.slack.com/developer-program/sandboxes>.
 

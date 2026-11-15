@@ -107,7 +107,7 @@ While following the skill:
 - **With `--app`, set up the existing app.** Pass `--app`, `--team`, and the template repo you chose above to the skill, and follow its existing app path. The skill skips choosing a workspace, a language, and a template, and links the project to the app. It still asks which AI provider to use for an agent template.
 - **Without `--app`, use the Starter Agent template.** When the skill asks which template to use, pick Starter Agent (`slack-samples/bolt-js-starter-agent` or `slack-samples/bolt-python-starter-agent`) without asking the user. Still ask which language (JavaScript or Python) and which AI provider they want.
 - **Resolve skill references from the hosted copies** too. A reference like "the `<name>` skill", or `slack:<name>` in older copies, means the skill at `https://docs.slack.dev/.well-known/skills/<name>/SKILL.md`. A path like `references/<file>.md` is relative to that skill's folder at the same address. The full list of skills and their files is at [https://docs.slack.dev/.well-known/skills/index.json](https://docs.slack.dev/.well-known/skills/index.json).
-- **Let the skill ask its own questions**, such as which workspace to install into or which AI provider to use. Those choices are the user's. Never ask the user to paste an API key or password into this conversation: the skill has them type secrets into the Slack CLI's own prompt.
+- **Let the skill ask its own questions**, such as which workspace to install into or which AI provider to use. Those choices are the user's. Never ask the user to paste an API key into this conversation: the skill has them type it into the Slack CLI's own prompt.
 
 ---
 

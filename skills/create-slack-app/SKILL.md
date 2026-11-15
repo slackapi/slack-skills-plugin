@@ -225,21 +225,23 @@ If the developer chose an agent template (Starter Agent or Support Agent), they 
 | `openai-agents-sdk` | `OPENAI_API_KEY` | OpenAI API key |
 | `pydantic-ai` | `OPENAI_API_KEY` | OpenAI API key (required). Optionally also `ANTHROPIC_API_KEY` if using Anthropic as the backend — if both are set, Anthropic is used by default. |
 
-For each variable, give the developer this command to run in a terminal of their own. Use the project's full path, because a new terminal may not start in the folder this session is in:
+For each variable, give the developer these two commands to run in a terminal of their own. Use the project's full path, because a new terminal may not start in the folder this session is in. Keep them as two commands: Windows PowerShell 5.1 does not accept `&&`.
 
 ```bash
-cd <project-path> && SLACK_CMD env set <ENV_VAR_NAME>
+cd <project-path>
+SLACK_CMD env set <ENV_VAR_NAME>
 ```
 
 For example:
 
 ```bash
-cd ~/projects/my-slack-agent && SLACK_CMD env set ANTHROPIC_API_KEY
+cd ~/projects/my-slack-agent
+SLACK_CMD env set ANTHROPIC_API_KEY
 ```
 
 With no value given, the CLI asks for one with hidden input and saves it to the project's `.env` file. Wait for the developer to confirm each variable is set before continuing. Do not read `.env` to check it: that would load the key into the conversation.
 
-**Important**: Do not run this command yourself. It needs an interactive terminal, so from the agent it fails and suggests the `--value` flag. Do not retry with `--value`: that puts the key on the command line and in the conversation. If the developer pastes a key into the chat anyway, do not pass it to a command or repeat it. Ask them to run the command above instead, and suggest rotating the key with their provider, since it is now in the conversation transcript.
+**Important**: Do not run this command yourself. It needs an interactive terminal, so from the agent it fails and suggests the `--value` flag. Do not retry with `--value`: that puts the key on the command line and in the conversation. If the developer pastes a key into the chat anyway, do not pass it to a command or repeat it. Ask them to run the commands above instead, and suggest rotating the key with their provider, since it is now in the conversation transcript.
 
 ---
 

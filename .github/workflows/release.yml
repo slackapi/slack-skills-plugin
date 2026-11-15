@@ -97,6 +97,7 @@ jobs:
     name: Notify
     if: needs.release.outputs.published == 'true' && github.repository == 'slackapi/slack-skills-plugin'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: release
     permissions:
       contents: read

@@ -134,12 +134,12 @@ The CLI uses the developer's authenticated session, so it is the simplest path o
 
 ### Via raw HTTP (curl)
 
-Use the **Bash tool** when the developer wants a raw request or isn't using the CLI. Send the token from Step 3 (Path B) in the `Authorization` header. Pipe the header into curl with `-H @-` so the token stays out of the command line and the conversation: `printf` is a shell builtin, so the expanded token never appears in the process list. If the token is in the project's `.env` file, load it in the same command first with `set -a && . ./.env && set +a &&`. For a user token, use `$SLACK_USER_TOKEN` in place of `$SLACK_BOT_TOKEN`.
+Use the **Bash tool** when the developer wants a raw request or isn't using the CLI. Send the token from Step 3 (Path B) in the `Authorization` header. Pipe the header into curl with `-H @-` so the token stays out of the command line and the conversation: `printf` is a shell builtin, so the expanded token never appears in the process list. If the token is in the project's `.env` file, read just that line in the same command first, rather than sourcing the file, which runs it as shell code: `SLACK_BOT_TOKEN="$(sed -n 's/^SLACK_BOT_TOKEN=//p' .env | tr -d "\"'")" &&`. When the variable is not set, the `${SLACK_BOT_TOKEN:?…}` form prints `SLACK_BOT_TOKEN is not set` before Slack's `not_authed`, so the developer knows to set the variable rather than check the token. For a user token, use `$SLACK_USER_TOKEN` in place of `$SLACK_BOT_TOKEN`.
 
 **Form-encoded** (the default for most methods):
 
 ```bash
-printf 'Authorization: Bearer %s\n' "$SLACK_BOT_TOKEN" | curl -s -X POST 'https://slack.com/api/conversations.list' \
+printf 'Authorization: Bearer %s\n' "${SLACK_BOT_TOKEN:?SLACK_BOT_TOKEN is not set}" | curl -s -X POST 'https://slack.com/api/conversations.list' \
   -H @- \
   -d 'types=public_channel&limit=200'
 ```
@@ -147,7 +147,7 @@ printf 'Authorization: Bearer %s\n' "$SLACK_BOT_TOKEN" | curl -s -X POST 'https:
 **JSON body** (for methods taking complex arguments like `blocks`, `view`, `attachments`, `metadata`):
 
 ```bash
-printf 'Authorization: Bearer %s\n' "$SLACK_BOT_TOKEN" | curl -s -X POST 'https://slack.com/api/chat.postMessage' \
+printf 'Authorization: Bearer %s\n' "${SLACK_BOT_TOKEN:?SLACK_BOT_TOKEN is not set}" | curl -s -X POST 'https://slack.com/api/chat.postMessage' \
   -H @- \
   -H 'Content-Type: application/json' \
   -d '{"channel":"C0123456789","text":"Hello from the API"}'
@@ -177,12 +177,12 @@ Methods that return collections use **cursor pagination**, not page numbers. A m
 
 ```bash
 # First page
-printf 'Authorization: Bearer %s\n' "$SLACK_BOT_TOKEN" | curl -s -X POST 'https://slack.com/api/conversations.history' \
+printf 'Authorization: Bearer %s\n' "${SLACK_BOT_TOKEN:?SLACK_BOT_TOKEN is not set}" | curl -s -X POST 'https://slack.com/api/conversations.history' \
   -H @- \
   -d 'channel=C0123456789&limit=200'
 
 # Next page — pass the cursor from response_metadata.next_cursor
-printf 'Authorization: Bearer %s\n' "$SLACK_BOT_TOKEN" | curl -s -X POST 'https://slack.com/api/conversations.history' \
+printf 'Authorization: Bearer %s\n' "${SLACK_BOT_TOKEN:?SLACK_BOT_TOKEN is not set}" | curl -s -X POST 'https://slack.com/api/conversations.history' \
   -H @- \
   -d 'channel=C0123456789&limit=200&cursor=dXNlcjpVMDYxTkZUVDI='
 ```

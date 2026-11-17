@@ -26,7 +26,7 @@ class ClaudeCodeModel(DeepEvalBaseLLM):
     """Claude model used as the eval judge, run through the Claude Code CLI in print mode.
 
     Each call runs one `claude -p` turn on the developer's own Claude Code login, so no
-    API key is needed. Settings, MCP servers, and built-in tools are turned off, and the
+    API key is needed. Settings, CLAUDE.md, plugins, hooks, MCP servers, and built-in tools are turned off, and the
     CLI runs in an empty directory, so the eval prompt is the only context the model sees.
     The CLI has no temperature option, so picks can vary a little between runs.
     """
@@ -60,6 +60,7 @@ class ClaudeCodeModel(DeepEvalBaseLLM):
             "--setting-sources",
             "",
             "--no-session-persistence",
+            "--safe-mode",
         ]
 
     def generate(self, prompt: str, schema: type[SchemaT]) -> tuple[SchemaT, float]:  # type: ignore[override]
@@ -78,7 +79,12 @@ class ClaudeCodeModel(DeepEvalBaseLLM):
             raise RuntimeError(
                 f"{self.executable} exited {result.returncode}: {result.stderr.strip() or result.stdout.strip()}"
             )
-        output = json.loads(result.stdout)
+        try:
+            output = json.loads(result.stdout)
+        except json.JSONDecodeError as error:
+            raise RuntimeError(
+                f"{self.executable} printed output that is not JSON: {result.stdout.strip()!r}"
+            ) from error
         if output.get("is_error") or "structured_output" not in output:
             raise RuntimeError(f"{self.executable} returned no structured output: {output.get('result')!r}")
         return schema.model_validate(output["structured_output"]), float(output.get("total_cost_usd", 0.0))

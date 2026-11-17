@@ -7,7 +7,7 @@ from deepeval.models import GeminiModel
 from deepeval.test_case import ToolCall
 from pydantic import BaseModel
 
-from tests.config import EVAL_CLAUDE_BIN, EVAL_PROVIDER, GEMINI_API_KEY_POOL, SLACK_MCP_TOKEN
+from tests.config import EVAL_CLAUDE_BIN, EVAL_PROVIDER, EVAL_PROVIDERS, GEMINI_API_KEY_POOL, SLACK_MCP_TOKEN
 from tests.support.judge import ClaudeCodeModel, make_judge_model
 from tests.support.tools import get_all_skill_tools, get_slack_mcp_tools
 
@@ -258,6 +258,8 @@ class TestToolSelection:
 
     @classmethod
     def setup_class(cls) -> None:
+        if EVAL_PROVIDER not in EVAL_PROVIDERS:
+            pytest.fail(f"Unknown EVAL_PROVIDER {EVAL_PROVIDER!r}, expected one of {EVAL_PROVIDERS}")
         if EVAL_PROVIDER == "gemini" and not GEMINI_API_KEY_POOL:
             pytest.fail("No Gemini API key set (set GEMINI_API_KEY or GEMINI_API_KEY_*)")
         if EVAL_PROVIDER == "claude-code" and not shutil.which(EVAL_CLAUDE_BIN):

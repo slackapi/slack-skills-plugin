@@ -52,3 +52,12 @@ class TestClaudeCodeModel:
 
         with pytest.raises(RuntimeError, match="Not logged in"):
             ClaudeCodeModel(model="haiku").generate("pick one", schema=Pick)
+
+    def test_non_json_output_raises_with_the_output(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(subprocess, "run", fake_run("Update available!"))
+
+        with pytest.raises(RuntimeError, match="not JSON: 'Update available!'"):
+            ClaudeCodeModel(model="haiku").generate("pick one", schema=Pick)
+
+    def test_turns_off_customizations(self) -> None:
+        assert "--safe-mode" in ClaudeCodeModel(model="haiku").command(Pick)

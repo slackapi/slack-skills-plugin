@@ -34,7 +34,7 @@ Run `make help` for the full list of targets and what each does. The common ones
 
 See the [maintainers guide](.github/maintainers_guide.md#local-development--testing) for local development and testing setup.
 
-Eval tests (`make test-eval`) need a Gemini API key and, for the MCP tool-selection test, `SLACK_MCP_TOKEN`. Copy `.env.example` to `.env` and fill in values; each variable is documented inline there, and the `Makefile` auto-loads `.env`.
+Eval tests (`make test-eval`) need a Gemini API key (or `EVAL_PROVIDER=claude-code` to run on Claude instead) and, for the MCP tool-selection test, `SLACK_MCP_TOKEN`. Copy `.env.example` to `.env` and fill in values; each variable is documented inline there, and the `Makefile` auto-loads `.env`.
 
 ## Cross-Skill References
 

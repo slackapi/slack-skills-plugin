@@ -215,7 +215,7 @@ Confirm the project was created successfully by checking that the directory exis
 
 ### 4c. Set required environment variables (agent templates only)
 
-If the developer chose an agent template (Starter Agent or Support Agent), they need to set the required API key for their chosen AI provider. Ask for the key value using AskUserQuestion, then set it using the Slack CLI from within the project directory.
+If the developer chose an agent template (Starter Agent or Support Agent), they need to set the required API key for their chosen AI provider. The key is a credential, so the developer types it into the Slack CLI's own prompt, which hides what they type. Never ask for a key with AskUserQuestion or in chat, and never put a key value in a command.
 
 **Required environment variables by provider:**
 
@@ -225,19 +225,23 @@ If the developer chose an agent template (Starter Agent or Support Agent), they 
 | `openai-agents-sdk` | `OPENAI_API_KEY` | OpenAI API key |
 | `pydantic-ai` | `OPENAI_API_KEY` | OpenAI API key (required). Optionally also `ANTHROPIC_API_KEY` if using Anthropic as the backend — if both are set, Anthropic is used by default. |
 
-Use AskUserQuestion to ask the developer for their API key value(s). Then set each one:
+For each variable, give the developer these two commands to run in a terminal of their own. Use the project's full path, because a new terminal may not start in the folder this session is in. Keep them as two commands: Windows PowerShell 5.1 does not accept `&&`.
 
 ```bash
-cd <project-name> && SLACK_CMD env set <ENV_VAR_NAME> <value>
+cd <project-path>
+SLACK_CMD env set <ENV_VAR_NAME>
 ```
 
 For example:
 
 ```bash
-cd my-slack-agent && SLACK_CMD env set ANTHROPIC_API_KEY sk-ant-...
+cd ~/projects/my-slack-agent
+SLACK_CMD env set ANTHROPIC_API_KEY
 ```
 
-**Important**: Do NOT store or echo API key values in logs or output. Only pass them directly to `SLACK_CMD env set`.
+With no value given, the CLI asks for one with hidden input and saves it to the project's `.env` file. Wait for the developer to confirm each variable is set before continuing. Do not read `.env` to check it: that would load the key into the conversation.
+
+**Important**: Do not run this command yourself. It needs an interactive terminal, so from the agent it fails and suggests the `--value` flag. Do not retry with `--value`: that puts the key on the command line and in the conversation. If the developer pastes a key into the chat anyway, do not pass it to a command or repeat it. Ask them to run the commands above instead, and suggest rotating the key with their provider, since it is now in the conversation transcript.
 
 ---
 
@@ -270,5 +274,6 @@ After the app is running, suggest next steps:
 - This skill focuses on **Bolt for JavaScript** and **Bolt for Python** only. Do not suggest Deno, workflow apps, or `slack deploy` (hosted deployment).
 - This skill scaffolds and runs the app. It does not own Block Kit JSON. If the developer asks to build or edit a message, modal, or Home tab layout (now or in Step 6), use the `block-kit` skill instead of writing the blocks here from memory.
 - `SLACK_CMD sandbox create` prompts for a name only when `--name` is missing. Supply `--team` and `--name` and it runs non-interactively, so you can run it yourself rather than handing it to the developer. Leave out `--password`: since Slack CLI v4.11.0 the sandbox then uses email sign-in, and no password passes through the agent. `SLACK_CMD sandbox list` needs `--team` for the same reason: without it the CLI prompts for which authentication to use.
+- `SLACK_CMD env set <NAME>` with no value prompts for it with hidden input. Use it for every API key, and because it needs an interactive terminal, the developer runs it rather than the agent.
 - Free Teams and developer sandboxes both support everything this skill builds. The CLI's `free_team_not_allowed` error is scoped to low-code workflow and function apps, which this skill does not create.
 - If the developer hits issues, suggest `SLACK_CMD doctor` to diagnose their setup.

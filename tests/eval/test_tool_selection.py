@@ -1,3 +1,4 @@
+import shutil
 import time
 from typing import TypedDict
 
@@ -6,8 +7,8 @@ from deepeval.models import GeminiModel
 from deepeval.test_case import ToolCall
 from pydantic import BaseModel
 
-from tests.config import GEMINI_API_KEY_POOL, SLACK_MCP_TOKEN
-from tests.support.judge import make_judge_model
+from tests.config import EVAL_CLAUDE_BIN, EVAL_PROVIDER, GEMINI_API_KEY_POOL, SLACK_MCP_TOKEN
+from tests.support.judge import ClaudeCodeModel, make_judge_model
 from tests.support.tools import get_all_skill_tools, get_slack_mcp_tools
 
 
@@ -252,13 +253,15 @@ just to resolve it into an ID first. Respond with the tool's exact name."""
 class TestToolSelection:
     """Assert the model selects the expected tool for each scenario."""
 
-    model: GeminiModel
+    model: GeminiModel | ClaudeCodeModel
     available_tools: list[ToolCall]
 
     @classmethod
     def setup_class(cls) -> None:
-        if not GEMINI_API_KEY_POOL:
+        if EVAL_PROVIDER == "gemini" and not GEMINI_API_KEY_POOL:
             pytest.fail("No Gemini API key set (set GEMINI_API_KEY or GEMINI_API_KEY_*)")
+        if EVAL_PROVIDER == "claude-code" and not shutil.which(EVAL_CLAUDE_BIN):
+            pytest.fail(f"Claude Code CLI {EVAL_CLAUDE_BIN!r} not found (install it or set EVAL_CLAUDE_BIN)")
         if not SLACK_MCP_TOKEN:
             pytest.fail("SLACK_MCP_TOKEN not set")
         # Fetch tools once for the whole class: the MCP list is one network
@@ -269,6 +272,8 @@ class TestToolSelection:
         self.model = make_judge_model()
 
     def teardown_method(self) -> None:
+        if EVAL_PROVIDER != "gemini":
+            return
         # Gemini's free tier allows only 15 requests/minute. Each scenario makes one
         # model.generate() call, so sleep between scenarios to stay well under the
         # limit (~12 req/min) and avoid HTTP 429 / RESOURCE_EXHAUSTED.

@@ -35,6 +35,13 @@ EXPECTED_SKILLS = (
 GEMINI_API_KEY_POOL = get_gemini_api_key_pool(os.environ)
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL_NAME", "gemini-3.1-flash-lite")
 
+# Eval model provider: "gemini" (the default, and what CI runs) or "claude-code", which
+# runs the Claude Code CLI in print mode on the developer's own Claude Code login.
+EVAL_PROVIDERS = ("gemini", "claude-code")
+EVAL_PROVIDER = os.environ.get("EVAL_PROVIDER", "gemini").strip() or "gemini"
+EVAL_CLAUDE_BIN = os.environ.get("EVAL_CLAUDE_BIN", "claude").strip() or "claude"
+EVAL_CLAUDE_MODEL = os.environ.get("EVAL_CLAUDE_MODEL", "sonnet").strip() or "sonnet"
+
 # Slack MCP server
 SLACK_MCP_URL = "https://mcp.slack.com/mcp"
 SLACK_MCP_TOKEN = os.environ.get("SLACK_MCP_TOKEN", "")

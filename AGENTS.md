@@ -56,7 +56,7 @@ A skill's `description` frontmatter is the only signal an agent uses to decide w
 Two test layers validate skills:
 
 1. **Unit** (`tests/unit/`): validates frontmatter fields, naming, and markdown structure. Fast, runs in CI on every PR.
-2. **Eval** (`tests/eval/`): LLM-judged tests that use a Gemini model. `tests/eval/test_tool_selection.py` asks the model to pick the expected tool/skill for each of a set of prompts. Because Gemini's free tier caps at 15 requests/minute, the test sleeps ~5s between scenarios (see its `teardown_method`) to stay under the limit.
+2. **Eval** (`tests/eval/`): LLM-judged tests that use a Gemini model. `tests/eval/test_tool_selection.py` asks the model to pick the expected tool/skill for each of a set of prompts. Because Gemini's free tier caps at 15 requests/minute, the test sleeps ~5s between scenarios (see its `teardown_method`) to stay under the limit. Locally, `EVAL_PROVIDER=claude-code` runs the same eval on Claude through the Claude Code CLI (`claude -p`) instead, with no sleep. See `.env.example`.
 
 To add an eval scenario, append a `Scenario` (prompt + expected tool) to `SCENARIOS` in `tests/eval/test_tool_selection.py`.
 

@@ -86,6 +86,12 @@ SCENARIOS: list[Scenario] = [
         "accepted_tools": ["slack-docs"],
     },
     {
+        # Only Web API method reference pages belong to slack-api. Other reference pages stay here.
+        "id": "skill-slack-docs-event-reference-url",
+        "prompt": "Summarize this docs page for me: https://docs.slack.dev/reference/events/message",
+        "accepted_tools": ["slack-docs"],
+    },
+    {
         "id": "skill-slack-cli-run-local",
         "prompt": "Run my Slack app locally for development from the terminal",
         "accepted_tools": ["slack-cli"],

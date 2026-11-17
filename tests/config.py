@@ -13,6 +13,10 @@ def get_gemini_api_key_pool(environ: Mapping[str, str]) -> list[str]:
     return [environ[name].strip() for name in environ if name.startswith("GEMINI_API_KEY") and environ[name].strip()]
 
 
+def get_eval_provider(environ: Mapping[str, str]) -> str:
+    return environ.get("EVAL_PROVIDER", "").strip().lower() or "gemini"
+
+
 # Filesystem
 SKILLS_ROOT = Path(__file__).parent.parent / "skills"
 
@@ -34,6 +38,11 @@ EXPECTED_SKILLS = (
 # key to the pool; blank values are skipped so an empty GEMINI_API_KEY= doesn't sneak in.
 GEMINI_API_KEY_POOL = get_gemini_api_key_pool(os.environ)
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL_NAME", "gemini-3.1-flash-lite")
+
+EVAL_PROVIDERS = ("gemini", "claude-code")
+EVAL_PROVIDER = get_eval_provider(os.environ)
+EVAL_CLAUDE_BIN = os.environ.get("EVAL_CLAUDE_BIN", "claude").strip() or "claude"
+EVAL_CLAUDE_MODEL = os.environ.get("EVAL_CLAUDE_MODEL", "sonnet").strip() or "sonnet"
 
 # Slack MCP server
 SLACK_MCP_URL = "https://mcp.slack.com/mcp"

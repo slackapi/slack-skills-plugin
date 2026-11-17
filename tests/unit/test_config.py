@@ -1,4 +1,4 @@
-from tests.config import get_gemini_api_key_pool
+from tests.config import get_eval_provider, get_gemini_api_key_pool
 
 
 class TestGeminiApiKeyPool:
@@ -25,3 +25,14 @@ class TestGeminiApiKeyPool:
 
     def test_empty_environment(self) -> None:
         assert get_gemini_api_key_pool({}) == []
+
+
+class TestEvalProvider:
+    def test_defaults_to_gemini(self) -> None:
+        assert get_eval_provider({}) == "gemini"
+
+    def test_blank_defaults_to_gemini(self) -> None:
+        assert get_eval_provider({"EVAL_PROVIDER": "  "}) == "gemini"
+
+    def test_normalizes_case_and_whitespace(self) -> None:
+        assert get_eval_provider({"EVAL_PROVIDER": " Claude-Code "}) == "claude-code"

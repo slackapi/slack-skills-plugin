@@ -1,5 +1,22 @@
 # slack
 
+## 1.8.0
+
+### Minor Changes
+
+- 2416523: The `slack-docs` skill now searches and reads docs.slack.dev with the Slack CLI when it is installed, using `slack docs search --hide-pinned` and `slack docs get`. On an older CLI, it uses each command only when the CLI has it, and suggests `slack upgrade`. Agents without the CLI keep using the search API and fetching the page's markdown.
+
+### Patch Changes
+
+- 99e027a: Name `skills@latest` in the agent setup prompt's `npx skills` install command, so tracking the latest `skills` release reads as a deliberate choice. Current npm already resolves the latest release for a bare `npx skills`, so the installed version does not change.
+- 3d56a56: The `slack-cli` and `deploy-slack-app` skills now ask the developer which workspaces to grant when an app is first installed to an Enterprise organization, instead of always granting all of them. The agent shows the same choices the CLI prompt offers, all workspaces first and then each workspace by name, and passes the answer to `--org-workspace-grant`.
+- 6a708d6: `create-slack-app` no longer asks for an AI provider API key in chat. The developer sets it with `slack env set <NAME>` in their own terminal, where the CLI hides what they type, so the key stays out of the agent's transcript and shell history.
+- 524163c: `create-slack-app` no longer asks for a sandbox password in chat. New developer sandboxes use email sign-in, the Slack CLI default since v4.11.0, so no password ends up in the agent's transcript or shell history.
+- 2a2b7ae: Claude Code install instructions now list Slack's Claude marketplace first. Updates on the official Claude marketplace are experiencing large delays, so we recommend Slack's marketplace until that is resolved.
+- caac336: Updating the plugin from the `slack` Claude Code marketplace now works without a GitHub SSH key. `claude plugin update slack@slack` used to fail with `Permission denied (publickey)` on machines that clone GitHub over HTTPS, even though the install itself worked.
+- fa7c1c2: The `slack-api` skill no longer has the agent handle a Slack token when it calls methods without the Slack CLI. The developer provides the token as `SLACK_BOT_TOKEN` or `SLACK_USER_TOKEN`, and the curl examples pipe the `Authorization` header in on stdin, so the token stays out of the conversation, the command line, and shell history.
+- 466ef0a: Have the `slack-docs` skill pass `pin=false` to the docs search API, so searches about Claude, Cursor, Codex, MCP, or coding agents return docs pages instead of putting this plugin's own page first. The API ignores the parameter until docs.slack.dev supports it, so the change is safe to release before then.
+
 ## 1.7.0
 
 ### Minor Changes

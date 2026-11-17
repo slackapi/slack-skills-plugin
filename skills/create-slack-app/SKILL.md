@@ -81,13 +81,13 @@ SLACK_CMD sandbox list --team <team_id>
 **If the developer has no Developer Program account**, `sandbox list` returns nothing useful, because sandboxes belong to the developer program account whose email matches the authenticated user rather than to the workspace. If they say they do have an account, check that the email they are logged in with matches it before sending them to sign up, and log into a workspace under that email if not. Point them at <https://api.slack.com/developer-program/join>, and offer the Free Team path in 3b as a way to start building now rather than waiting on signup.
 
 - **If a sandbox exists**: Show it and confirm they want to use it.
-- **If no sandbox exists**: Create one. Ask the developer for a name and a password with AskUserQuestion, then run:
+- **If no sandbox exists**: Create one. Ask the developer for a name with AskUserQuestion, then run:
 
   ```bash
-  SLACK_CMD sandbox create --team <team_id> --name <sandbox-name> --password <password>
+  SLACK_CMD sandbox create --team <team_id> --name <sandbox-name>
   ```
 
-  **Important**: the password is a credential. Do NOT echo it, restate it, or write it into a summary. Pass it straight to the command, the same rule Step 4c applies to API keys.
+  Do not pass `--password`, and do not ask the developer for a password. Without it, the developer signs into the sandbox with a link sent to their email, so no credential passes through this conversation or the command line. This needs Slack CLI v4.11.0 or later. Check the version from Step 1b before running it, and if it is older, ask the developer to run `SLACK_CMD upgrade` first. An older CLI prompts for a password, which fails when run from the agent. If the developer wants password sign-in, have them create the sandbox in the browser and set the password there.
 
   Sandboxes can also be created in the browser at <https://api.slack.com/developer-program/sandboxes>.
 
@@ -215,7 +215,7 @@ Confirm the project was created successfully by checking that the directory exis
 
 ### 4c. Set required environment variables (agent templates only)
 
-If the developer chose an agent template (Starter Agent or Support Agent), they need to set the required API key for their chosen AI provider. Ask for the key value using AskUserQuestion, then set it using the Slack CLI from within the project directory.
+If the developer chose an agent template (Starter Agent or Support Agent), they need to set the required API key for their chosen AI provider. The key is a credential, so the developer types it into the Slack CLI's own prompt, which hides what they type. Never ask for a key with AskUserQuestion or in chat, and never put a key value in a command.
 
 **Required environment variables by provider:**
 
@@ -225,19 +225,23 @@ If the developer chose an agent template (Starter Agent or Support Agent), they 
 | `openai-agents-sdk` | `OPENAI_API_KEY` | OpenAI API key |
 | `pydantic-ai` | `OPENAI_API_KEY` | OpenAI API key (required). Optionally also `ANTHROPIC_API_KEY` if using Anthropic as the backend — if both are set, Anthropic is used by default. |
 
-Use AskUserQuestion to ask the developer for their API key value(s). Then set each one:
+For each variable, give the developer these two commands to run in a terminal of their own. Use the project's full path, because a new terminal may not start in the folder this session is in. Keep them as two commands: Windows PowerShell 5.1 does not accept `&&`.
 
 ```bash
-cd <project-name> && SLACK_CMD env set <ENV_VAR_NAME> <value>
+cd <project-path>
+SLACK_CMD env set <ENV_VAR_NAME>
 ```
 
 For example:
 
 ```bash
-cd my-slack-agent && SLACK_CMD env set ANTHROPIC_API_KEY sk-ant-...
+cd ~/projects/my-slack-agent
+SLACK_CMD env set ANTHROPIC_API_KEY
 ```
 
-**Important**: Do NOT store or echo API key values in logs or output. Only pass them directly to `SLACK_CMD env set`.
+With no value given, the CLI asks for one with hidden input and saves it to the project's `.env` file. Wait for the developer to confirm each variable is set before continuing. Do not read `.env` to check it: that would load the key into the conversation.
+
+**Important**: Do not run this command yourself. It needs an interactive terminal, so from the agent it fails and suggests the `--value` flag. Do not retry with `--value`: that puts the key on the command line and in the conversation. If the developer pastes a key into the chat anyway, do not pass it to a command or repeat it. Ask them to run the commands above instead, and suggest rotating the key with their provider, since it is now in the conversation transcript.
 
 ---
 
@@ -269,6 +273,7 @@ After the app is running, suggest next steps:
 - `SLACK_CMD` is a placeholder — always substitute the actual command name resolved in Step 1a (typically `slack`, but may be an alias).
 - This skill focuses on **Bolt for JavaScript** and **Bolt for Python** only. Do not suggest Deno, workflow apps, or `slack deploy` (hosted deployment).
 - This skill scaffolds and runs the app. It does not own Block Kit JSON. If the developer asks to build or edit a message, modal, or Home tab layout (now or in Step 6), use the `block-kit` skill instead of writing the blocks here from memory.
-- `SLACK_CMD sandbox create` prompts for a name and password only when those flags are missing. Supply `--team`, `--name`, and `--password` and it runs non-interactively, so you can run it yourself rather than handing it to the developer. `SLACK_CMD sandbox list` needs `--team` for the same reason: without it the CLI prompts for which authentication to use.
+- `SLACK_CMD sandbox create` prompts for a name only when `--name` is missing. Supply `--team` and `--name` and it runs non-interactively, so you can run it yourself rather than handing it to the developer. Leave out `--password`: since Slack CLI v4.11.0 the sandbox then uses email sign-in, and no password passes through the agent. `SLACK_CMD sandbox list` needs `--team` for the same reason: without it the CLI prompts for which authentication to use.
+- `SLACK_CMD env set <NAME>` with no value prompts for it with hidden input. Use it for every API key, and because it needs an interactive terminal, the developer runs it rather than the agent.
 - Free Teams and developer sandboxes both support everything this skill builds. The CLI's `free_team_not_allowed` error is scoped to low-code workflow and function apps, which this skill does not create.
 - If the developer hits issues, suggest `SLACK_CMD doctor` to diagnose their setup.

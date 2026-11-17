@@ -119,20 +119,30 @@ For Heroku, the value is `./.slack/deploy-heroku.sh`. **Leave the `get-hooks` en
 
 Run `SLACK_CMD deploy` from the project root and watch the output. The CLI creates the deployed app, installs it, and then runs the hook script, so the first part of the output is app installation and the second is the provider's build.
 
-Four flags matter when running this outside an interactive terminal, which includes most agent sessions. The CLI asks four questions, and each one is fatal unanswered: a non-interactive shell gets `The input device is not a TTY or does not support interactivity` and nothing is deployed.
+Three flags matter when running this outside an interactive terminal, which includes most agent sessions. The CLI asks these questions, and each one is fatal unanswered: a non-interactive shell gets `The input device is not a TTY or does not support interactivity` and nothing is deployed.
 
 - `--skip-update` stops the CLI pausing to offer an upgrade.
 - `--team <team ID>` picks the workspace or organization. Use the team the developer chose in **Step 2b: Choose a Team**.
 - `--app deployed` selects the deployed app environment, and creates that app on a first deploy. Without it the CLI asks the developer to choose between an existing app and a new one. This is the flag most easily missed, because the prompt it answers only appears on a project that has never been deployed.
-- `--org-workspace-grant all` answers the workspace-grant prompt for an org-installed app.
 
-So the full command is `SLACK_CMD deploy --skip-update --team <team ID> --app deployed --org-workspace-grant all`.
+So the full command is `SLACK_CMD deploy --skip-update --team <team ID> --app deployed`.
 
 Put any provider variables settled in **Step 4a: Prepare the Provider** in front of it. The hook inherits the CLI's environment, so this is how they reach the script:
 
 ```sh
-HEROKU_TEAM=<team> HEROKU_APP_NAME=<name> SLACK_CMD deploy --skip-update --team <team ID> --app deployed --org-workspace-grant all
+HEROKU_TEAM=<team> HEROKU_APP_NAME=<name> SLACK_CMD deploy --skip-update --team <team ID> --app deployed
 ```
+
+**On an Enterprise organization, ask the developer which workspaces to grant.** The first deploy to an organization stops on one more question, and the error prints it:
+
+```text
+› Choose a workspace to grant access:
+    All of them
+    Acme Sales T0123456789
+    Acme Support T0987654321
+```
+
+Ask the developer the same question, with the choices in the same order: all of the organization's workspaces first, then each workspace by name. Never choose for the developer. Granting all workspaces makes the app available to everyone in the organization. Then run the deploy again with `--org-workspace-grant all` for all of them, or `--org-workspace-grant <workspace team ID>` for one workspace. If the CLI stops without listing the workspaces, ask whether to grant all workspaces or just one, and for that workspace's team ID if they pick one.
 
 **The deployed app is a different app from the one `SLACK_CMD run` uses.** The CLI writes the deployed app to `.slack/apps.json` and the local development app to `.slack/apps.dev.json`, keyed by team. Both keep working independently, which is the intended design, not a mistake to correct.
 

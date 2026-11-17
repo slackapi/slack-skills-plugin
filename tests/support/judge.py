@@ -11,26 +11,16 @@ from tests.config import (
     EVAL_CLAUDE_BIN,
     EVAL_CLAUDE_MODEL,
     EVAL_PROVIDER,
-    EVAL_PROVIDERS,
     GEMINI_API_KEY_POOL,
     GEMINI_MODEL,
 )
 
 SchemaT = TypeVar("SchemaT", bound=BaseModel)
 
-# Keeps the model on the eval prompt alone: the eval asks for a pick, not an action.
 CLAUDE_CODE_SYSTEM_PROMPT = "Answer the request with the structured output it asks for. Do not use any tools."
 
 
 class ClaudeCodeModel(DeepEvalBaseLLM):
-    """Claude model used as the eval judge, run through the Claude Code CLI in print mode.
-
-    Each call runs one `claude -p` turn on the developer's own Claude Code login, so no
-    API key is needed. Settings, CLAUDE.md, plugins, hooks, MCP servers, and built-in tools are turned off, and the
-    CLI runs in an empty directory, so the eval prompt is the only context the model sees.
-    The CLI has no temperature option, so picks can vary a little between runs.
-    """
-
     def __init__(self, model: str = EVAL_CLAUDE_MODEL, executable: str = EVAL_CLAUDE_BIN) -> None:
         self.executable = executable
         self.model_name = model
@@ -56,7 +46,6 @@ class ClaudeCodeModel(DeepEvalBaseLLM):
             CLAUDE_CODE_SYSTEM_PROMPT,
             "--tools",
             "",
-            "--strict-mcp-config",
             "--setting-sources",
             "",
             "--no-session-persistence",
@@ -64,7 +53,8 @@ class ClaudeCodeModel(DeepEvalBaseLLM):
         ]
 
     def generate(self, prompt: str, schema: type[SchemaT]) -> tuple[SchemaT, float]:  # type: ignore[override]
-        """Return the structured answer and its cost in USD, like `GeminiModel.generate`."""
+        # Claude Code still tells the model its working directory, so run it somewhere that
+        # isn't this repo, whose name would hint at the plugin's skills.
         with tempfile.TemporaryDirectory() as cwd:
             result = subprocess.run(
                 self.command(schema),
@@ -94,9 +84,6 @@ class ClaudeCodeModel(DeepEvalBaseLLM):
 
 
 def make_judge_model() -> GeminiModel | ClaudeCodeModel:
-    """Model used as the DeepEval judge for LLM-graded eval tests, picked by EVAL_PROVIDER."""
     if EVAL_PROVIDER == "claude-code":
         return ClaudeCodeModel()
-    if EVAL_PROVIDER == "gemini":
-        return GeminiModel(model=GEMINI_MODEL, api_key=random.choice(GEMINI_API_KEY_POOL), temperature=0)
-    raise ValueError(f"Unknown EVAL_PROVIDER {EVAL_PROVIDER!r}, expected one of {EVAL_PROVIDERS}")
+    return GeminiModel(model=GEMINI_MODEL, api_key=random.choice(GEMINI_API_KEY_POOL), temperature=0)

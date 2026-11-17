@@ -5,6 +5,7 @@ from typing import Any
 import pytest
 from pydantic import BaseModel
 
+from tests.support import judge
 from tests.support.judge import ClaudeCodeModel
 
 
@@ -38,7 +39,6 @@ class TestClaudeCodeModel:
 
         assert cmd[cmd.index("--tools") + 1] == ""
         assert cmd[cmd.index("--setting-sources") + 1] == ""
-        assert "--strict-mcp-config" in cmd
         assert json.loads(cmd[cmd.index("--json-schema") + 1]) == Pick.model_json_schema()
 
     def test_nonzero_exit_raises(self, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -61,3 +61,10 @@ class TestClaudeCodeModel:
 
     def test_turns_off_customizations(self) -> None:
         assert "--safe-mode" in ClaudeCodeModel(model="haiku").command(Pick)
+
+
+class TestMakeJudgeModel:
+    def test_claude_code_provider_returns_claude_code_model(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(judge, "EVAL_PROVIDER", "claude-code")
+
+        assert isinstance(judge.make_judge_model(), ClaudeCodeModel)

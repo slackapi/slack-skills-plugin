@@ -39,8 +39,6 @@ EXPECTED_SKILLS = (
 GEMINI_API_KEY_POOL = get_gemini_api_key_pool(os.environ)
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL_NAME", "gemini-3.1-flash-lite")
 
-# Eval model provider: "gemini" (the default, and what CI runs) or "claude-code", which
-# runs the Claude Code CLI in print mode on the developer's own Claude Code login.
 EVAL_PROVIDERS = ("gemini", "claude-code")
 EVAL_PROVIDER = get_eval_provider(os.environ)
 EVAL_CLAUDE_BIN = os.environ.get("EVAL_CLAUDE_BIN", "claude").strip() or "claude"

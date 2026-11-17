@@ -26,7 +26,7 @@ Run `make help` for the full list of targets and what each does. The common ones
 | `make format` | Auto-format code (ruff for Python, rumdl for Markdown) |
 | `make typecheck` | Run mypy static type checks |
 | `make test-unit` | Run structural/unit validation tests |
-| `make test-eval` | Run LLM-judged tests (DeepEval against Gemini) |
+| `make test-eval` | Run LLM-judged tests (DeepEval against Gemini, or Claude with `EVAL_PROVIDER=claude-code`) |
 | `make test` | Run all tests (unit + eval) |
 | `make clean` | Remove virtualenv and local Cursor install |
 | `make cursor-install` | Install this plugin into a local Cursor for development |

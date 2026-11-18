@@ -1,5 +1,13 @@
 # slack
 
+## 1.8.1
+
+### Patch Changes
+
+- a6db580: Starting an existing app on the developer's machine to try a code change now loads the `slack-cli` skill for `slack run`, instead of `test-slack-app`. Claude picked `test-slack-app` for about half of these requests, because its description also mentions trying an app out with `slack run`.
+- 2a8d195: The `deploy-slack-app` description now leaves conceptual questions about how Slack app hosting works to the `slack-docs` skill. Claude used to load `deploy-slack-app` for "How does hosting for Slack apps work conceptually?" because the description mentions hosting. A request to deploy or host an app still loads `deploy-slack-app`.
+- 09e0163: A pasted Web API method reference link, like `docs.slack.dev/reference/methods/conversations.history`, now loads the `slack-api` skill instead of `slack-docs`, so the agent answers with the method's arguments, scopes, and errors. Other docs.slack.dev links still load `slack-docs`.
+
 ## 1.8.0
 
 ### Minor Changes

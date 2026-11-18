@@ -1,6 +1,6 @@
 ---
 name: deploy-slack-app
-description: Use when a developer wants to deploy, host, or run a Slack app somewhere it keeps working after the local process stops, or mentions Railway, Heroku, `railway up`, `git push heroku`, `slack deploy`, a `deploy` hook in `.slack/hooks.json`, hosting a Socket Mode or Request URL (HTTP) Bolt app, deploying from Windows, graduating an app out of a developer sandbox, or tearing down a deployed app.
+description: Use when a developer wants to deploy, host, or run a Slack app somewhere it keeps working after the local process stops, or mentions Railway, Heroku, `railway up`, `git push heroku`, `slack deploy`, a `deploy` hook in `.slack/hooks.json`, hosting a Socket Mode or Request URL (HTTP) Bolt app, deploying from Windows, graduating an app out of a developer sandbox, or tearing down a deployed app. Not for conceptual questions about how Slack app hosting works, which the `slack-docs` skill answers.
 ---
 
 # Deploy Slack App

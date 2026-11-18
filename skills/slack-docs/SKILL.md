@@ -1,6 +1,6 @@
 ---
 name: slack-docs
-description: "Use when answering a conceptual or how-to question about Slack platform features, or when asked to look up, fetch, or summarize a docs.slack.dev page, including a pasted docs.slack.dev link. Covers finding and reading official Slack docs as clean markdown."
+description: "Use when answering a conceptual or how-to question about Slack platform features, or when asked to look up, fetch, or summarize a docs.slack.dev page, including a pasted docs.slack.dev link. Web API method reference pages (docs.slack.dev/reference/methods/...) belong to the `slack-api` skill. Covers finding and reading official Slack docs as clean markdown."
 argument-hint: "[topic or docs.slack.dev URL]"
 ---
 

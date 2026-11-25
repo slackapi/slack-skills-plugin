@@ -69,7 +69,7 @@ Only run the install script when the developer picks "Install it for me". Any ot
 
 ### 1d. Continue where you left off
 
-Once `SLACK_CMD` is set, go back to the skill that sent you to this step, if one did, and continue from its next step. For example, the `create-slack-app` skill continues at "Verify the CLI version". This matters most after the developer installs the CLI themselves, because the conversation paused there. If no other skill sent you here, go on to Step 2.
+Once `SLACK_CMD` is set, go back to the skill that sent you to this step, if one did. Continue right after the instruction that sent you here, not at that skill's next numbered step, because the rest of its current step may still apply (the `slack-api` skill checks authentication next, in the same step). For example, the `create-slack-app` skill continues at "Verify the CLI version". This matters most after the developer installs the CLI themselves, because the conversation paused there. If no other skill sent you here, go on to Step 2.
 
 **Common mistakes:** Don't use `which slack` to discover the binary — `which` resolves any shell alias and defeats the point of 1a. In Git Bash on Windows, use the POSIX probe form, not PowerShell.
 

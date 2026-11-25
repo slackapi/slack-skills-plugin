@@ -55,7 +55,6 @@ If 1b fails or returns a different value, ask the developer one question using A
 - Options:
   - "It's aliased as..." (let them provide the alias)
   - "Install it for me" (runs the Slack CLI install script from `downloads.slack-edge.com`)
-  - "Show me the command, I'll install it"
 - **Aliased:** verify it with `<alias> _fingerprint 2>/dev/null` and set `SLACK_CMD=<alias>`.
 - **Install it for me:** run the install script, then re-run **1a**. The install script writes `~/.slack/bin/slack`.
 
@@ -63,9 +62,7 @@ If 1b fails or returns a different value, ask the developer one question using A
   curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash
   ```
 
-- **Show me the command:** print the install command above and stop. Don't run it. Wait until the developer says it's installed, then re-run **1a**.
-
-Only run the install script when the developer picks "Install it for me". Any other answer, including one typed in by the developer, is not consent to run it. If they say they don't want the CLI, don't install it and don't wait: go back to the skill that sent you here, which may have a path without the CLI.
+Only run the install script when the developer picks "Install it for me". Any other answer, including one typed in by the developer, is not consent to run it.
 
 **Common mistakes:** Don't use `which slack` to discover the binary — `which` resolves any shell alias and defeats the point of 1a. In Git Bash on Windows, use the POSIX probe form, not PowerShell.
 

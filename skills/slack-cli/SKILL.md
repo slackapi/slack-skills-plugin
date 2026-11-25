@@ -55,7 +55,7 @@ If 1b fails or returns a different value, ask the developer one question using A
 - Options:
   - "It's aliased as..." (let them provide the alias)
   - "Install it for me" (runs the Slack CLI install script from `downloads.slack-edge.com`)
-- **Aliased:** verify it with `<alias> _fingerprint 2>/dev/null` and set `SLACK_CMD=<alias>`.
+- **Aliased:** verify it with `<alias> _fingerprint 2>/dev/null`. If it outputs `d41d8cd98f00b204e9800998ecf8427e`, set `SLACK_CMD=<alias>`. Otherwise it isn't the public Slack CLI: tell the developer and ask again.
 - **Install it for me:** run the install script, then re-run **1a**. The install script writes `~/.slack/bin/slack`.
 
   ```text

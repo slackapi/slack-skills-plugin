@@ -1,6 +1,6 @@
 ---
 name: test-slack-app
-description: Use when a developer wants to test, try out, smoke-test, verify, or confirm that a Slack app built with the Slack CLI (or a plain Bolt app) actually works, by running it in a developer sandbox or a Free Team, never a workspace with real users, with `slack run` and exercising its real slash commands, shortcuts, events, actions, modals, App Home, and assistant surfaces. Also covers `slack doctor` and `slack manifest validate` health checks before hands-on testing.
+description: Use when a developer wants to test, try out, smoke-test, verify, or confirm that a Slack app built with the Slack CLI (or a plain Bolt app) actually works, by running it in a developer sandbox or a Free Team, never a workspace with real users, with `slack run` and exercising its real slash commands, shortcuts, events, actions, modals, App Home, and assistant surfaces, or a Deno Slack SDK app's workflows, functions, and triggers (`slack trigger create`, `deno task test`). Also covers `slack doctor` and `slack manifest validate` health checks before hands-on testing.
 ---
 
 # Test Slack App
@@ -39,6 +39,8 @@ Catch obvious setup problems with the CLI's own validation before the slower han
 - `SLACK_CMD doctor`: checks the CLI, language runtime, and authentication.
 - `SLACK_CMD manifest validate`: run from the project directory if the app has a manifest, to confirm the app configuration is well-formed.
 
+For a Deno Slack SDK app (its `.slack/hooks.json` runs `deno_slack_hooks`, or its `deno.json` or `deno.jsonc` imports `deno-slack-sdk`), also run the project's own tests. If `deno.json` or `deno.jsonc` defines a `test` task, run `deno task test`. The Deno samples define it as `deno fmt --check && deno lint && deno test --allow-read`, and their function tests use `SlackFunctionTester` with a stubbed `fetch`, so they need no workspace. With no `test` task, run `deno test` if the project has `*_test.ts` files.
+
 Surface anything these flag before moving on.
 
 ---
@@ -50,6 +52,8 @@ Whichever path you use below, first turn the app's log level up to debug so you 
 ### CLI-managed apps (recommended)
 
 Follow **Step 6: Running an App Locally (`slack run`)** in the `slack-cli` skill to start the local dev server in the background. This also installs the app into the target workspace, which matters for a fresh sandbox or Free Team where nothing is installed yet. Once it is running, file changes auto-reload.
+
+For a Deno Slack SDK app, there is usually no log-level variable to set. Pass `--activity-level debug` to `SLACK_CMD run` instead, which shows the app's activity logs, including `console.log` output from functions, at debug level. The local run also offers to create triggers, which a background shell cannot answer, so add `--hide-triggers` and create them in **3a. Read the source to find what the app listens for**.
 
 ### Plain Bolt apps without the CLI (best-effort)
 
@@ -79,6 +83,12 @@ Read the app's listener code and list the interactions it registers. Depending o
 - **[App Home](https://docs.slack.dev/surfaces/app-home.md):** an `app_home_opened` handler or a published Home tab.
 - **[Assistant / agent](https://docs.slack.dev/ai.md):** an assistant or `assistant_thread_started` handler, common in the agent templates.
 
+For a Deno Slack SDK app, read these instead:
+
+- **Workflows:** the `workflows` listed in `manifest.ts`, and the steps each one runs in `workflows/`.
+- **Functions:** each `DefineFunction` in `functions/`, its inputs and outputs, and the Slack API calls or datastore writes it makes.
+- **Triggers:** each file in `triggers/` and its `type`: shortcut (a link trigger), event, scheduled, or webhook. Triggers are not created when the app is installed. For each file, run `SLACK_CMD trigger create --trigger-def triggers/<file>.ts --app local`, then `SLACK_CMD trigger list --app local` to see the triggers that exist. Triggers created for the local app do not carry over to a deployed app.
+
 Name the concrete identifiers you find (the actual command and callback names), not placeholders.
 
 ### 3b. Turn each into a "do this, expect that" step
@@ -93,11 +103,19 @@ For every registered interaction, give the developer a concrete step and what a 
 - **Modal submit** (`view_submission`) → submit the modal → expect the confirmation or side effect.
 - **App Home** → click the app in the left sidebar to open its **Home** tab → expect the published view.
 
+For a Deno Slack SDK app, each step starts a workflow from one of its triggers:
+
+- **Link (shortcut) trigger** → open the shortcut URL that `trigger create` printed, or paste it into a channel and click the button it unfurls into → expect the workflow's first step, such as its form.
+- **Event trigger** → cause the event in a channel the trigger watches, such as posting a message or adding a reaction → expect the workflow to run.
+- **Scheduled trigger** → check its next run time in `SLACK_CMD trigger list --app local` and wait for it → expect the workflow to run at that time.
+- **Webhook trigger** → send a POST request with a flat JSON body to the URL that `trigger create` printed → expect the workflow to run with those inputs.
+- **Each function** → after the workflow runs, confirm the side effect the function's code makes, such as a message posted or a datastore item written.
+
 ### 3c. Confirm and report
 
 While the developer interacts, help them confirm it is working:
 
-- If the app runs under `slack run`, watch its logs (ask "show me the output from slack run") to confirm events arrive and to read any errors.
+- If the app runs under `slack run`, watch its logs (ask "show me the output from slack run") to confirm events arrive and to read any errors. For a Deno Slack SDK app, the same output shows each workflow step and function execution.
 - If a response looks wrong (a malformed message or Block Kit view, or an API error), use the `block-kit` and `slack-api` skills to dig into the payload or method.
 
 Close with a short summary: what you and the developer confirmed working, and what they should eyeball themselves. Remember this is manual checking: you are helping the developer watch the app respond, not producing an automated pass or fail.

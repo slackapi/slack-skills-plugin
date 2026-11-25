@@ -115,6 +115,11 @@ SCENARIOS: list[Scenario] = [
         "accepted_tools": ["create-slack-app"],
     },
     {
+        "id": "skill-test-app-deno-workflow",
+        "prompt": "Help me test my Deno Slack SDK app's workflow and its link trigger in my sandbox",
+        "accepted_tools": ["test-slack-app"],
+    },
+    {
         "id": "skill-deploy-app-keep-running",
         "prompt": "Deploy my Slack app somewhere it keeps running after I close my laptop",
         "accepted_tools": ["deploy-slack-app"],

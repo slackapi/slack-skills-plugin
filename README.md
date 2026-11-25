@@ -122,7 +122,7 @@ Nine skills load on demand to handle messaging tasks and developer workflows:
 - [`slack-docs`](skills/slack-docs/SKILL.md) - finding and reading the right Slack developer docs page
 - [`slack-cli`](skills/slack-cli/SKILL.md) - using the [Slack CLI][slack-cli] to create, run, and manage apps
 - [`create-slack-app`](skills/create-slack-app/SKILL.md) - building a Slack app or agent with the CLI and [Bolt][bolt]
-- [`test-slack-app`](skills/test-slack-app/SKILL.md) - running an app somewhere safe and confirming it works in Slack
+- [`test-slack-app`](skills/test-slack-app/SKILL.md) - running an app somewhere safe and confirming it works in Slack, including a Deno Slack SDK app's workflows and triggers
 - [`deploy-slack-app`](skills/deploy-slack-app/SKILL.md) - deploying a Socket Mode app to Railway or Heroku as a separate, always-on Slack app
 - [`block-kit`](skills/block-kit/SKILL.md) - building and validating [Block Kit][block-kit] layouts
 

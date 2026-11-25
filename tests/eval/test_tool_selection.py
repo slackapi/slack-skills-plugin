@@ -145,7 +145,7 @@ SCENARIOS: list[Scenario] = [
         # A Deno Slack SDK app deploys with plain `slack deploy`, which the skill points to.
         "id": "skill-deploy-app-deno",
         "prompt": "Deploy my Deno Slack SDK app with its workflows and triggers so it keeps running",
-        "accepted_tools": ["deploy-slack-app", "slack-cli"],
+        "accepted_tools": ["deploy-slack-app"],
     },
     {
         # Pins the boundary the deploy-slack-app description is most likely to blur:

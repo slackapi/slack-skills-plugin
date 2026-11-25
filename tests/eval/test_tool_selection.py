@@ -147,6 +147,11 @@ SCENARIOS: list[Scenario] = [
         "accepted_tools": ["deploy-slack-app"],
     },
     {
+        "id": "skill-deploy-app-deno",
+        "prompt": "Deploy my Deno Slack SDK app with its workflows and triggers so it keeps running",
+        "accepted_tools": ["deploy-slack-app"],
+    },
+    {
         # Pins the boundary the deploy-slack-app description is most likely to blur:
         # running locally stays with slack-cli.
         "id": "skill-deploy-app-vs-cli-run-local",

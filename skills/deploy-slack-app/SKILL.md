@@ -1,13 +1,15 @@
 ---
 name: deploy-slack-app
-description: Use when a developer wants to deploy, host, or run a Slack app somewhere it keeps working after the local process stops, or mentions Railway, Heroku, `railway up`, `git push heroku`, `slack deploy`, a `deploy` hook in `.slack/hooks.json`, hosting a Socket Mode or Request URL (HTTP) Bolt app, deploying from Windows, graduating an app out of a developer sandbox, or tearing down a deployed app. Not for conceptual questions about how Slack app hosting works, which the `slack-docs` skill answers.
+description: Use when a developer wants to deploy, host, or run a Slack app somewhere it keeps working after the local process stops, or mentions Railway, Heroku, `railway up`, `git push heroku`, `slack deploy`, a `deploy` hook in `.slack/hooks.json`, hosting a Socket Mode or Request URL (HTTP) Bolt app, deploying a Deno Slack SDK app (workflows, functions, and triggers) to Slack's managed hosting, deploying from Windows, graduating an app out of a developer sandbox, or tearing down a deployed app. Not for conceptual questions about how Slack app hosting works, which the `slack-docs` skill answers.
 ---
 
 # Deploy Slack App
 
 Take a Slack app that already works locally and deploy it to a hosting provider as a separate Slack app, with its own app ID, that keeps running without the developer's machine. The local development app is unchanged, and **Step 5: Deploy** explains how the two coexist. This is the step after the `test-slack-app` skill confirms the app responds.
 
-The mechanism is the Slack CLI's `deploy` hook. Adding a `deploy` key to the project's `.slack/hooks.json` replaces Slack's own hosted deployment with a script of your choosing, and the CLI runs that script _after_ it has created and installed the deployed app. That ordering is the whole reason this approach is worth using: the app's bot and app-level tokens are already in the script's environment by the time it runs, so nothing here has to prompt for a secret or store one.
+A Deno Slack SDK app is the exception: it deploys to Slack's own managed hosting with plain `slack deploy`, and **Step 1b: Check for a Deno Slack SDK App** sends it to **Deploy a Deno Slack SDK App** instead of the provider flow.
+
+For the provider flow, the mechanism is the Slack CLI's `deploy` hook. Adding a `deploy` key to the project's `.slack/hooks.json` replaces Slack's own hosted deployment with a script of your choosing, and the CLI runs that script _after_ it has created and installed the deployed app. That ordering is the whole reason this approach is worth using: the app's bot and app-level tokens are already in the script's environment by the time it runs, so nothing here has to prompt for a secret or store one.
 
 Two supported providers, both running the app as a long-lived worker process:
 
@@ -28,7 +30,19 @@ Load the `slack-cli` skill (with your skill tool, if you have one) before runnin
 
 This matters more than it looks. Some machines have an unrelated internal tool named `slack` on the path, and running that instead produces confusing failures well into the deploy.
 
-### 1b. Confirm the App Uses Socket Mode
+### 1b. Check for a Deno Slack SDK App
+
+Before reading the manifest for Socket Mode, check whether this is a Deno Slack SDK app. Any one of these is a match:
+
+- `.slack/hooks.json` has a `get-hooks` command that runs `deno_slack_hooks`.
+- `deno.json` or `deno.jsonc` imports `deno-slack-sdk`.
+- The project has a `manifest.ts` that imports `Manifest` from `deno-slack-sdk`, usually beside `functions/`, `workflows/`, and `triggers/` folders.
+
+**A Deno Slack SDK app does not use this skill's provider flow.** Its functions run on Slack's managed hosting, and its manifest sets `socket_mode_enabled` to `false`, so **Step 1c: Confirm the App Uses Socket Mode** would wrongly stop it as a Request URL app. Skip the rest of Steps 1 to 8 and follow **Deploy a Deno Slack SDK App** below. Do not add a `deploy` hook or a Railway or Heroku script to it.
+
+If none of these match, continue with the next step.
+
+### 1c. Confirm the App Uses Socket Mode
 
 **Read the app's manifest rather than asking.** The project already declares which mode it uses, so a question here is redundant. Check `manifest.json` for `settings.socket_mode_enabled`. If `.slack/config.json` sets the manifest source to `remote`, there is no local file, so read it with `SLACK_CMD manifest info` instead.
 
@@ -37,7 +51,7 @@ This matters more than it looks. Some machines have an unrelated internal tool n
 
 If the manifest is ambiguous, read the app's entrypoint. A Bolt for JavaScript app constructed with `socketMode: true` and an `appToken`, or a Bolt for Python app started through `SocketModeHandler`, is a Socket Mode app.
 
-### 1c. Confirm the Runtime Is Supported
+### 1d. Confirm the Runtime Is Supported
 
 This flow is verified on macOS and Linux. The deploy hook is a shell script, so a Windows developer needs a PowerShell equivalent that does not exist yet. On Windows, say so rather than letting the deploy fail partway through. WSL is a workable path in the meantime. Support may have shipped in a newer version of the Slack Skills Plugin, so ask the developer to update the plugin and try again. If they are already on the latest version, point them to <https://github.com/slackapi/slack-skills-plugin/issues/171> to add a reaction or comment.
 
@@ -197,6 +211,21 @@ Leave `.slack/hooks.json` and the deploy script in place, so a later `SLACK_CMD 
 
 ---
 
+## Deploy a Deno Slack SDK App
+
+Use this section instead of Steps 2 to 8 when **Step 1b: Check for a Deno Slack SDK App** found a Deno Slack SDK app. The `slack-cli` skill covers the CLI's commands generally.
+
+1. **Check the plan.** Deploying a Deno Slack SDK app needs a paid Slack plan or an upgraded developer sandbox. A basic sandbox does not support deploying to Slack's hosting, and the `create-slack-app` skill's **Basic sandboxes** note explains the upgrade. Point the developer to <https://docs.slack.dev/tools/deno-slack-sdk/guides/deploying-to-slack.md> for the current terms.
+2. **Choose a team.** Follow **Step 2b: Choose a Team** to pick the team from `SLACK_CMD auth list`. Never pick it yourself. For an Enterprise organization, the CLI asks which of the organization's workspaces the app can access the first time it installs the app, and a background shell cannot answer. Ask the developer which workspaces to grant, as **Step 5: Deploy** describes under "On an Enterprise organization", and add the same `--org-workspace-grant` value to each `run`, `deploy`, and `trigger create` command below.
+3. **Confirm it works locally first.** Use the `test-slack-app` skill to run the app and start at least one workflow, as **Step 3: Confirm It Works Locally First** describes. A local run offers to create triggers, which a background shell cannot answer, so run `SLACK_CMD run --hide-triggers --team <team ID>`, then create a local trigger with `SLACK_CMD trigger create --trigger-def triggers/<file>.ts --app local --team <team ID>` unless `SLACK_CMD trigger list --app local --team <team ID> --limit 50` already shows it.
+4. **Deploy.** Run `SLACK_CMD deploy --skip-update --hide-triggers --team <team ID> --app deployed` from the project root, with no `deploy` key in `.slack/hooks.json`. The CLI packages the app and deploys it to Slack, as a separate app with its own app ID in `.slack/apps.json`. `--hide-triggers` skips the CLI's offer to create triggers, which a background shell cannot answer, and the next step creates them. Add the workspace grant from step 2 for an Enterprise organization. Commit `.slack/apps.json` after the first deploy, so later deploys from any checkout reach the same app.
+5. **Create the triggers.** Triggers created for the local app do not carry over to the deployed app. For each file in `triggers/`, run `SLACK_CMD trigger create --trigger-def triggers/<file>.ts --app deployed --team <team ID>`. The output for a link trigger includes its shortcut URL.
+6. **Verify.** Run `SLACK_CMD trigger list --app deployed --team <team ID> --limit 50` to confirm the triggers exist. The list shows 4 triggers unless `--limit` is set. Stop the local `SLACK_CMD run`, start a workflow from one of the triggers, and read the deployed app's logs with `SLACK_CMD activity --app deployed --team <team ID>`.
+7. **Re-deploy.** Shipping a change is the same `SLACK_CMD deploy` command. The triggers stay in place. When a trigger file changes, update the existing trigger rather than creating a second one: find its ID with `SLACK_CMD trigger list --app deployed --team <team ID> --limit 50`, then run `SLACK_CMD trigger update --trigger-id <trigger ID> --trigger-def triggers/<file>.ts --app deployed --team <team ID>`. A new file gets `trigger create`, as in step 5.
+8. **Tear down.** Name the deployed app ID from `.slack/apps.json` and ask once, then run `SLACK_CMD app delete --team <team ID> --app deployed --force`. Leave the local app unless the developer asks for it too.
+
+---
+
 ## Notes
 
 **Serverless providers cannot host a Socket Mode app.** A Socket Mode app is a process that stays resident and holds an outbound websocket open. Vercel, AWS Lambda, and similar platforms run per-request functions with a maximum duration and no always-on process type, so there is nothing for the websocket to live in. When a developer asks for one of these, explain the constraint rather than attempting it. Hosting a Slack app on a serverless platform means a Request URL app, which this skill does not cover yet.
@@ -205,6 +234,6 @@ Leave `.slack/hooks.json` and the deploy script in place, so a later `SLACK_CMD 
 
 **The token handoff is not a documented contract.** The Slack CLI does not pass the tokens to the deploy hook explicitly. It sets them on its own process during app installation, and the hook script inherits them because it runs later in that same process. It works, and it only works for apps with no Slack-hosted function runtime, which covers every Bolt app. That is why each deploy script checks for both tokens and stops with a readable message instead of assuming they are present.
 
-**Not `slack deploy` without a hook.** With no `deploy` key in `.slack/hooks.json`, `SLACK_CMD deploy` targets Slack's own hosted infrastructure, which is a different product for a different kind of app. The `slack-cli` skill covers the CLI's commands generally.
+**Not `slack deploy` without a hook, for a Bolt app.** With no `deploy` key in `.slack/hooks.json`, `SLACK_CMD deploy` targets Slack's own hosted infrastructure, which hosts Deno Slack SDK apps, not Bolt apps. **Deploy a Deno Slack SDK App** covers that path. The `slack-cli` skill covers the CLI's commands generally.
 
 **Building the app comes first.** If there is no app yet, start with the `create-slack-app` skill and come back here once it runs locally.

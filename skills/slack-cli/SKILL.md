@@ -65,7 +65,7 @@ If 1b fails or returns a different value, ask the developer one question using A
 
 - **Show me the command:** print the install command above and stop. Don't run it. Wait until the developer says it's installed, then re-run **1a**.
 
-Only run the install script when the developer picks "Install it for me". Any other answer, including one typed in by the developer, is not consent to run it.
+Only run the install script when the developer picks "Install it for me". Any other answer, including one typed in by the developer, is not consent to run it. If they say they don't want the CLI, don't install it and don't wait: go back to the skill that sent you here, which may have a path without the CLI.
 
 **Common mistakes:** Don't use `which slack` to discover the binary — `which` resolves any shell alias and defeats the point of 1a. In Git Bash on Windows, use the POSIX probe form, not PowerShell.
 

@@ -49,18 +49,20 @@ If it outputs `d41d8cd98f00b204e9800998ecf8427e`, set `SLACK_CMD=slack` and proc
 
 ### 1c. Ask about an alias, or install
 
-If 1b fails or returns a different value, ask the developer using AskUserQuestion:
+If 1b fails or returns a different value, ask the developer one question using AskUserQuestion. The options cover both the alias and the install, so the developer chooses whether a remote script runs on their machine:
 
-- "The `slack` command on your system doesn't appear to be the public Slack CLI. Do you have it installed under a different name or alias?"
-- Options: "Yes, it's aliased as..." (let them provide the alias), "No, I need to install it"
-- If they provide an alias, verify it with `<alias> _fingerprint 2>/dev/null` and set `SLACK_CMD=<alias>`.
-- If they need to install it, run:
+- "I couldn't find the public Slack CLI on your system. Is it installed under a different name or alias, or should it be installed?"
+- Options:
+  - "It's aliased as..." (let them provide the alias)
+  - "Install it for me" (runs the Slack CLI install script from `downloads.slack-edge.com`)
+- **Aliased:** verify it with `<alias> _fingerprint 2>/dev/null`. If it outputs `d41d8cd98f00b204e9800998ecf8427e`, set `SLACK_CMD=<alias>`. Otherwise it isn't the public Slack CLI: tell the developer and ask again.
+- **Install it for me:** run the install script, then re-run **1a**. The install script writes `~/.slack/bin/slack`.
 
   ```text
   curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash
   ```
 
-  Then re-run **1a** — the install script will have written `~/.slack/bin/slack`.
+Only run the install script when the developer picks "Install it for me". Any other answer, including one typed in by the developer, is not consent to run it.
 
 **Common mistakes:** Don't use `which slack` to discover the binary — `which` resolves any shell alias and defeats the point of 1a. In Git Bash on Windows, use the POSIX probe form, not PowerShell.
 

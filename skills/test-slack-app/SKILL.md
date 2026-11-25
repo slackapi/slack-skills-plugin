@@ -30,7 +30,7 @@ Testing belongs in a workspace nobody is working in: a developer sandbox for pre
 - **Explain it from the live docs, not from here.** Use the `slack-docs` skill to fetch and summarize <https://docs.slack.dev/tools/developer-sandboxes.md>, so the recommendation always reflects the current docs rather than a copy that drifts out of date. Tell the developer that Slack recommends a sandbox for building and testing apps.
 - **Find the current target.** Run `SLACK_CMD auth list` for the authenticated workspaces and their team IDs, and, from the project directory, `SLACK_CMD app list` for the apps already installed and their IDs.
 - **Confirm the target is safe.** The CLI cannot tell a sandbox, a Free Team, and a workspace full of real users apart, so ask the developer which one they are pointed at. A sandbox or a Free Team they created for this is fine. A workspace with coworkers in it is not: stop and get them onto one of the other two.
-- **A Deno Slack SDK app needs a developer sandbox or a paid plan.** Slack requires a paid plan for workflow apps, so a Free Team won't work. Steer the developer to a sandbox, per <https://docs.slack.dev/tools/deno-slack-sdk/guides/deploying-to-slack.md>.
+- **A Deno Slack SDK app needs a developer sandbox or a paid plan.** A project is a Deno Slack SDK app when its `.slack/hooks.json` runs `deno_slack_hooks`, or its `deno.json` or `deno.jsonc` imports `deno-slack-sdk`. Slack requires a paid plan for workflow apps, so a Free Team won't work. Steer the developer to a sandbox, per <https://docs.slack.dev/tools/deno-slack-sdk/guides/deploying-to-slack.md>.
 - **If there is no safe target yet**, set one up with the `create-slack-app` skill (**Step 3: Choose Where to Install the App**), which owns the ranked targets, the `sandbox list` / `sandbox create` flow, and the Developer Program links. Either path finishes in the browser, so have the developer come back here once the workspace exists and they have logged into it.
 
 ### 1c. Quick health check
@@ -40,7 +40,7 @@ Catch obvious setup problems with the CLI's own validation before the slower han
 - `SLACK_CMD doctor`: checks the CLI, language runtime, and authentication.
 - `SLACK_CMD manifest validate`: run from the project directory if the app has a manifest, to confirm the app configuration is well-formed.
 
-For a Deno Slack SDK app (its `.slack/hooks.json` runs `deno_slack_hooks`, or its `deno.json` or `deno.jsonc` imports `deno-slack-sdk`), also run the project's own tests. If `deno.json` or `deno.jsonc` defines a `test` task, run `deno task test`. The Deno samples define it as `deno fmt --check && deno lint && deno test --allow-read`, and their function tests use `SlackFunctionTester` with a stubbed `fetch`, so they need no workspace. With no `test` task, run `deno test --allow-read` if the project has `*_test.ts` files.
+For a Deno Slack SDK app (spotted as **1b. Make sure there is a safe workspace to test in** describes), also run the project's own tests. If `deno.json` or `deno.jsonc` defines a `test` task, run `deno task test`. The Deno samples' function tests use `SlackFunctionTester` with a stubbed `fetch`, so they need no workspace. With no `test` task, run `deno test --allow-read` if the project has `*_test.ts` files.
 
 Surface anything these flag before moving on.
 

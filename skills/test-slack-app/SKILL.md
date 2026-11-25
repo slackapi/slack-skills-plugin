@@ -88,7 +88,7 @@ For a Deno Slack SDK app, read these instead:
 
 - **Workflows:** the `workflows` listed in `manifest.ts`, and the steps each one runs in `workflows/`.
 - **Functions:** each `DefineFunction` in `functions/`, its inputs and outputs, and the Slack API calls or datastore writes it makes.
-- **Triggers:** each file in `triggers/` and its `type`: shortcut (a link trigger), event, scheduled, or webhook. Triggers are not created when the app is installed. For each file, run `SLACK_CMD trigger create --trigger-def triggers/<file>.ts --app local --team <team ID>`, then `SLACK_CMD trigger list --app local --team <team ID> --limit 50` to see the triggers that exist. The list shows 4 triggers unless `--limit` is set. Triggers created for the local app do not carry over to a deployed app.
+- **Triggers:** each file in `triggers/` and its `type`: shortcut (a link trigger), event, scheduled, or webhook. Triggers are not created when the app is installed. First run `SLACK_CMD trigger list --app local --team <team ID> --limit 50` to see the triggers that already exist (the list shows 4 unless `--limit` is set). For each file without one, check it for placeholder values, such as a sample channel ID or a `start_time` already in the past, then run `SLACK_CMD trigger create --trigger-def triggers/<file>.ts --app local --team <team ID>`. For an Enterprise organization, ask the developer which workspace the trigger is for, or whether all of them, and add `--org-workspace-grant <workspace ID>` or `--org-workspace-grant all`. Never choose `all` yourself. Triggers created for the local app do not carry over to a deployed app.
 
 Name the concrete identifiers you find (the actual command and callback names), not placeholders.
 

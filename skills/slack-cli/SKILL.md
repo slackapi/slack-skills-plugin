@@ -35,7 +35,7 @@ $p = "$env:USERPROFILE\AppData\Local\slack-cli\bin\slack.exe"
 if (Test-Path $p) { $p } elseif (Test-Path "$env:USERPROFILE\.slack-cli\bin\slack.exe") { "$env:USERPROFILE\.slack-cli\bin\slack.exe" }
 ```
 
-If a path is returned, set `SLACK_CMD` to that **absolute path** and proceed to Step 2. Do not also run `_fingerprint`.
+If a path is returned, set `SLACK_CMD` to that **absolute path** and go to **1d**. Do not also run `_fingerprint`.
 
 ### 1b. `slack` on PATH (verify with fingerprint)
 
@@ -45,7 +45,7 @@ If 1a found nothing, try `slack` on PATH:
 slack _fingerprint 2>/dev/null
 ```
 
-If it outputs `d41d8cd98f00b204e9800998ecf8427e`, set `SLACK_CMD=slack` and proceed.
+If it outputs `d41d8cd98f00b204e9800998ecf8427e`, set `SLACK_CMD=slack` and go to **1d**.
 
 ### 1c. Ask about an alias, or install
 
@@ -55,14 +55,21 @@ If 1b fails or returns a different value, ask the developer one question using A
 - Options:
   - "It's aliased as..." (let them provide the alias)
   - "Install it for me" (runs the Slack CLI install script from `downloads.slack-edge.com`)
-- **Aliased:** verify it with `<alias> _fingerprint 2>/dev/null`. If it outputs `d41d8cd98f00b204e9800998ecf8427e`, set `SLACK_CMD=<alias>`. Otherwise it isn't the public Slack CLI: tell the developer and ask again.
+  - "Show me the command, I'll install it"
+- **Aliased:** verify it with `<alias> _fingerprint 2>/dev/null`. If it outputs `d41d8cd98f00b204e9800998ecf8427e`, set `SLACK_CMD=<alias>` and go to **1d**. Otherwise it isn't the public Slack CLI: tell the developer and ask again.
 - **Install it for me:** run the install script, then re-run **1a**. The install script writes `~/.slack/bin/slack`.
 
   ```text
   curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash
   ```
 
-Only run the install script when the developer picks "Install it for me". Any other answer, including one typed in by the developer, is not consent to run it.
+- **Show me the command:** print the install command above and don't run it. Wait for the developer to say it's installed, then re-run **1a**. If 1a still finds nothing, tell them and ask this question again.
+
+Only run the install script when the developer picks "Install it for me". Any other answer, including one typed in by the developer, is not consent to run it. A typed answer like "I'll install it myself" takes the "Show me the command" path.
+
+### 1d. Continue where you left off
+
+Once `SLACK_CMD` is set, go back to the skill that sent you to this step, if one did. Continue right after the instruction that sent you here, not at that skill's next numbered step, because the rest of its current step may still apply (the `slack-api` skill checks authentication next, in the same step). For example, the `create-slack-app` skill continues at "Verify the CLI version". This matters most after the developer installs the CLI themselves, because the conversation paused there. If no other skill sent you here, go on to Step 2.
 
 **Common mistakes:** Don't use `which slack` to discover the binary — `which` resolves any shell alias and defeats the point of 1a. In Git Bash on Windows, use the POSIX probe form, not PowerShell.
 

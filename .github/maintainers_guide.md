@@ -17,6 +17,8 @@ Maintaining this repo requires:
   verifying that skills and commands work outside Claude Code before release.
 - **[Codex][codex-cli]**: another agentic coding environment. Useful for
   verifying that the skills work outside Claude Code before release.
+- **[Antigravity CLI][antigravity-cli]** (`agy`): Google's agentic coding CLI.
+  Useful for verifying that the skills work outside Claude Code before release.
 - **Git**: standard version control.
 - **[GitHub CLI (`gh`)][gh-cli]**: for creating PRs as drafts and managing
   issues.
@@ -198,6 +200,34 @@ second manifest.
 
 Codex support currently ships only the skills; the hosted MCP server is not yet wired into the Codex surface.
 
+### Testing in Antigravity
+
+The Antigravity manifest lives at `.antigravity-plugin/plugin.json`. Antigravity reads it in place of a root `plugin.json`, so it can sit beside the Claude Code, Cursor, and Codex manifests. Check it the way the plugin loader reads it:
+
+```sh
+agy plugin validate .
+```
+
+Expect three warnings, for `.mcp.json`, `AGENTS.md`, and `commands/`. Those files are for the other tools, and Antigravity skips them. Use `--strict` only if you filter those three out of the `--json` report.
+
+Install your checkout, then start a new `agy` session to pick it up:
+
+```sh
+agy plugin install "$PWD"
+```
+
+`agy plugin list` shows the plugin and its skills. Each skill is also a slash command, for example `/block-kit`.
+
+**Re-run `agy plugin install "$PWD"` after every change.** Installing copies your checkout into `~/.gemini/config/plugins/slack/`, and Antigravity loads that copy rather than reading your working tree.
+
+To remove it:
+
+```sh
+agy plugin uninstall slack
+```
+
+Antigravity support currently ships only the skills. The hosted MCP server is not yet wired into the Antigravity surface, and the commands don't load.
+
 ---
 
 ## Versioning
@@ -286,6 +316,7 @@ Patch and minor updates are auto-approved and auto-merged via the
 [claude-code]: https://claude.ai/code
 [cursor]: https://cursor.com
 [codex-cli]: https://developers.openai.com/codex/cli
+[antigravity-cli]: https://antigravity.google/docs/cli/using/
 [gh-cli]: https://cli.github.com
 [conv-commits]: https://www.conventionalcommits.org
 [semver]: https://semver.org

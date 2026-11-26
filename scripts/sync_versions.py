@@ -12,6 +12,7 @@ PACKAGE_JSON_PATH = REPO_ROOT / "package.json"
 CLAUDE_PLUGIN_PATH = REPO_ROOT / ".claude-plugin" / "plugin.json"
 CURSOR_PLUGIN_PATH = REPO_ROOT / ".cursor-plugin" / "plugin.json"
 CODEX_PLUGIN_PATH = REPO_ROOT / ".codex-plugin" / "plugin.json"
+ANTIGRAVITY_PLUGIN_PATH = REPO_ROOT / ".antigravity-plugin" / "plugin.json"
 CLAUDE_MARKETPLACE_PATH = REPO_ROOT / ".claude-plugin" / "marketplace.json"
 
 
@@ -46,6 +47,7 @@ def main() -> None:
     write_version(CLAUDE_PLUGIN_PATH, version)
     write_version(CURSOR_PLUGIN_PATH, version)
     write_version(CODEX_PLUGIN_PATH, version)
+    write_version(ANTIGRAVITY_PLUGIN_PATH, version)
     write_marketplace_ref(CLAUDE_MARKETPLACE_PATH, version)
 
 

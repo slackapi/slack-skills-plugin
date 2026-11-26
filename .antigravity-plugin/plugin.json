@@ -1,0 +1,21 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "slack",
+  "displayName": "Slack",
+  "version": "1.8.0",
+  "description": "Slack skills for developing apps with the Slack CLI, Bolt frameworks, Web API, and Block Kit",
+  "author": {
+    "name": "Slack",
+    "url": "https://slack.com"
+  },
+  "homepage": "https://docs.slack.dev/ai/slack-skills-plugin",
+  "repository": "https://github.com/slackapi/slack-skills-plugin",
+  "license": "MIT",
+  "keywords": [
+    "slack",
+    "bolt",
+    "block-kit",
+    "slack-cli",
+    "slack-api"
+  ]
+}

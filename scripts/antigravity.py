@@ -24,7 +24,6 @@ MANIFEST_PATH = REPO_ROOT / ".antigravity-plugin" / "plugin.json"
 
 
 def plugin_name() -> str:
-    """Read the plugin name from the Antigravity manifest so renames are picked up."""
     name: str = json.loads(MANIFEST_PATH.read_text())["name"]
     return name
 
@@ -36,7 +35,6 @@ def plugin_files() -> set[Path]:
 
 
 def copy_plugin(target: Path) -> int:
-    """Copy only the files Antigravity loads, so .venv symlinks and .env secrets stay behind."""
     files = plugin_files()
     for source in files:
         dest = target / source.relative_to(REPO_ROOT)

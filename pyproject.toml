@@ -82,6 +82,7 @@ style = "asterisk"
 [tool.mypy]
 python_version = "3.15"
 files = ["tests", "scripts"]
+explicit_package_bases = true
 plugins = ["pydantic.mypy"]
 disallow_untyped_defs = true
 warn_unused_ignores = true

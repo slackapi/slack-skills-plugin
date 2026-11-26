@@ -29,6 +29,8 @@ Run `make help` for the full list of targets and what each does. The common ones
 | `make test-eval` | Run LLM-judged tests (DeepEval against Gemini, or Claude with `EVAL_PROVIDER=claude-code`) |
 | `make test` | Run all tests (unit + eval) |
 | `make clean` | Remove virtualenv and local Cursor install |
+| `make antigravity-install` | Install this plugin into the local Antigravity CLI for development |
+| `make antigravity-uninstall` | Uninstall this plugin from the local Antigravity CLI |
 | `make cursor-install` | Install this plugin into a local Cursor for development |
 | `make cursor-uninstall` | Uninstall this plugin from the local Cursor install |
 

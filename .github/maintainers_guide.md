@@ -17,6 +17,8 @@ Maintaining this repo requires:
   verifying that skills and commands work outside Claude Code before release.
 - **[Codex][codex-cli]**: another agentic coding environment. Useful for
   verifying that the skills work outside Claude Code before release.
+- **[Antigravity CLI][antigravity-cli]** (`agy`): Google's agentic coding CLI.
+  Useful for verifying that the skills work outside Claude Code before release.
 - **Git**: standard version control.
 - **[GitHub CLI (`gh`)][gh-cli]**: for creating PRs as drafts and managing
   issues.
@@ -198,6 +200,36 @@ second manifest.
 
 Codex support currently ships only the skills; the hosted MCP server is not yet wired into the Codex surface.
 
+### Testing in Antigravity
+
+The Antigravity manifest lives at `.antigravity-plugin/plugin.json`. Antigravity reads it in place of a root `plugin.json`, so it can sit beside the Claude Code, Cursor, and Codex manifests. Check it the way the plugin loader reads it:
+
+```sh
+agy plugin validate .
+```
+
+Expect three warnings, for `.mcp.json`, `AGENTS.md`, and `commands/`. Those files are for the other tools, and Antigravity skips them. Don't pass `--strict`, which fails on those warnings.
+
+Install your checkout, then start a new `agy` session to pick it up:
+
+```sh
+make antigravity-install
+```
+
+This stages only the manifest and `skills/` in a temporary folder, then runs `agy plugin install` on it. Don't run `agy plugin install "$PWD"`: it copies the whole working tree, fails on the symlinks in `.venv`, and would copy your `.env`.
+
+`agy plugin list` shows the plugin and its skills. Each skill is also a slash command, for example `/block-kit`.
+
+**Re-run `make antigravity-install` after every change.** Installing copies the plugin into `~/.gemini/config/plugins/slack/`, and Antigravity loads that copy rather than reading your working tree.
+
+To remove it:
+
+```sh
+make antigravity-uninstall
+```
+
+Antigravity support currently ships only the skills. The hosted MCP server is not yet part of the Antigravity plugin. A developer install from GitHub prints "commands: 5 installed (converted to skills)", but those commands don't show up in an `agy` session.
+
 ---
 
 ## Versioning
@@ -286,6 +318,7 @@ Patch and minor updates are auto-approved and auto-merged via the
 [claude-code]: https://claude.ai/code
 [cursor]: https://cursor.com
 [codex-cli]: https://developers.openai.com/codex/cli
+[antigravity-cli]: https://antigravity.google/docs/cli/using/
 [gh-cli]: https://cli.github.com
 [conv-commits]: https://www.conventionalcommits.org
 [semver]: https://semver.org

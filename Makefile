@@ -6,7 +6,7 @@ RUMDL := $(VENV)/bin/rumdl
 MYPY := $(VENV)/bin/mypy
 DEEPEVAL := $(VENV)/bin/deepeval
 
-TARGETS := help install install-test install-tools clean lint format typecheck test test-unit test-eval cursor-install cursor-uninstall
+TARGETS := help install install-test install-tools clean lint format typecheck test test-unit test-eval antigravity-install antigravity-uninstall cursor-install cursor-uninstall
 
 .PHONY: $(TARGETS)
 
@@ -30,6 +30,12 @@ install-tools: $(VENV) ## Install linting/formatting tools (ruff)
 clean: ## Remove virtual environment and local Cursor install
 	-$(PYTHON) scripts/cursor.py uninstall
 	rm -rf $(VENV) node_modules
+
+antigravity-install: $(VENV) ## Install this plugin into the local Antigravity CLI for development
+	$(PYTHON) scripts/antigravity.py install
+
+antigravity-uninstall: $(VENV) ## Uninstall this plugin from the local Antigravity CLI
+	$(PYTHON) scripts/antigravity.py uninstall
 
 cursor-install: $(VENV) ## Install this plugin into a local Cursor for development
 	$(PYTHON) scripts/cursor.py install

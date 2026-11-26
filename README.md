@@ -1,6 +1,6 @@
 # Slack MCP and Skills Plugin
 
-A [Claude Code][claude-code], [Cursor][cursor], and [Codex][codex-cli] plugin that brings Slack into your AI tools with a [Slack MCP Server][slack-mcp-docs] and set of Slack skills for both users and developers.
+A [Claude Code][claude-code], [Antigravity][antigravity], [Cursor][cursor], and [Codex][codex-cli] plugin that brings Slack into your AI tools with a [Slack MCP Server][slack-mcp-docs] and set of Slack skills for both users and developers.
 
 [![CI Build](https://github.com/slackapi/slack-skills-plugin/actions/workflows/ci-build.yml/badge.svg)](https://github.com/slackapi/slack-skills-plugin/actions/workflows/ci-build.yml?query=branch%3Amain)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -49,6 +49,20 @@ claude plugin uninstall slack@claude-plugins-official
 ```
 
 Then follow the [install steps](#claude-code) above. Run `claude plugin list` to confirm that `slack@slack` is the only Slack plugin listed.
+
+### Antigravity
+
+The plugin installs into the [Antigravity CLI][antigravity] straight from this repository:
+
+```sh
+agy plugin install https://github.com/slackapi/slack-skills-plugin
+```
+
+Run the same command again to update to the latest version. It replaces the installed copy. To remove the plugin, run `agy plugin uninstall slack`.
+
+Start a new Antigravity session to pick up the skills.
+
+Antigravity support currently ships the skills only: the commands and the MCP server don't load in Antigravity yet.
 
 ### Cursor
 
@@ -165,6 +179,7 @@ We welcome contributions from everyone! Please check out our [contributor's guid
 Working on the plugin itself? See the [maintainer's guide](.github/maintainers_guide.md) for local development setup.
 
 [claude-code]: https://claude.com/claude-code
+[antigravity]: https://antigravity.google/docs/cli/using/
 [cursor]: https://cursor.com
 [codex-cli]: https://developers.openai.com/codex/cli
 [slack-mcp-docs]: https://docs.slack.dev/ai/mcp-server/

@@ -3,6 +3,7 @@ import json
 import logging
 import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
@@ -44,17 +45,23 @@ def copy_plugin(target: Path) -> int:
     return len(files)
 
 
+def run_agy(*args: str) -> None:
+    if shutil.which("agy") is None:
+        sys.exit("agy not found on PATH. Install the Antigravity CLI first: https://antigravity.google/docs/install?tab=cli")
+    subprocess.run(["agy", *args], check=True)
+
+
 def install() -> None:
     with tempfile.TemporaryDirectory() as staging:
         target = Path(staging) / plugin_name()
         count = copy_plugin(target)
         logger.info(f"Staged {count} plugin files in {target}")
-        subprocess.run(["agy", "plugin", "install", str(target)], check=True)
+        run_agy("plugin", "install", str(target))
     logger.info("Start a new agy session to pick up the changes.")
 
 
 def uninstall() -> None:
-    subprocess.run(["agy", "plugin", "uninstall", plugin_name()], check=True)
+    run_agy("plugin", "uninstall", plugin_name())
 
 
 def main() -> None:

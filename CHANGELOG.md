@@ -1,5 +1,21 @@
 # slack
 
+## 1.9.0
+
+### Minor Changes
+
+- 4ba6bda: Add Antigravity plugin support. A new `.antigravity-plugin/plugin.json` manifest exposes the Slack skills to the [Antigravity CLI](https://antigravity.google/docs/cli/using/) (`agy`), so the plugin installs with `agy plugin install https://github.com/slackapi/slack-skills-plugin`. Antigravity support ships the skills only: the commands and the Slack MCP server don't load there yet.
+- bf37682: When the Slack CLI isn't installed, the `slack-cli` skill now also offers to show the install command so you can run it yourself. Once you say it's installed, the agent picks up where it left off, for example creating your app with the `create-slack-app` skill.
+- 766e933: The `test-slack-app` skill now covers Deno Slack SDK apps. It runs the project's `deno task test`, creates the app's triggers for the local app, and gives a step for each link, event, scheduled, and webhook trigger and the functions its workflows run. It used to list Bolt listeners only.
+
+### Patch Changes
+
+- a6db580: Starting an existing app on the developer's machine to try a code change now loads the `slack-cli` skill for `slack run`, instead of `test-slack-app`. Claude picked `test-slack-app` for about half of these requests, because its description also mentions trying an app out with `slack run`.
+- 2b9e876: The `deploy-slack-app` skill now spots a Deno Slack SDK app and deploys it to Slack with plain `slack deploy`, then creates its triggers for the deployed app. It used to read the app's manifest as a Request URL app and stop, or steer it to a Railway or Heroku deploy hook.
+- 2a8d195: The `deploy-slack-app` description now leaves conceptual questions about how Slack app hosting works to the `slack-docs` skill. Claude used to load `deploy-slack-app` for "How does hosting for Slack apps work conceptually?" because the description mentions hosting. A request to deploy or host an app still loads `deploy-slack-app`.
+- 09e0163: A pasted Web API method reference link, like `docs.slack.dev/reference/methods/conversations.history`, now loads the `slack-api` skill instead of `slack-docs`, so the agent answers with the method's arguments, scopes, and errors. Other docs.slack.dev links still load `slack-docs`.
+- fd745d6: When the Slack CLI isn't installed, the `slack-cli` skill now asks whether to install it, and names the install script from `downloads.slack-edge.com`, in the same question that asks about an alias. Before, answering "No, I need to install it" to a question about aliases ran the install script without asking.
+
 ## 1.8.0
 
 ### Minor Changes

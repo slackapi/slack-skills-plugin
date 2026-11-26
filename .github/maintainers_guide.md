@@ -228,7 +228,7 @@ To remove it:
 make antigravity-uninstall
 ```
 
-Antigravity support currently ships only the skills. The hosted MCP server is not yet wired into the Antigravity surface. A developer install from GitHub prints "commands: 5 installed (converted to skills)", but those commands don't show up in an `agy` session.
+Antigravity support currently ships only the skills. The hosted MCP server is not yet part of the Antigravity plugin. A developer install from GitHub prints "commands: 5 installed (converted to skills)", but those commands don't show up in an `agy` session.
 
 ---
 

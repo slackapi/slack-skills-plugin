@@ -208,25 +208,27 @@ The Antigravity manifest lives at `.antigravity-plugin/plugin.json`. Antigravity
 agy plugin validate .
 ```
 
-Expect three warnings, for `.mcp.json`, `AGENTS.md`, and `commands/`. Those files are for the other tools, and Antigravity skips them. Use `--strict` only if you filter those three out of the `--json` report.
+Expect three warnings, for `.mcp.json`, `AGENTS.md`, and `commands/`. Those files are for the other tools, and Antigravity skips them. Don't pass `--strict`, which fails on those warnings.
 
 Install your checkout, then start a new `agy` session to pick it up:
 
 ```sh
-agy plugin install "$PWD"
+make antigravity-install
 ```
+
+This stages only the manifest and `skills/` in a temporary folder, then runs `agy plugin install` on it. Don't run `agy plugin install "$PWD"`: it copies the whole working tree, fails on the symlinks in `.venv`, and would copy your `.env`.
 
 `agy plugin list` shows the plugin and its skills. Each skill is also a slash command, for example `/block-kit`.
 
-**Re-run `agy plugin install "$PWD"` after every change.** Installing copies your checkout into `~/.gemini/config/plugins/slack/`, and Antigravity loads that copy rather than reading your working tree.
+**Re-run `make antigravity-install` after every change.** Installing copies the plugin into `~/.gemini/config/plugins/slack/`, and Antigravity loads that copy rather than reading your working tree.
 
 To remove it:
 
 ```sh
-agy plugin uninstall slack
+make antigravity-uninstall
 ```
 
-Antigravity support currently ships only the skills. The hosted MCP server is not yet wired into the Antigravity surface, and the commands don't load.
+Antigravity support currently ships only the skills. The hosted MCP server is not yet wired into the Antigravity surface. A developer install from GitHub prints "commands: 5 installed (converted to skills)", but those commands don't show up in an `agy` session.
 
 ---
 

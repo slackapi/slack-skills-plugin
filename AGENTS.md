@@ -31,6 +31,8 @@ Run `make help` for the full list of targets and what each does. The common ones
 | `make clean` | Remove virtualenv and local Cursor install |
 | `make cursor-install` | Install this plugin into a local Cursor for development |
 | `make cursor-uninstall` | Uninstall this plugin from the local Cursor install |
+| `make antigravity-install` | Install this plugin into the local Antigravity CLI for development |
+| `make antigravity-uninstall` | Uninstall this plugin from the local Antigravity CLI |
 
 See the [maintainers guide](.github/maintainers_guide.md#local-development--testing) for local development and testing setup.
 

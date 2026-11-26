@@ -1,6 +1,6 @@
 # Slack MCP and Skills Plugin
 
-The Slack MCP and Skills Plugin for AI tools bundles together a set of skills that help you develop on the Slack platform with the [Slack MCP Server](/ai/slack-mcp-server). You can use the plugin with Claude Code, Codex, Cursor, and other coding agents.
+The Slack MCP and Skills Plugin for AI tools bundles together a set of skills that help you develop on the Slack platform with the [Slack MCP Server](/ai/slack-mcp-server). You can use the plugin with Claude Code, Antigravity, Codex, Cursor, and other coding agents.
 
 Installing the plugin sets up two things:
 
@@ -9,13 +9,13 @@ Installing the plugin sets up two things:
 
 The Slack MCP server is configured automatically when the plugin loads. You'll be prompted to authenticate into your Slack workspace via OAuth. Full setup details vary depending on the AI tool you are using.
 
-The Slack MCP Server connection is only available when using with Claude Code and Cursor. For Codex and other coding agents, the plugin installs the skills only. You won't experience an OAuth prompt since it's not connecting to the Slack MCP server. Your tool also won't be able to utilize the `slack-search` skill, as it needs the Slack MCP Server connection to query your workspace.
+The Slack MCP Server connection is only available when using with Claude Code and Cursor. For Antigravity, Codex, and other coding agents, the plugin installs the skills only. You won't experience an OAuth prompt since it's not connecting to the Slack MCP server. Your tool also won't be able to utilize the `slack-search` skill, as it needs the Slack MCP Server connection to query your workspace.
 
 ---
 
 ## Installing the plugin
 
-Read on for instructions on installing the Plugin for your AI tool of your choice, whether it be [Claude Code](#claude-code-install), [Codex](#codex-install), [Cursor](#cursor-install) or [other coding agents](#other-agents-install).
+Read on for instructions on installing the Plugin for your AI tool of your choice, whether it be [Claude Code](#claude-code-install), [Antigravity](#antigravity-install), [Codex](#codex-install), [Cursor](#cursor-install) or [other coding agents](#other-agents-install).
 
 ### Installing the plugin for Claude Code {#claude-code-install}
 
@@ -57,6 +57,20 @@ If you installed the plugin from the official Claude marketplace, uninstall it f
 ```
 
 Then follow the [install steps](#claude-code-install) above. Run `claude plugin list` to confirm that `slack@slack` is the only Slack plugin listed.
+
+### Installing the plugin for Antigravity {#antigravity-install}
+
+The plugin installs into the [Antigravity CLI](https://antigravity.google/docs/cli/using/) straight from its [GitHub repository](https://github.com/slackapi/slack-skills-plugin):
+
+```sh
+agy plugin install https://github.com/slackapi/slack-skills-plugin
+```
+
+Run the same command again to update to the latest version. It replaces the installed copy. To remove the plugin, run `agy plugin uninstall slack`.
+
+Start a new Antigravity session to pick up the skills.
+
+As the Slack MCP Server is not available on Antigravity yet, this installs the skills only. Your tool also won't be able to utilize the `slack-search` skill, as it needs the Slack MCP Server connection to query your workspace.
 
 ### Installing the plugin for Codex {#codex-install}
 

@@ -66,6 +66,16 @@ claude plugin update slack@slack
 
 The plugin loads in the user's next Claude Code session, or after they run `/reload-plugins`. Do not wait for either. Continue with Step 2 in this session using the hosted skills.
 
+### Antigravity
+
+```sh
+agy plugin install https://github.com/slackapi/slack-skills-plugin
+```
+
+This installs the Slack skills. If the plugin is already installed, run the same command to update it: it replaces the installed copy.
+
+The plugin loads in the user's next Antigravity session. Do not ask the user to restart. Continue with Step 2 in this session using the hosted skills.
+
 ### Codex
 
 ```sh

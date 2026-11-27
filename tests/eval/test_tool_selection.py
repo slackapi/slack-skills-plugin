@@ -7,8 +7,16 @@ from deepeval.models import GeminiModel
 from deepeval.test_case import ToolCall
 from pydantic import BaseModel
 
-from tests.config import EVAL_CLAUDE_BIN, EVAL_PROVIDER, EVAL_PROVIDERS, GEMINI_API_KEY_POOL, SLACK_MCP_TOKEN
-from tests.support.judge import ClaudeCodeModel, make_judge_model
+from tests.config import (
+    EVAL_ANTIGRAVITY_BIN,
+    EVAL_CLAUDE_BIN,
+    EVAL_PROVIDER,
+    EVAL_PROVIDERS,
+    GEMINI_API_KEY_POOL,
+    PLUGIN_NAME,
+    SLACK_MCP_TOKEN,
+)
+from tests.support.judge import AntigravityModel, ClaudeCodeModel, make_judge_model
 from tests.support.tools import get_all_skill_tools, get_slack_mcp_tools
 
 
@@ -269,7 +277,7 @@ just to resolve it into an ID first. Respond with the tool's exact name."""
 class TestToolSelection:
     """Assert the model selects the expected tool for each scenario."""
 
-    model: GeminiModel | ClaudeCodeModel
+    model: GeminiModel | AntigravityModel | ClaudeCodeModel
     available_tools: list[ToolCall]
 
     @classmethod
@@ -278,6 +286,16 @@ class TestToolSelection:
             pytest.fail(f"Unknown EVAL_PROVIDER {EVAL_PROVIDER!r}, expected one of {EVAL_PROVIDERS}")
         if EVAL_PROVIDER == "gemini" and not GEMINI_API_KEY_POOL:
             pytest.fail("No Gemini API key set (set GEMINI_API_KEY or GEMINI_API_KEY_*)")
+        if EVAL_PROVIDER == "antigravity":
+            if not shutil.which(EVAL_ANTIGRAVITY_BIN):
+                pytest.fail(
+                    f"Antigravity CLI {EVAL_ANTIGRAVITY_BIN!r} not found (install it or set EVAL_ANTIGRAVITY_BIN)"
+                )
+            if installed := AntigravityModel().enabled_plugin():
+                pytest.fail(
+                    f"The Antigravity CLI has this plugin enabled ({installed}), so the model would also see the "
+                    f"installed skills. Run `{EVAL_ANTIGRAVITY_BIN} plugin disable {PLUGIN_NAME}` first."
+                )
         if EVAL_PROVIDER == "claude-code" and not shutil.which(EVAL_CLAUDE_BIN):
             pytest.fail(f"Claude Code CLI {EVAL_CLAUDE_BIN!r} not found (install it or set EVAL_CLAUDE_BIN)")
         if not SLACK_MCP_TOKEN:

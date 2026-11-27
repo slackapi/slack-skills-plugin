@@ -70,5 +70,5 @@ endif
 test-unit: ## Run structural/unit validation tests (set testdir=<path> to target specific files)
 	$(PYTHON) -m pytest $(or $(testdir),tests/unit/) -v
 
-test-eval: ## Run LLM-judged tests (requires SLACK_MCP_TOKEN, plus GEMINI_API_KEY or EVAL_PROVIDER=claude-code; set testdir=<path> to target specific files)
+test-eval: ## Run LLM-judged tests (requires SLACK_MCP_TOKEN, plus GEMINI_API_KEY or EVAL_PROVIDER=antigravity|claude-code; set testdir=<path> to target specific files)
 	$(DEEPEVAL) test run $(or $(testdir),tests/eval/) -v

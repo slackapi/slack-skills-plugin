@@ -1,5 +1,6 @@
 import json
 import subprocess
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -7,6 +8,8 @@ from pydantic import BaseModel
 
 from tests.support import judge
 from tests.support.judge import AntigravityModel, ClaudeCodeModel
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 class Pick(BaseModel):
@@ -17,6 +20,7 @@ def fake_run(stdout: str, returncode: int = 0) -> Any:
     def run(cmd: list[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
         run.cmd = cmd  # type: ignore[attr-defined]
         run.input = kwargs.get("input")  # type: ignore[attr-defined]
+        run.cwd = kwargs.get("cwd")  # type: ignore[attr-defined]
         return subprocess.CompletedProcess(cmd, returncode, stdout=stdout, stderr="boom")
 
     return run
@@ -35,8 +39,16 @@ class TestAntigravityModel:
         assert choice == Pick(tool_name="block-kit")
         assert cost == 0.0
         assert run.cmd[:3] == ["my-agy", "--model", "gemini-3.8-flash-low"]
-        assert run.cmd[-1].startswith("--print=")
-        assert run.cmd[-1].endswith("pick one")
+        assert run.cmd[-1] == f"--print={judge.STRUCTURED_OUTPUT_INSTRUCTION}\n\npick one"
+
+    def test_runs_outside_the_repo(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        run = fake_run(json.dumps({"status": "SUCCESS", "structured_output": {"tool_name": "block-kit"}}))
+        monkeypatch.setattr(subprocess, "run", run)
+
+        AntigravityModel(model="").generate("pick one", schema=Pick)
+
+        assert run.cwd is not None
+        assert not Path(run.cwd).resolve().is_relative_to(REPO_ROOT)
 
     def test_blank_model_uses_the_cli_default(self) -> None:
         assert "--model" not in AntigravityModel(model="").command("pick one", Pick)
@@ -59,6 +71,13 @@ class TestAntigravityModel:
         with pytest.raises(RuntimeError, match="no structured output"):
             AntigravityModel(model="").generate("pick one", schema=Pick)
 
+    def test_non_success_status_raises(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        output = {"status": "ERROR", "structured_output": {"tool_name": "block-kit"}, "response": "quota reached"}
+        monkeypatch.setattr(subprocess, "run", fake_run(json.dumps(output)))
+
+        with pytest.raises(RuntimeError, match="quota reached"):
+            AntigravityModel(model="").generate("pick one", schema=Pick)
+
     def test_non_json_output_raises_with_the_output(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setattr(subprocess, "run", fake_run("Update available!"))
 
@@ -77,6 +96,11 @@ class TestAntigravityModel:
 
         assert AntigravityModel(model="").enabled_plugin() is None
 
+    def test_enabled_plugin_empty_output_raises(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(subprocess, "run", fake_run(""))
+
+        with pytest.raises(RuntimeError, match="plugin list printed output that is not JSON"):
+            AntigravityModel(model="").enabled_plugin()
 
     def test_enabled_plugin_non_json_output_raises(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setattr(subprocess, "run", fake_run("Update available!"))

@@ -37,9 +37,6 @@ class AntigravityModel(DeepEvalBaseLLM):
 
     def command(self, prompt: str, schema: type[BaseModel]) -> list[str]:
         model = ["--model", self.model_name] if self.model_name else []
-        # The CLI has no system prompt flag, so the instruction leads the prompt. The prompt goes
-        # in --print= because the CLI reads it from the flag, not from stdin. Print mode denies
-        # any tool call that needs permission, so the model can't change files.
         return [
             self.executable,
             *model,
@@ -52,18 +49,13 @@ class AntigravityModel(DeepEvalBaseLLM):
         ]
 
     def enabled_plugin(self) -> str | None:
-        """Return the path of this plugin when it is installed and enabled in the CLI, else None.
-
-        The CLI has no flag to turn plugins off for one run, so an installed copy would show the
-        model its own skill descriptions next to the ones in the eval prompt.
-        """
         result = subprocess.run(
             [self.executable, "plugin", "list", "--json"], capture_output=True, text=True, timeout=60, check=False
         )
         if result.returncode != 0:
             raise RuntimeError(f"{self.executable} plugin list exited {result.returncode}: {result.stderr.strip()}")
         try:
-            plugins = json.loads(result.stdout or "[]")
+            plugins = json.loads(result.stdout)
         except json.JSONDecodeError as error:
             raise RuntimeError(
                 f"{self.executable} plugin list printed output that is not JSON: {result.stdout.strip()!r}"
@@ -76,7 +68,6 @@ class AntigravityModel(DeepEvalBaseLLM):
         return None
 
     def generate(self, prompt: str, schema: type[SchemaT]) -> tuple[SchemaT, float]:  # type: ignore[override]
-        # Run outside this repo, whose name and files would hint at the plugin's skills.
         with tempfile.TemporaryDirectory() as cwd:
             result = subprocess.run(
                 self.command(prompt, schema),
@@ -98,7 +89,6 @@ class AntigravityModel(DeepEvalBaseLLM):
             ) from error
         if output.get("status") != "SUCCESS" or "structured_output" not in output:
             raise RuntimeError(f"{self.executable} returned no structured output: {output.get('response')!r}")
-        # The CLI reports token usage but no cost.
         return schema.model_validate(output["structured_output"]), 0.0
 
     async def a_generate(self, prompt: str, schema: type[SchemaT]) -> tuple[SchemaT, float]:  # type: ignore[override]

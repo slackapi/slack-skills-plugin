@@ -19,6 +19,8 @@ Maintaining this repo requires:
   verifying that the skills work outside Claude Code before release.
 - **[Antigravity CLI][antigravity-cli]** (`agy`): Google's agentic coding CLI.
   Useful for verifying that the skills work outside Claude Code before release.
+- **[OpenCode][opencode]**: an open source agentic coding CLI. Useful for
+  verifying that the skills work outside Claude Code before release.
 - **Git**: standard version control.
 - **[GitHub CLI (`gh`)][gh-cli]**: for creating PRs as drafts and managing
   issues.
@@ -230,6 +232,34 @@ make antigravity-uninstall
 
 Antigravity support currently ships only the skills. The hosted MCP server is not yet part of the Antigravity plugin. A developer install from GitHub prints "commands: 5 installed (converted to skills)", but those commands don't show up in an `agy` session.
 
+### Testing in OpenCode
+
+The OpenCode plugin is a JavaScript module at `.opencode/plugins/slack.js`, which `package.json` names as its `main` entry. Its default export serves both OpenCode generations:
+
+- OpenCode 1 calls `server()`, whose `config` hook adds `skills/` to the skill search paths.
+- OpenCode 2 calls `setup()`, which registers each skill through `ctx.skill.transform()`. OpenCode 2 has no `config` hook, and its plugin API still changes between releases, so each skill is registered in its own `try`/`catch`.
+
+`make test-unit` drives both entrypoints with fake OpenCode objects in Node.
+
+OpenCode loads project plugins from `.opencode/plugins/`, so a session started inside this repo loads your checkout with no setup. To try it from another project, point that project's `opencode.json` at your checkout:
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": ["file:///path/to/slack-skills-plugin"]
+}
+```
+
+`opencode debug skill` lists the skills OpenCode found, with the path each one loaded from. OpenCode reads the plugin from your working tree, so a new session picks up every change.
+
+To test the install a developer runs, install a branch from git into a scratch project:
+
+```sh
+opencode plugin "slack@git+https://github.com/slackapi/slack-skills-plugin.git#<branch>"
+```
+
+OpenCode support currently ships only the skills. The commands call Slack MCP tools, and the hosted MCP server needs a Slack client ID for OpenCode before it can be added.
+
 ---
 
 ## Versioning
@@ -319,6 +349,7 @@ Patch and minor updates are auto-approved and auto-merged via the
 [cursor]: https://cursor.com
 [codex-cli]: https://developers.openai.com/codex/cli
 [antigravity-cli]: https://antigravity.google/docs/cli/using/
+[opencode]: https://opencode.ai
 [gh-cli]: https://cli.github.com
 [conv-commits]: https://www.conventionalcommits.org
 [semver]: https://semver.org

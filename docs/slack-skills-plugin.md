@@ -1,6 +1,6 @@
 # Slack MCP and Skills Plugin
 
-The Slack MCP and Skills Plugin for AI tools bundles together a set of skills that help you develop on the Slack platform with the [Slack MCP Server](/ai/slack-mcp-server). You can use the plugin with Claude Code, Antigravity, Codex, Cursor, and other coding agents.
+The Slack MCP and Skills Plugin for AI tools bundles together a set of skills that help you develop on the Slack platform with the [Slack MCP Server](/ai/slack-mcp-server). You can use the plugin with Claude Code, Antigravity, Codex, Cursor, OpenCode, and other coding agents.
 
 Installing the plugin sets up two things:
 
@@ -9,13 +9,13 @@ Installing the plugin sets up two things:
 
 The Slack MCP server is configured automatically when the plugin loads. You'll be prompted to authenticate into your Slack workspace via OAuth. Full setup details vary depending on the AI tool you are using.
 
-The Slack MCP Server connection is only available when using with Claude Code and Cursor. For Antigravity, Codex, and other coding agents, the plugin installs the skills only. You won't experience an OAuth prompt since it's not connecting to the Slack MCP server. Your tool also won't be able to utilize the `slack-search` skill, as it needs the Slack MCP Server connection to query your workspace.
+The Slack MCP Server connection is only available when using with Claude Code and Cursor. For Antigravity, Codex, OpenCode, and other coding agents, the plugin installs the skills only. You won't experience an OAuth prompt since it's not connecting to the Slack MCP server. Your tool also won't be able to utilize the `slack-search` skill, as it needs the Slack MCP Server connection to query your workspace.
 
 ---
 
 ## Installing the plugin
 
-Read on for instructions on installing the Plugin for your AI tool of your choice, whether it be [Claude Code](#claude-code-install), [Antigravity](#antigravity-install), [Codex](#codex-install), [Cursor](#cursor-install) or [other coding agents](#other-agents-install).
+Read on for instructions on installing the Plugin for your AI tool of your choice, whether it be [Claude Code](#claude-code-install), [Antigravity](#antigravity-install), [Codex](#codex-install), [Cursor](#cursor-install), [OpenCode](#opencode-install), or [other coding agents](#other-agents-install).
 
 ### Installing the plugin for Claude Code {#claude-code-install}
 
@@ -93,6 +93,20 @@ The plugin is published on the [official Cursor Marketplace](https://cursor.com/
 
 Alternatively, search for "slack" in the Cursor plugin marketplace. This installs the skills, and MCP server together, and prompts OAuth to your Slack workspace on first use.
 
+### Installing the plugin for OpenCode {#opencode-install}
+
+The plugin installs into [OpenCode](https://opencode.ai) straight from its [GitHub repository](https://github.com/slackapi/slack-skills-plugin):
+
+```sh
+opencode plugin -g "slack@git+https://github.com/slackapi/slack-skills-plugin.git"
+```
+
+The `-g` flag installs the plugin for your user. Drop it to install for the current project only. Keep the full `git+https` source: a bare `slack` installs an unrelated npm package.
+
+Run the same command with `-f` to update to the latest version. Start a new OpenCode session to pick up the skills.
+
+As the Slack MCP Server is not available on OpenCode yet, this installs the skills only. Your tool also won't be able to utilize the `slack-search` skill, as it needs the Slack MCP Server connection to query your workspace.
+
 ### Installing the skills for other agents {#other-agents-install}
 
 You can install the skills within the Plugin into other coding agents with [`npx skills`](https://github.com/vercel-labs/skills), naming the agent you want:
@@ -101,9 +115,8 @@ You can install the skills within the Plugin into other coding agents with [`npx
 # Install the skills for a coding agent, named by its own identifier
 npx skills add slackapi/slack-skills-plugin -y -a <agent>
 
-# For example, Gemini CLI or OpenCode
+# For example, Gemini CLI
 npx skills add slackapi/slack-skills-plugin -y -a gemini-cli
-npx skills add slackapi/slack-skills-plugin -y -a opencode
 ```
 
 Other popular agents include `crush`, `devin`, `hermes-agent`, `openclaw`, and `pi`. See [supported agents](https://github.com/vercel-labs/skills#supported-agents) for the full list of agents and their identifiers.

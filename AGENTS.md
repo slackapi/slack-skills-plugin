@@ -85,7 +85,7 @@ The eval job reads the `GEMINI_API_KEY_*` (e.g. `GEMINI_API_KEY_BOB`, `GEMINI_AP
 
 - A new install path, or a change to an existing install command
 - Adding, removing, or renaming a skill, which also means the skills table
-- A capability that differs by surface (Claude Code, Cursor, Codex): say so explicitly rather than leaving a developer to infer it
+- A capability that differs by surface (Claude Code, Antigravity, Cursor, Codex, OpenCode): say so explicitly rather than leaving a developer to infer it
 - Anything that makes an existing statement on the page wrong, including the list of supported tools
 
 `README.md` covers the same ground for people arriving via GitHub, so the same PR usually needs the matching edit there. Check both.

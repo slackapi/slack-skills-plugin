@@ -1,6 +1,6 @@
 # Slack MCP and Skills Plugin
 
-A [Claude Code][claude-code], [Antigravity][antigravity], [Cursor][cursor], and [Codex][codex-cli] plugin that brings Slack into your AI tools with a [Slack MCP Server][slack-mcp-docs] and set of Slack skills for both users and developers.
+A [Claude Code][claude-code], [Antigravity][antigravity], [Cursor][cursor], [Codex][codex-cli], and [OpenCode][opencode] plugin that brings Slack into your AI tools with a [Slack MCP Server][slack-mcp-docs] and set of Slack skills for both users and developers.
 
 [![CI Build](https://github.com/slackapi/slack-skills-plugin/actions/workflows/ci-build.yml/badge.svg)](https://github.com/slackapi/slack-skills-plugin/actions/workflows/ci-build.yml?query=branch%3Amain)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -94,6 +94,20 @@ Start a new Codex session to pick up the plugin, then invoke a skill by name wit
 
 Codex support currently ships the skills only; the MCP server is not yet wired into the Codex surface.
 
+### OpenCode
+
+The plugin installs into [OpenCode][opencode] straight from this repository:
+
+```sh
+opencode plugin -g "slack@git+https://github.com/slackapi/slack-skills-plugin.git"
+```
+
+The `-g` flag installs the plugin for your user. Drop it to install for the current project only. Keep the full `git+https` source: a bare `slack` installs an unrelated npm package.
+
+Run the same command with `-f` to update to the latest version. Start a new OpenCode session to pick up the skills.
+
+OpenCode support currently ships the skills only: the commands and the MCP server don't load in OpenCode yet.
+
 ### Other agents
 
 The skills install into other coding agents with [`npx skills`][npx-skills], no plugin marketplace required:
@@ -102,9 +116,8 @@ The skills install into other coding agents with [`npx skills`][npx-skills], no 
 # Install the skills for a coding agent, named by its own identifier
 npx skills add slackapi/slack-skills-plugin -y -a <agent>
 
-# For example, Gemini CLI or OpenCode
+# For example, Gemini CLI
 npx skills add slackapi/slack-skills-plugin -y -a gemini-cli
-npx skills add slackapi/slack-skills-plugin -y -a opencode
 ```
 
 Other popular agents include `crush`, `devin`, `hermes-agent`, `openclaw`, and `pi`. See [supported agents][npx-skills] for the full list of agents and their identifiers. Add `-g` to install for your user instead of the current project. Run the same command again to update the skills to the latest version.
@@ -182,6 +195,7 @@ Working on the plugin itself? See the [maintainer's guide](.github/maintainers_g
 [antigravity]: https://antigravity.google/docs/cli/using/
 [cursor]: https://cursor.com
 [codex-cli]: https://developers.openai.com/codex/cli
+[opencode]: https://opencode.ai
 [slack-mcp-docs]: https://docs.slack.dev/ai/mcp-server/
 [npx-skills]: https://github.com/vercel-labs/skills#supported-agents
 [slack-cli]: https://tools.slack.dev/slack-cli

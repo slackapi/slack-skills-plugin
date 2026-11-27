@@ -78,6 +78,19 @@ class TestAntigravityModel:
         assert AntigravityModel(model="").enabled_plugin() is None
 
 
+    def test_enabled_plugin_non_json_output_raises(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(subprocess, "run", fake_run("Update available!"))
+
+        with pytest.raises(RuntimeError, match="plugin list printed output that is not JSON"):
+            AntigravityModel(model="").enabled_plugin()
+
+    def test_enabled_plugin_non_list_output_raises(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(subprocess, "run", fake_run(json.dumps({"plugins": []})))
+
+        with pytest.raises(RuntimeError, match="not a list"):
+            AntigravityModel(model="").enabled_plugin()
+
+
 class TestClaudeCodeModel:
     def test_parses_structured_output_and_cost(self, monkeypatch: pytest.MonkeyPatch) -> None:
         run = fake_run(json.dumps({"structured_output": {"tool_name": "slack-docs"}, "total_cost_usd": 0.003}))

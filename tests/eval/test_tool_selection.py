@@ -13,6 +13,7 @@ from tests.config import (
     EVAL_PROVIDER,
     EVAL_PROVIDERS,
     GEMINI_API_KEY_POOL,
+    PLUGIN_NAME,
     SLACK_MCP_TOKEN,
 )
 from tests.support.judge import AntigravityModel, ClaudeCodeModel, make_judge_model
@@ -293,7 +294,7 @@ class TestToolSelection:
             if installed := AntigravityModel().enabled_plugin():
                 pytest.fail(
                     f"The Antigravity CLI has this plugin enabled ({installed}), so the model would also see the "
-                    "installed skills. Run `make antigravity-uninstall` or `agy plugin disable slack` first."
+                    f"installed skills. Run `{EVAL_ANTIGRAVITY_BIN} plugin disable {PLUGIN_NAME}` first."
                 )
         if EVAL_PROVIDER == "claude-code" and not shutil.which(EVAL_CLAUDE_BIN):
             pytest.fail(f"Claude Code CLI {EVAL_CLAUDE_BIN!r} not found (install it or set EVAL_CLAUDE_BIN)")

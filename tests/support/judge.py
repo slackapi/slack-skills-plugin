@@ -62,8 +62,16 @@ class AntigravityModel(DeepEvalBaseLLM):
         )
         if result.returncode != 0:
             raise RuntimeError(f"{self.executable} plugin list exited {result.returncode}: {result.stderr.strip()}")
-        for plugin in json.loads(result.stdout or "[]"):
-            if plugin.get("name") == PLUGIN_NAME and plugin.get("enabled"):
+        try:
+            plugins = json.loads(result.stdout or "[]")
+        except json.JSONDecodeError as error:
+            raise RuntimeError(
+                f"{self.executable} plugin list printed output that is not JSON: {result.stdout.strip()!r}"
+            ) from error
+        if not isinstance(plugins, list):
+            raise RuntimeError(f"{self.executable} plugin list printed JSON that is not a list: {plugins!r}")
+        for plugin in plugins:
+            if isinstance(plugin, dict) and plugin.get("name") == PLUGIN_NAME and plugin.get("enabled"):
                 return str(plugin.get("path", PLUGIN_NAME))
         return None
 

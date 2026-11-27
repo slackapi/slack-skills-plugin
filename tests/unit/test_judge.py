@@ -6,7 +6,7 @@ import pytest
 from pydantic import BaseModel
 
 from tests.support import judge
-from tests.support.judge import ClaudeCodeModel
+from tests.support.judge import AntigravityModel, ClaudeCodeModel
 
 
 class Pick(BaseModel):
@@ -16,10 +16,66 @@ class Pick(BaseModel):
 def fake_run(stdout: str, returncode: int = 0) -> Any:
     def run(cmd: list[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
         run.cmd = cmd  # type: ignore[attr-defined]
-        run.input = kwargs["input"]  # type: ignore[attr-defined]
+        run.input = kwargs.get("input")  # type: ignore[attr-defined]
         return subprocess.CompletedProcess(cmd, returncode, stdout=stdout, stderr="boom")
 
     return run
+
+
+class TestAntigravityModel:
+    def test_parses_structured_output(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        output = {"status": "SUCCESS", "structured_output": {"tool_name": "block-kit"}}
+        run = fake_run(json.dumps(output))
+        monkeypatch.setattr(subprocess, "run", run)
+
+        choice, cost = AntigravityModel(model="gemini-3.8-flash-low", executable="my-agy").generate(
+            "pick one", schema=Pick
+        )
+
+        assert choice == Pick(tool_name="block-kit")
+        assert cost == 0.0
+        assert run.cmd[:3] == ["my-agy", "--model", "gemini-3.8-flash-low"]
+        assert run.cmd[-1].startswith("--print=")
+        assert run.cmd[-1].endswith("pick one")
+
+    def test_blank_model_uses_the_cli_default(self) -> None:
+        assert "--model" not in AntigravityModel(model="").command("pick one", Pick)
+
+    def test_turns_off_slash_commands_and_sets_schema(self) -> None:
+        cmd = AntigravityModel(model="").command("pick one", Pick)
+
+        assert "--disable-slash-commands" in cmd
+        assert json.loads(cmd[cmd.index("--json-schema") + 1]) == Pick.model_json_schema()
+
+    def test_nonzero_exit_raises(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(subprocess, "run", fake_run("", returncode=1))
+
+        with pytest.raises(RuntimeError, match="exited 1: boom"):
+            AntigravityModel(model="").generate("pick one", schema=Pick)
+
+    def test_missing_structured_output_raises(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(subprocess, "run", fake_run(json.dumps({"status": "SUCCESS", "response": ""})))
+
+        with pytest.raises(RuntimeError, match="no structured output"):
+            AntigravityModel(model="").generate("pick one", schema=Pick)
+
+    def test_non_json_output_raises_with_the_output(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(subprocess, "run", fake_run("Update available!"))
+
+        with pytest.raises(RuntimeError, match="not JSON: 'Update available!'"):
+            AntigravityModel(model="").generate("pick one", schema=Pick)
+
+    def test_enabled_plugin_returns_its_path(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        plugins = [{"name": judge.PLUGIN_NAME, "enabled": True, "path": "/plugins/slack"}]
+        monkeypatch.setattr(subprocess, "run", fake_run(json.dumps(plugins)))
+
+        assert AntigravityModel(model="").enabled_plugin() == "/plugins/slack"
+
+    def test_disabled_or_missing_plugin_returns_none(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        plugins = [{"name": judge.PLUGIN_NAME, "enabled": False}, {"name": "other", "enabled": True}]
+        monkeypatch.setattr(subprocess, "run", fake_run(json.dumps(plugins)))
+
+        assert AntigravityModel(model="").enabled_plugin() is None
 
 
 class TestClaudeCodeModel:
@@ -64,6 +120,11 @@ class TestClaudeCodeModel:
 
 
 class TestMakeJudgeModel:
+    def test_antigravity_provider_returns_antigravity_model(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(judge, "EVAL_PROVIDER", "antigravity")
+
+        assert isinstance(judge.make_judge_model(), AntigravityModel)
+
     def test_claude_code_provider_returns_claude_code_model(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setattr(judge, "EVAL_PROVIDER", "claude-code")
 
